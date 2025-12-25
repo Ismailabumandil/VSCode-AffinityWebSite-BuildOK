@@ -1,0 +1,373 @@
+/* =========================================================
+   Tailwind & Plugins
+========================================================= */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================
+   Fonts
+========================================================= */
+@font-face {
+  font-family: "Tajawal";
+  src: url("/images/tajawal-extralight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Tajawal";
+  src: url("/images/tajawal-medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Tajawal";
+  src: url("/images/tajawal-bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Tajawal";
+  src: url("/images/tajawal-extrabold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Tajawal";
+  src: url("/images/tajawal-black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =========================================================
+   ROOT – Light Theme (Default)
+========================================================= */
+:root {
+  --page-bg: #ffffff;
+  --page-fg: #0b1220;
+
+  --background: #ffffff;
+  --foreground: #0b1220;
+
+  --primary: #0ea5e9; /* Sky Blue */
+  --secondary: #22d3ee; /* Cyan */
+  --accent: #38bdf8; /* Light Blue */
+
+  --card: #ffffff;
+  --card-foreground: #0b1220;
+
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #0ea5e9;
+
+  --muted: #f9fafb;
+  --muted-foreground: #6b7280;
+
+  /* Neon Glow (Light) */
+  --glow-1: rgba(14, 165, 233, 0.12);
+  --glow-2: rgba(34, 211, 238, 0.12);
+
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* =========================================================
+   BRAND THEME – Sky Blue Neon (Default Brand)
+========================================================= */
+html[data-theme="brand"] {
+  --page-bg: #050a1a;
+  --page-fg: #ffffff;
+
+  --background: #050a1a;
+  --foreground: #ffffff;
+
+  --primary: #0ea5e9;
+  --secondary: #22d3ee;
+  --accent: #38bdf8;
+
+  --card: #020617;
+  --card-foreground: #ffffff;
+
+  --border: rgba(56, 189, 248, 0.2);
+  --input: rgba(56, 189, 248, 0.2);
+  --ring: #0ea5e9;
+
+  --muted: #020617;
+  --muted-foreground: #cbd5e1;
+
+  /* Neon Glow */
+  --glow-1: rgba(14, 165, 233, 0.2);
+  --glow-2: rgba(34, 211, 238, 0.2);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+/* =========================================================
+   DARK THEME – Very Dark Blue
+========================================================= */
+html[data-theme="dark"] {
+  --page-bg: #020617;
+  --page-fg: #ffffff;
+
+  --background: #020617;
+  --foreground: #ffffff;
+
+  --primary: #0ea5e9;
+  --secondary: #22d3ee;
+  --accent: #38bdf8;
+
+  --card: #020617;
+  --card-foreground: #ffffff;
+
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #0ea5e9;
+
+  --muted: #020617;
+  --muted-foreground: #94a3b8;
+
+  --glow-1: rgba(14, 165, 233, 0.18);
+  --glow-2: rgba(34, 211, 238, 0.18);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+/* =========================================================
+   LIGHT THEME (Explicit)
+========================================================= */
+html[data-theme="light"] {
+  --page-bg: #ffffff;
+  --page-fg: #0b1220;
+
+  --background: #ffffff;
+  --foreground: #0b1220;
+
+  --primary: #0ea5e9;
+  --secondary: #22d3ee;
+  --accent: #38bdf8;
+
+  --card: #ffffff;
+  --card-foreground: #0b1220;
+
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #0ea5e9;
+
+  --muted: #f9fafb;
+  --muted-foreground: #6b7280;
+
+  --glow-1: rgba(14, 165, 233, 0.12);
+  --glow-2: rgba(34, 211, 238, 0.12);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* =========================================================
+   Tailwind Theme Bridge
+========================================================= */
+@theme inline {
+  --font-sans: "Poppins", "Tajawal", system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(0.577 0.245 27.325);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: oklch(0.646 0.222 41.116);
+  --color-chart-2: oklch(0.6 0.118 184.704);
+  --color-chart-3: oklch(0.398 0.07 227.392);
+  --color-chart-4: oklch(0.828 0.189 84.429);
+  --color-chart-5: oklch(0.769 0.188 70.08);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* =========================================================
+   Base Layer
+========================================================= */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background: var(--page-bg);
+    color: var(--page-fg);
+    font-family: var(--font-sans);
+    @apply antialiased bg-background text-foreground;
+  }
+}
+
+/* =========================================================
+   Loading Progress Bar
+========================================================= */
+@keyframes loading-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+  @keyframes introPulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.98;
+          }
+          50% {
+            transform: scale(1.02);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes introDots {
+          0%, 100% {
+            transform: translateY(0);
+            opacity: 0.45;
+          }
+          50% {
+            transform: translateY(-4px);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes pulseRing {
+          0% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.5);
+            opacity: 0.5;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes affinitySweep {
+          0% {
+            transform: translateX(-35%);
+            opacity: 0.35;
+          }
+          50% {
+            transform: translateX(35%);
+            opacity: 0.65;
+          }
+          100% {
+            transform: translateX(-35%);
+            opacity: 0.35;
+          }
+        }
+        
+        @keyframes slideConnection {
+          0%, 100% {
+            transform: translateX(-100%);
+          }
+          50% {
+            transform: translateX(100%);
+          }
+        }
+        
+        @keyframes flowParticle {
+          0% {
+            left: 0%;
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            left: 100%;
+            opacity: 0;
+          }
+        }
+.loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #0ea5e9, #22d3ee, transparent);
+  animation: loading-progress 1.5s ease-in-out infinite;
+  z-index: 99999;
+  box-shadow: 0 0 10px #0ea5e9, 0 0 20px #22d3ee;
+}
+
+/* =========================================================
+   RTL / LTR & Arabic Support
+========================================================= */
+html[dir="rtl"] {
+  direction: rtl;
+}
+html[dir="ltr"] {
+  direction: ltr;
+}
+html[lang="ar"] body {
+  font-family: "Tajawal", sans-serif;
+}
