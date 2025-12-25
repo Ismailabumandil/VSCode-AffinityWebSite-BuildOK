@@ -1,13 +1,14 @@
-import type React from "react"
-import type { Metadata } from "next"
+import { ReactNode } from "react"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import CookieConsent from "@/components/cookie-consent"
-import { ThemeProvider } from "@/contexts/theme-context"
 import { LoadingBar } from "@/components/loading-bar"
 import ScrollToTopOnRoute from "@/components/scroll-to-top-on-route"
 import QuickNav from "@/components/quick-nav"
-import "@/app/globals.css"
+import { Providers } from "./providers"
+import "./globals.css"
+
+
 
 /* Fonts */
 const _geist = Geist({
@@ -22,9 +23,7 @@ const _geistMono = Geist_Mono({
   preload: false,
 })
 
-
-/* Metadata */
-export const metadata: Metadata = {
+export const metadata = {
   title: "Affinity Technology",
   description: "Created By Affinity Technology",
   generator: "Vibe Of Ismail Abumandil",
@@ -47,24 +46,20 @@ export const metadata: Metadata = {
   },
 }
 
-/* Root Layout */
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
+    
     <html lang="en">
       <body className="font-sans antialiased">
-        <ThemeProvider>
+        <Providers>
           <LoadingBar />
           {children}
           <ScrollToTopOnRoute />
           <QuickNav />
           <Analytics />
           <CookieConsent />
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
-  )
+    )
 }

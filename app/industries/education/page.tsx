@@ -14,7 +14,7 @@ import { useTheme } from "@/contexts/theme-context"
 export default function EducationPage() {
   // ✅ Global theme + language
   const { theme, language, getCurrentThemeColors } = useTheme()
-  const currentTheme = useMemo(() => getCurrentThemeColors(), [theme])
+  const currentTheme = useMemo(() => getCurrentThemeColors(), [theme, getCurrentThemeColors])
 
   useEffect(() => {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr"
@@ -38,7 +38,7 @@ export default function EducationPage() {
       <BackgroundTLogos />
 
       {/* ✅ Navbar uses global theme/lang */}
-      <Navbar />
+      <Navbar  />
 
       <Breadcrumb currentLang={language} />
 
@@ -78,10 +78,7 @@ export default function EducationPage() {
                 </div>
               </div>
 
-              <div
-                className="relative h-96 rounded-3xl overflow-hidden border"
-                style={{ borderColor: "var(--border)" }}
-              >
+              <div className="relative h-96 rounded-3xl overflow-hidden border" style={{ borderColor: "var(--border)" }}>
                 <Image
                   src="/modern-classroom-with-students-learning-technology.jpg"
                   alt="Education Technology"
@@ -104,71 +101,72 @@ export default function EducationPage() {
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {(language === "en"
-              ? [
-                  {
-                    title: "Learning Management",
-                    description: "Comprehensive LMS platforms for course management and student engagement.",
-                    icon: "📚",
-                  },
-                  {
-                    title: "Virtual Classrooms",
-                    description: "Interactive online learning environments with live video and collaboration tools.",
-                    icon: "💻",
-                  },
-                  {
-                    title: "Assessment Tools",
-                    description: "Automated grading and analytics to track student progress and performance.",
-                    icon: "📝",
-                  },
-                  {
-                    title: "AI-Powered Tutoring",
-                    description: "Personalized learning experiences with adaptive AI tutoring systems.",
-                    icon: "🤖",
-                  },
-                  {
-                    title: "Content Management",
-                    description: "Digital libraries and content repositories for easy access to learning materials.",
-                    icon: "📖",
-                  },
-                  {
-                    title: "Student Information Systems",
-                    description: "Integrated systems for admissions, enrollment, and academic records management.",
-                    icon: "🎓",
-                  },
-                ]
-              : [
-                  {
-                    title: "إدارة التعلم",
-                    description: "منصات LMS شاملة لإدارة الدورات ومشاركة الطلاب.",
-                    icon: "📚",
-                  },
-                  {
-                    title: "الفصول الافتراضية",
-                    description: "بيئات تعليمية تفاعلية عبر الإنترنت مع فيديو مباشر وأدوات التعاون.",
-                    icon: "💻",
-                  },
-                  {
-                    title: "أدوات التقييم",
-                    description: "التقييم الآلي والتحليلات لتتبع تقدم الطلاب وأدائهم.",
-                    icon: "📝",
-                  },
-                  {
-                    title: "التدريس بالذكاء الاصطناعي",
-                    description: "تجارب تعليمية شخصية مع أنظمة التدريس التكيفية بالذكاء الاصطناعي.",
-                    icon: "🤖",
-                  },
-                  {
-                    title: "إدارة المحتوى",
-                    description: "المكتبات الرقمية ومستودعات المحتوى لسهولة الوصول إلى المواد التعليمية.",
-                    icon: "📖",
-                  },
-                  {
-                    title: "أنظمة معلومات الطلاب",
-                    description: "أنظمة متكاملة للقبول والتسجيل وإدارة السجلات الأكاديمية.",
-                    icon: "🎓",
-                  },
-                ]
+            {(
+              language === "en"
+                ? [
+                    {
+                      title: "Learning Management",
+                      description: "Comprehensive LMS platforms for course management and student engagement.",
+                      icon: "📚",
+                    },
+                    {
+                      title: "Virtual Classrooms",
+                      description: "Interactive online learning environments with live video and collaboration tools.",
+                      icon: "💻",
+                    },
+                    {
+                      title: "Assessment Tools",
+                      description: "Automated grading and analytics to track student progress and performance.",
+                      icon: "📝",
+                    },
+                    {
+                      title: "AI-Powered Tutoring",
+                      description: "Personalized learning experiences with adaptive AI tutoring systems.",
+                      icon: "🤖",
+                    },
+                    {
+                      title: "Content Management",
+                      description: "Digital libraries and content repositories for easy access to learning materials.",
+                      icon: "📖",
+                    },
+                    {
+                      title: "Student Information Systems",
+                      description: "Integrated systems for admissions, enrollment, and academic records management.",
+                      icon: "🎓",
+                    },
+                  ]
+                : [
+                    {
+                      title: "إدارة التعلم",
+                      description: "منصات LMS شاملة لإدارة الدورات ومشاركة الطلاب.",
+                      icon: "📚",
+                    },
+                    {
+                      title: "الفصول الافتراضية",
+                      description: "بيئات تعليمية تفاعلية عبر الإنترنت مع فيديو مباشر وأدوات التعاون.",
+                      icon: "💻",
+                    },
+                    {
+                      title: "أدوات التقييم",
+                      description: "التقييم الآلي والتحليلات لتتبع تقدم الطلاب وأدائهم.",
+                      icon: "📝",
+                    },
+                    {
+                      title: "التدريس بالذكاء الاصطناعي",
+                      description: "تجارب تعليمية شخصية مع أنظمة التدريس التكيفية بالذكاء الاصطناعي.",
+                      icon: "🤖",
+                    },
+                    {
+                      title: "إدارة المحتوى",
+                      description: "المكتبات الرقمية ومستودعات المحتوى لسهولة الوصول إلى المواد التعليمية.",
+                      icon: "📖",
+                    },
+                    {
+                      title: "أنظمة معلومات الطلاب",
+                      description: "أنظمة متكاملة للقبول والتسجيل وإدارة السجلات الأكاديمية.",
+                      icon: "🎓",
+                    },
+                  ]
             ).map((solution, index) => (
               <ScrollReveal key={index} direction="up" delay={index * 100}>
                 <div
@@ -207,19 +205,20 @@ export default function EducationPage() {
             </h2>
 
             <div className="grid md:grid-cols-4 gap-8 text-center">
-              {(language === "en"
-                ? [
-                    { number: "100K+", label: "Students Reached" },
-                    { number: "200+", label: "Institutions" },
-                    { number: "95%", label: "Satisfaction Rate" },
-                    { number: "24/7", label: "Learning Access" },
-                  ]
-                : [
-                    { number: "100K+", label: "طالب تم الوصول إليه" },
-                    { number: "200+", label: "مؤسسة" },
-                    { number: "95%", label: "معدل الرضا" },
-                    { number: "24/7", label: "الوصول للتعلم" },
-                  ]
+              {(
+                language === "en"
+                  ? [
+                      { number: "100K+", label: "Students Reached" },
+                      { number: "200+", label: "Institutions" },
+                      { number: "95%", label: "Satisfaction Rate" },
+                      { number: "24/7", label: "Learning Access" },
+                    ]
+                  : [
+                      { number: "100K+", label: "طالب تم الوصول إليه" },
+                      { number: "200+", label: "مؤسسة" },
+                      { number: "95%", label: "معدل الرضا" },
+                      { number: "24/7", label: "الوصول للتعلم" },
+                    ]
               ).map((stat, index) => (
                 <div key={index}>
                   <div className="text-5xl font-black mb-2" style={{ color: currentTheme.accent }}>

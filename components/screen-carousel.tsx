@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 
 type Lang = "en" | "ar"
 
@@ -41,22 +40,19 @@ export function ScreenCarousel({
   const safeSlides = useMemo(() => slides.slice(0, 6), [slides]) // ✅ 6 فقط
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(defaultPaused)
-  const [isMounted, setIsMounted] = useState(false)
 
+  // swipe
   const startX = useRef<number | null>(null)
   const deltaX = useRef(0)
 
+  // autoplay
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isMounted || paused || safeSlides.length <= 1) return
+    if (paused || safeSlides.length <= 1) return
     const t = setInterval(() => {
       setIndex((i) => (i + 1) % safeSlides.length)
     }, autoMs)
     return () => clearInterval(t)
-  }, [paused, autoMs, safeSlides.length, isMounted])
+  }, [paused, autoMs, safeSlides.length])
 
   const go = (next: number) => {
     const n = ((next % safeSlides.length) + safeSlides.length) % safeSlides.length
@@ -120,7 +116,7 @@ export function ScreenCarousel({
             }}
             onClick={() => setPaused((p) => !p)}
           >
-            {paused ? (language === "en" ? "Play" : "تشغيل") : language === "en" ? "Pause" : "إيقاف"}
+            {paused ? (language === "en" ? "Play" : "تشغيل") : (language === "en" ? "Pause" : "إيقاف")}
           </button>
         </div>
       )}
@@ -147,12 +143,7 @@ export function ScreenCarousel({
           {safeSlides.map((s, i) => (
             <div key={i} className="min-w-full">
               <div className="relative h-[240px] sm:h-[320px] md:h-[380px]">
-                <img
-                  src={s.src || "/placeholder.svg"}
-                  alt={s.alt}
-                  className="w-full h-full object-cover"
-                  draggable={false}
-                />
+                <img src={s.src} alt={s.alt} className="w-full h-full object-cover" draggable={false} />
                 <div
                   className="absolute inset-0"
                   style={{
@@ -233,12 +224,7 @@ export function ScreenCarousel({
               }}
               aria-label={`Select slide ${i + 1}`}
             >
-              <img
-                src={s.src || "/placeholder.svg"}
-                alt={s.alt}
-                className="w-full h-full object-cover"
-                draggable={false}
-              />
+              <img src={s.src} alt={s.alt} className="w-full h-full object-cover" draggable={false} />
               <div
                 className="absolute inset-0"
                 style={{

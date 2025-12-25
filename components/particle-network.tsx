@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 
 interface ParticleNetworkProps {
   particleCount?: number
@@ -10,15 +10,8 @@ interface ParticleNetworkProps {
 
 export function ParticleNetwork({ particleCount = 50, color = "#25064c", className = "" }: ParticleNetworkProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isMounted) return
-
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -54,8 +47,6 @@ export function ParticleNetwork({ particleCount = 50, color = "#25064c", classNa
       mouseX = e.clientX - rect.left
       mouseY = e.clientY - rect.top
     })
-
-    let animationId: number
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -101,7 +92,7 @@ export function ParticleNetwork({ particleCount = 50, color = "#25064c", classNa
       })
 
       ctx.globalAlpha = 1
-      animationId = requestAnimationFrame(animate)
+      requestAnimationFrame(animate)
     }
 
     animate()
@@ -112,18 +103,8 @@ export function ParticleNetwork({ particleCount = 50, color = "#25064c", classNa
     }
 
     window.addEventListener("resize", handleResize)
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId)
-      }
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [particleCount, color, isMounted])
-
-  if (!isMounted) {
-    return <div className={`w-full h-full ${className}`} />
-  }
+    return () => window.removeEventListener("resize", handleResize)
+  }, [particleCount, color])
 
   return <canvas ref={canvasRef} className={`w-full h-full ${className}`} />
 }

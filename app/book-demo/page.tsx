@@ -18,7 +18,8 @@ export default function BookDemoPage() {
   // ✅ Global theme + language (Brand system)
   const { theme, setTheme, language, setLanguage, getCurrentThemeColors } = useTheme()
 
-  const themeColors = useMemo(() => getCurrentThemeColors(), [theme])
+  // ✅ Theme colors come from your global ThemeProvider (Blue Neon)
+  const themeColors = useMemo(() => getCurrentThemeColors(), [theme, getCurrentThemeColors])
 
   // Form state
   const [formData, setFormData] = useState({
@@ -88,14 +89,11 @@ export default function BookDemoPage() {
     if (!formData.serviceType)
       newErrors.serviceType = language === "en" ? "Please select a service type" : "يرجى اختيار نوع الخدمة"
 
-    if (!formData.preferredDate)
-      newErrors.preferredDate = language === "en" ? "Please select a date" : "يرجى اختيار التاريخ"
+    if (!formData.preferredDate) newErrors.preferredDate = language === "en" ? "Please select a date" : "يرجى اختيار التاريخ"
 
-    if (!formData.preferredTime)
-      newErrors.preferredTime = language === "en" ? "Please select a time" : "يرجى اختيار الوقت"
+    if (!formData.preferredTime) newErrors.preferredTime = language === "en" ? "Please select a time" : "يرجى اختيار الوقت"
 
-    if (!formData.teamMember)
-      newErrors.teamMember = language === "en" ? "Please select a team member" : "يرجى اختيار عضو الفريق"
+    if (!formData.teamMember) newErrors.teamMember = language === "en" ? "Please select a team member" : "يرجى اختيار عضو الفريق"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -129,9 +127,10 @@ export default function BookDemoPage() {
     const startDate = new Date(`${appointment.preferredDate}T${appointment.preferredTime}`)
     const endDate = new Date(startDate.getTime() + 60 * 60 * 1000)
 
-    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Demo: ${appointment.serviceType}&dates=${
-      startDate.toISOString().replace(/[-:]/g, "").split(".")[0]
-    }Z/${endDate.toISOString().replace(/[-:]/g, "").split(".")[0]}Z&details=Demo with ${
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Demo: ${appointment.serviceType}&dates=${startDate
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .split(".")[0]}Z/${endDate.toISOString().replace(/[-:]/g, "").split(".")[0]}Z&details=Demo with ${
       appointment.teamMember
     }&location=Online&sf=true&output=xml`
 
@@ -180,7 +179,7 @@ export default function BookDemoPage() {
       <ReadingProgress />
       <BackgroundTLogos />
 
-      <Navbar />
+      <Navbar/>
 
       <main className="pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-6">
@@ -282,7 +281,7 @@ export default function BookDemoPage() {
                         color: "var(--foreground)",
                         borderColor: "color-mix(in srgb, var(--accent) 55%, transparent)",
                       }}
-                      placeholder={language === "en" ? "+966 50 123 4567" : "+٩٦٥ ٥٠ ١٢٣ ٤٥٦٧"}
+                      placeholder={language === "en" ? "+966 50 123 4567" : "+٩٦٦ ٥٠ ١٢٣ ٤٥٦٧"}
                     />
                   </div>
 
@@ -298,9 +297,7 @@ export default function BookDemoPage() {
                       style={{
                         backgroundColor: "var(--background)",
                         color: "var(--foreground)",
-                        borderColor: errors.serviceType
-                          ? "#ef4444"
-                          : "color-mix(in srgb, var(--accent) 55%, transparent)",
+                        borderColor: errors.serviceType ? "#ef4444" : "color-mix(in srgb, var(--accent) 55%, transparent)",
                       }}
                     >
                       <option value="">{language === "en" ? "Select a service..." : "اختر خدمة..."}</option>
@@ -327,9 +324,7 @@ export default function BookDemoPage() {
                       style={{
                         backgroundColor: "var(--background)",
                         color: "var(--foreground)",
-                        borderColor: errors.preferredDate
-                          ? "#ef4444"
-                          : "color-mix(in srgb, var(--accent) 55%, transparent)",
+                        borderColor: errors.preferredDate ? "#ef4444" : "color-mix(in srgb, var(--accent) 55%, transparent)",
                       }}
                     />
                     {errors.preferredDate && <p className="text-red-500 text-sm mt-1">{errors.preferredDate}</p>}
@@ -348,9 +343,7 @@ export default function BookDemoPage() {
                       style={{
                         backgroundColor: "var(--background)",
                         color: "var(--foreground)",
-                        borderColor: errors.preferredTime
-                          ? "#ef4444"
-                          : "color-mix(in srgb, var(--accent) 55%, transparent)",
+                        borderColor: errors.preferredTime ? "#ef4444" : "color-mix(in srgb, var(--accent) 55%, transparent)",
                       }}
                     />
                     {errors.preferredTime && <p className="text-red-500 text-sm mt-1">{errors.preferredTime}</p>}
@@ -549,10 +542,10 @@ export default function BookDemoPage() {
         </div>
       </main>
 
-      <SharedFooter />
-      <ChatWidget />
-      <QuickNav />
-      <KeyboardShortcuts />
+      <SharedFooter  />
+      <ChatWidget  />
+      <QuickNav  />
+      <KeyboardShortcuts  />
       <ReadingBookmark pageId="book-demo" currentLang={language} currentTheme={themeColors as any} />
     </div>
   )

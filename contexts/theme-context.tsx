@@ -22,7 +22,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function AppThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeMode>("brand")
   const [language, setLanguageState] = useState<Language>("en")
   const [mounted, setMounted] = useState(false)

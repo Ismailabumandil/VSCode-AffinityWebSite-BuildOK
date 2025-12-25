@@ -1,4 +1,6 @@
 "use client"
+
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useTheme } from "@/contexts/theme-context"
 import { Navbar } from "@/components/navbar"
@@ -23,114 +25,111 @@ import {
   BarChart3,
   Bot,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react"
 
 export default function AIIntegrationPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
+  const [activePoint, setActivePoint] = useState(0)
+  const [activeService, setActiveService] = useState(0)
 
-  const currentTheme = {
-    background: "var(--page-bg)",
-    text: "var(--page-fg)",
-    accent: "var(--accent)",
-    primary: "var(--primary)",
-    secondary: "var(--secondary)",
-    border: "var(--border)",
-    glow1: "var(--glow-1)",
-    glow2: "var(--glow-2)",
+  // ✅ نفس مبدأ GRCStrategyPage: useMemo للثيم :contentReference[oaicite:1]{index=1}
+  const currentTheme = useMemo(
+    () => ({
+      background: "var(--page-bg)",
+      text: "var(--page-fg)",
+      primary: "var(--primary)",
+      accent: "var(--accent)",
+      secondary: "var(--secondary)",
+      muted: "var(--muted)",
+      mutedForeground: "var(--muted-foreground)",
+      border: "var(--border)",
+      glow1: "var(--glow-1)",
+      glow2: "var(--glow-2)",
+      mode: themeMode,
+    }),
+    [themeMode],
+  )
+
+  const sharedFooterTheme = {
+    bg: currentTheme.background,
+    text: currentTheme.text,
+    accent: currentTheme.accent,
   }
 
-  const sharedFooterTheme = { bg: currentTheme.background, text: currentTheme.text, accent: currentTheme.accent }
-
   const integrationPoints = [
-    { name: currentLang === "en" ? "ERP Systems" : "أنظمة ERP", nameAr: "أنظمة ERP", icon: Database },
-    { name: currentLang === "en" ? "CRM Platform" : "منصة CRM", nameAr: "منصة CRM", icon: Network },
-    { name: currentLang === "en" ? "Cloud Services" : "الخدمات السحابية", nameAr: "الخدمات السحابية", icon: Cloud },
-    { name: currentLang === "en" ? "Mobile Apps" : "التطبيقات", nameAr: "التطبيقات", icon: Cpu },
-    { name: currentLang === "en" ? "Analytics" : "التحليلات", nameAr: "التحليلات", icon: BarChart3 },
-    { name: currentLang === "en" ? "AI Hub" : "مركز الذكاء", nameAr: "مركز الذكاء", icon: Brain },
+    { name: "ERP Systems", nameAr: "أنظمة ERP", icon: Database },
+    { name: "CRM Platform", nameAr: "منصة CRM", icon: Network },
+    { name: "Cloud Services", nameAr: "الخدمات السحابية", icon: Cloud },
+    { name: "Mobile Apps", nameAr: "التطبيقات", icon: Cpu },
+    { name: "Analytics", nameAr: "التحليلات", icon: BarChart3 },
+    { name: "AI Hub", nameAr: "مركز الذكاء", icon: Brain },
   ]
 
   const services = [
     {
       icon: Bot,
-      title: currentLang === "en" ? "AI Models in Enterprise Apps" : "نماذج AI في التطبيقات المؤسسية",
-      titleAr: "نماذج AI في التطبيقات المؤسسية",
-      description:
-        currentLang === "en"
-          ? "Embedding AI capabilities into ERP, CRM, HR, finance, supply chain, ticketing, and custom applications for smarter operations."
-          : "تضمين قدرات AI في ERP وCRM والموارد البشرية والمالية وسلسلة الإمداد والتذاكر لتمكين التشغيل الذكي.",
-      descriptionAr:
-        "تضمين قدرات AI في ERP وCRM والموارد البشرية والمالية وسلسلة الإمداد والتذاكر لتمكين التشغيل الذكي.",
+      title: { en: "AI Models in Enterprise Apps", ar: "نماذج AI في التطبيقات المؤسسية" },
+      description: {
+        en: "Embedding AI capabilities into ERP, CRM, HR, finance, supply chain, ticketing, and custom applications for smarter operations.",
+        ar: "تضمين قدرات AI في ERP وCRM والموارد البشرية والمالية وسلسلة الإمداد والتذاكر لتمكين التشغيل الذكي.",
+      },
     },
     {
       icon: GitBranch,
-      title: currentLang === "en" ? "Data Pipeline & Model Orchestration" : "خطوط البيانات وإدارة النماذج",
-      titleAr: "خطوط البيانات وإدارة النماذج",
-      description:
-        currentLang === "en"
-          ? "Secure data pipelines, model management, validation frameworks, and automated training for consistent AI performance."
-          : "خطوط بيانات آمنة وحوكمة النماذج وآليات التحقق ودورات تدريب أوتوماتيكية لأداء ثابت.",
-      descriptionAr: "خطوط بيانات آمنة وحوكمة النماذج وآليات التحقق ودورات تدريب أوتوماتيكية لأداء ثابت.",
+      title: { en: "Data Pipeline & Model Orchestration", ar: "خطوط البيانات وإدارة النماذج" },
+      description: {
+        en: "Secure data pipelines, model management, validation frameworks, and automated training for consistent AI performance.",
+        ar: "خطوط بيانات آمنة وحوكمة النماذج وآليات التحقق ودورات تدريب أوتوماتيكية لأداء ثابت.",
+      },
     },
     {
       icon: Workflow,
-      title: currentLang === "en" ? "Intelligent Process Automation (IPA)" : "أتمتة العمليات الذكية",
-      titleAr: "أتمتة العمليات الذكية",
-      description:
-        currentLang === "en"
-          ? "Combining AI with RPA for document processing, forecasting, classification, risk scoring, and anomaly detection."
-          : "دمج AI مع RPA لمعالجة المستندات والتوقعات والتصنيف وكشف الشذوذ.",
-      descriptionAr: "دمج AI مع RPA لمعالجة المستندات والتوقعات والتصنيف وكشف الشذوذ.",
+      title: { en: "Intelligent Process Automation (IPA)", ar: "أتمتة العمليات الذكية" },
+      description: {
+        en: "Combining AI with RPA for document processing, forecasting, classification, risk scoring, and anomaly detection.",
+        ar: "دمج AI مع RPA لمعالجة المستندات والتوقعات والتصنيف وكشف الشذوذ.",
+      },
     },
     {
       icon: Cloud,
-      title: currentLang === "en" ? "API-Based AI Integration" : "تكامل AI عبر API",
-      titleAr: "تكامل AI عبر API",
-      description:
-        currentLang === "en"
-          ? "Integration with OpenAI, Azure AI, AWS AI, and Google Cloud ML through secure, scalable API gateways."
-          : "التكامل مع OpenAI وAzure AI وAWS AI وGoogle Cloud ML عبر بوابات API آمنة.",
-      descriptionAr: "التكامل مع OpenAI وAzure AI وAWS AI وGoogle Cloud ML عبر بوابات API آمنة.",
+      title: { en: "API-Based AI Integration", ar: "تكامل AI عبر API" },
+      description: {
+        en: "Integration with OpenAI, Azure AI, AWS AI, and Google Cloud ML through secure, scalable API gateways.",
+        ar: "التكامل مع OpenAI وAzure AI وAWS AI وGoogle Cloud ML عبر بوابات API آمنة.",
+      },
     },
     {
       icon: Boxes,
-      title: currentLang === "en" ? "Custom AI Microservices" : "خدمات AI مصغّرة",
-      titleAr: "خدمات AI مصغّرة",
-      description:
-        currentLang === "en"
-          ? "Modular AI services for recommendations, fraud detection, chat, demand forecasting, and NLP that scale independently."
-          : "خدمات AI مستقلة للتوصيات وكشف الاحتيال والتنبؤ بالطلب ومحركات NLP.",
-      descriptionAr: "خدمات AI مستقلة للتوصيات وكشف الاحتيال والتنبؤ بالطلب ومحركات NLP.",
-    },
-    {
-      icon: BarChart3,
-      title: currentLang === "en" ? "Predictive & Cognitive Insights" : "رؤى تنبؤية ومعرفية",
-      titleAr: "رؤى تنبؤية ومعرفية",
-      description:
-        currentLang === "en"
-          ? "AI-driven insights embedded in dashboards and decision centers for strategic and operational decisions."
-          : "تحليلات تنبؤية مدمجة في لوحات القيادة لدعم القرارات الاستراتيجية والتشغيلية.",
-      descriptionAr: "تحليلات تنبؤية مدمجة في لوحات القيادة لدعم القرارات الاستراتيجية والتشغيلية.",
+      title: { en: "Custom AI Microservices", ar: "خدمات AI مصغّرة" },
+      description: {
+        en: "Modular AI services for recommendations, fraud detection, chat, demand forecasting, and NLP that scale independently.",
+        ar: "خدمات AI مستقلة للتوصيات وكشف الاحتيال والتنبؤ بالطلب ومحركات NLP.",
+      },
     },
     {
       icon: Shield,
-      title: currentLang === "en" ? "Governed & Secure AI Deployment" : "نشر آمن ومحكوم للـ AI",
-      titleAr: "نشر آمن ومحكوم للـ AI",
-      description:
-        currentLang === "en"
-          ? "Enterprise-grade security with data encryption, access control, model governance, and continuous monitoring."
-          : "أمان على مستوى المؤسسات مع تشفير البيانات وحوكمة النماذج ومراقبة مستمرة.",
-      descriptionAr: "أمان على مستوى المؤسسات مع تشفير البيانات وحوكمة النماذج ومراقبة مستمرة.",
+      title: { en: "Governed & Secure AI Deployment", ar: "نشر آمن ومحكوم للـ AI" },
+      description: {
+        en: "Enterprise-grade security with data encryption, access control, model governance, and continuous monitoring.",
+        ar: "أمان على مستوى المؤسسات مع تشفير البيانات وحوكمة النماذج ومراقبة مستمرة.",
+      },
     },
     {
       icon: TrendingUp,
-      title: currentLang === "en" ? "Scalable AI Adoption" : "توسيع قدرات AI",
-      titleAr: "توسيع قدرات AI",
-      description:
-        currentLang === "en"
-          ? "Expand AI capabilities across departments, countries, and business units while maintaining consistency."
-          : "نشر وتوسيع تطبيقات AI عبر الإدارات والفروع مع الحفاظ على الاتساق.",
-      descriptionAr: "نشر وتوسيع تطبيقات AI عبر الإدارات والفروع مع الحفاظ على الاتساق.",
+      title: { en: "Scalable AI Adoption", ar: "توسيع قدرات AI" },
+      description: {
+        en: "Expand AI capabilities across departments, countries, and business units while maintaining consistency.",
+        ar: "نشر وتوسيع تطبيقات AI عبر الإدارات والفروع مع الحفاظ على الاتساق.",
+      },
+    },
+    {
+      icon: BarChart3,
+      title: { en: "Predictive & Cognitive Insights", ar: "رؤى تنبؤية ومعرفية" },
+      description: {
+        en: "AI-driven insights embedded in dashboards and decision centers for strategic and operational decisions.",
+        ar: "تحليلات تنبؤية مدمجة في لوحات القيادة لدعم القرارات الاستراتيجية والتشغيلية.",
+      },
     },
   ]
 
@@ -141,58 +140,75 @@ export default function AIIntegrationPage() {
     { name: "Google Cloud ML", logo: "/google-cloud-ml-logo.jpg" },
   ]
 
+  // ✅ نفس مبدأ intervals في الصفحة الشغالة :contentReference[oaicite:2]{index=2}
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActivePoint((prev) => (prev + 1) % integrationPoints.length)
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [integrationPoints.length])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveService((prev) => (prev + 1) % services.length)
+    }, 3500)
+    return () => clearInterval(interval)
+  }, [services.length])
+
   return (
     <div
       className="min-h-screen"
       dir={currentLang === "ar" ? "rtl" : "ltr"}
       style={{
-        background: `
-          radial-gradient(1000px 560px at 12% 16%, var(--glow-1), transparent 60%),
-          radial-gradient(1000px 560px at 86% 20%, var(--glow-2), transparent 60%),
-          radial-gradient(760px 460px at 50% 86%, rgba(167,139,250,0.14), transparent 60%),
-          linear-gradient(135deg, var(--page-bg), #020617)
-        `,
+        background: `linear-gradient(to bottom right,
+          var(--page-bg),
+          color-mix(in srgb, var(--page-bg) 78%, var(--primary) 22%),
+          var(--page-bg)
+        )`,
         color: "var(--page-fg)",
       }}
     >
       <Navbar />
-      <Breadcrumb currentLang={currentLang as any} currentTheme={currentTheme as any} />
+      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
       <ChatWidget />
       <ScrollToTop />
 
-      {/* Hero Section */}
+      {/* HERO */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-        {/* Soft animated blobs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-35">
+        {/* نفس الباكقراوند الشغال */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div
-            className="absolute top-16 left-10 w-96 h-96 rounded-full blur-3xl animate-pulse"
-            style={{ background: "rgba(56,189,248,0.16)" }}
+            className="absolute top-20 left-10 w-96 h-96 rounded-full blur-3xl animate-pulse opacity-20"
+            style={{ background: "radial-gradient(circle, var(--glow-1), transparent 70%)" }}
           />
           <div
-            className="absolute bottom-10 right-10 w-96 h-96 rounded-full blur-3xl animate-pulse"
-            style={{ background: "rgba(34,211,238,0.12)", animationDelay: "1s" }}
+            className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl animate-pulse delay-1000 opacity-20"
+            style={{ background: "radial-gradient(circle, var(--glow-2), transparent 70%)" }}
+          />
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] rounded-full blur-3xl animate-pulse delay-500 opacity-10"
+            style={{ background: "radial-gradient(circle, var(--primary), transparent 70%)" }}
           />
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div className="space-y-6">
+            {/* Left */}
+            <div>
               <div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6"
                 style={{
-                  background: "rgba(255,255,255,0.05)",
-                  borderColor: "rgba(56,189,248,0.18)",
-                  backdropFilter: "blur(10px)",
+                  background: "color-mix(in srgb, var(--primary) 14%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--primary) 35%, transparent)",
                 }}
               >
-                <Plug className="w-4 h-4" style={{ color: "rgba(34,211,238,0.95)" }} />
-                <span className="text-sm" style={{ color: "rgba(255,255,255,0.78)" }}>
+                <Plug className="w-5 h-5" style={{ color: "var(--accent)" }} />
+                <span className="text-sm font-medium">
                   {currentLang === "en" ? "Enterprise AI Integration" : "تكامل الذكاء الاصطناعي المؤسسي"}
                 </span>
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+              <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                 {currentLang === "en" ? (
                   <>
                     Embed{" "}
@@ -218,207 +234,292 @@ export default function AIIntegrationPage() {
                 )}
               </h1>
 
-              <p className="text-xl leading-relaxed" style={{ color: "rgba(255,255,255,0.72)" }}>
+              <p className="text-xl mb-8 leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
                 {currentLang === "en"
                   ? "Affinity Technology delivers advanced AI integration services that embed intelligence directly into enterprise systems, workflows, and customer-facing platforms."
-                  : "تقدّم Affinity Technology خدمات تكامل متقدمة للذكاء الاصطناعي، مما يتيح دمج القدرات الذكية مباشرة داخل الأنظمة المؤسسية وسير العمل."}
+                  : "تقدّم Affinity Technology خدمات تكامل متقدمة للذكاء الاصطناعي لدمج القدرات الذكية داخل الأنظمة وسير العمل."}
               </p>
 
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/contact"
-                  className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
                   style={{
-                    backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
-                    boxShadow: "0 0 44px rgba(56,189,248,0.18)",
-                    color: "#fff",
+                    background: "linear-gradient(90deg, var(--primary), var(--accent))",
+                    color: "white",
+                    boxShadow: "0 12px 40px color-mix(in srgb, var(--primary) 25%, transparent)",
                   }}
                 >
-                  {currentLang === "en" ? "Start AI Integration" : "ابدأ التكامل"}
+                  {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
                 </Link>
 
                 <Link
                   href="/shop"
-                  className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border"
                   style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(56,189,248,0.18)",
-                    color: "#fff",
-                    backdropFilter: "blur(10px)",
+                    background: "color-mix(in srgb, var(--card) 10%, transparent)",
+                    borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
                   }}
                 >
-                  {currentLang === "en" ? "View Solutions" : "عرض الحلول"}
+                  {currentLang === "en" ? "Learn More" : "اعرف المزيد"}
                 </Link>
               </div>
             </div>
 
-            {/* Right - Integration Network */}
+            {/* Right - Orbit (نفس مبدأ الصفحة الشغالة: rotator + counter) :contentReference[oaicite:3]{index=3} */}
             <div className="relative h-[520px] flex items-center justify-center">
-              {/* Ring */}
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  width: 420,
-                  height: 420,
-                  border: "1px dashed rgba(56,189,248,0.22)",
-                  boxShadow: "0 0 60px rgba(56,189,248,0.10)",
-                  animation: "spinSlow 18s linear infinite",
-                }}
-              />
+              <div className="relative w-[420px] h-[420px]">
+                {/* Rotator */}
+                <div className="absolute inset-0 orbit-rotator">
+                  {integrationPoints.map((p, index) => {
+                    const angle = (index / integrationPoints.length) * 2 * Math.PI
+                    const radius = 165
+                    const x = Math.cos(angle) * radius
+                    const y = Math.sin(angle) * radius
+                    const Icon = p.icon
+                    const isActive = index === activePoint
 
-              {/* Central AI Hub */}
-              <div className="absolute z-20">
-                <div
-                  className="w-32 h-32 rounded-2xl flex items-center justify-center"
-                  style={{
-                    backgroundImage: "linear-gradient(135deg, var(--primary), var(--accent))",
-                    boxShadow: "0 0 80px rgba(56,189,248,0.18)",
-                    animation: "pulseSoft 2.6s ease-in-out infinite",
-                  }}
-                >
-                  <Brain className="w-16 h-16 text-white" />
+                    return (
+                      <div
+                        key={index}
+                        className="absolute"
+                        style={{
+                          left: "50%",
+                          top: "50%",
+                          transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                        }}
+                      >
+                        <div className="orbit-counter">
+                          <div
+                            className="w-20 h-20 rounded-xl flex items-center justify-center border transition-all duration-500"
+                            style={{
+                              background: isActive
+                                ? "linear-gradient(135deg, var(--primary), var(--accent))"
+                                : "color-mix(in srgb, var(--card) 18%, transparent)",
+                              borderColor: isActive
+                                ? "color-mix(in srgb, var(--accent) 55%, transparent)"
+                                : "color-mix(in srgb, var(--border) 65%, transparent)",
+                              boxShadow: isActive ? "0 0 30px var(--glow-2)" : "none",
+                              transform: isActive ? "scale(1.12)" : "scale(1)",
+                            }}
+                          >
+                            <Icon className="w-10 h-10 text-white" />
+                          </div>
+
+                          <div className="mt-2 text-center">
+                            <span
+                              className="text-xs font-medium"
+                              style={{ color: isActive ? "var(--page-fg)" : "var(--muted-foreground)" }}
+                            >
+                              {currentLang === "en" ? p.name : p.nameAr}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
-              </div>
 
-              {/* Orbiting Integration Points */}
-              {integrationPoints.map((point, index) => {
-                const angle = index * 60 * (Math.PI / 180)
-                const radius = 190
-                const x = Math.cos(angle) * radius
-                const y = Math.sin(angle) * radius
-                const Icon = point.icon
+                {/* Lines */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ filter: "blur(0.6px)" }}>
+                  {integrationPoints.map((_, index) => {
+                    const angle = (index / integrationPoints.length) * 2 * Math.PI
+                    const radius = 165
+                    const cx = 210
+                    const cy = 210
+                    const x2 = cx + Math.cos(angle) * radius
+                    const y2 = cy + Math.sin(angle) * radius
+                    const isActive = index === activePoint
 
-                return (
-                  <div
-                    key={index}
-                    className="absolute top-1/2 left-1/2 transition-all duration-700"
-                    style={{
-                      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                    }}
-                  >
+                    return (
+                      <line
+                        key={index}
+                        x1={cx}
+                        y1={cy}
+                        x2={x2}
+                        y2={y2}
+                        stroke={isActive ? "var(--accent)" : "color-mix(in srgb, var(--primary) 25%, transparent)"}
+                        strokeWidth={isActive ? 2.5 : 1}
+                        opacity={isActive ? 0.85 : 0.35}
+                        className="transition-all duration-700"
+                      />
+                    )
+                  })}
+                </svg>
+
+                {/* Center Hub */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative">
                     <div
-                      className="w-20 h-20 rounded-2xl flex items-center justify-center"
+                      className="w-32 h-32 rounded-2xl flex items-center justify-center border shadow-2xl"
                       style={{
-                        background: "rgba(255,255,255,0.06)",
-                        border: "1px solid rgba(56,189,248,0.18)",
-                        backdropFilter: "blur(10px)",
-                        boxShadow: "0 0 22px rgba(56,189,248,0.08)",
+                        background: "linear-gradient(135deg, var(--primary), var(--accent))",
+                        borderColor: "color-mix(in srgb, var(--accent) 45%, transparent)",
+                        boxShadow: "0 0 70px var(--glow-1)",
                       }}
                     >
-                      <Icon className="w-10 h-10" style={{ color: "rgba(34,211,238,0.85)" }} />
+                      <Sparkles className="w-16 h-16 text-white" />
                     </div>
-
-                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                      <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.65)" }}>
-                        {currentLang === "en" ? point.name : point.nameAr}
-                      </span>
-                    </div>
-
-                    {/* Beam to center */}
                     <div
-                      className="absolute top-1/2 left-1/2 -translate-y-1/2 origin-left"
-                      style={{
-                        width: `${radius}px`,
-                        height: 2,
-                        background: "linear-gradient(90deg, rgba(56,189,248,0.55), rgba(167,139,250,0.00))",
-                        transform: `translate(-50%, -50%) rotate(${180 + index * 60}deg)`,
-                        filter: "drop-shadow(0 0 10px rgba(56,189,248,0.25))",
-                      }}
+                      className="absolute inset-0 rounded-2xl blur-xl opacity-40 animate-pulse"
+                      style={{ background: "color-mix(in srgb, var(--primary) 35%, transparent)" }}
                     />
                   </div>
-                )
-              })}
+                </div>
+              </div>
             </div>
+            {/* End Orbit */}
           </div>
         </div>
       </section>
 
-      {/* Live Image */}
+      {/* SERVICES */}
+      <section className="py-20 px-4 relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              {currentLang === "en" ? "AI Integration Services" : "خدمات تكامل الذكاء الاصطناعي"}
+            </h2>
+            <p className="text-xl" style={{ color: "var(--muted-foreground)" }}>
+              {currentLang === "en"
+                ? "Enterprise-ready services designed for secure, scalable AI adoption"
+                : "خدمات مؤسسية للتبني الآمن والقابل للتوسع للذكاء الاصطناعي"}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => {
+              const Icon = service.icon
+              const isHighlighted = index === activeService
+
+              return (
+                <div
+                  key={index}
+                  className="relative p-8 rounded-2xl border transition-all duration-500 group hover:scale-[1.02]"
+                  style={{
+                    background: isHighlighted
+                      ? "linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, transparent), color-mix(in srgb, var(--accent) 10%, transparent))"
+                      : "color-mix(in srgb, var(--card) 18%, transparent)",
+                    borderColor: isHighlighted
+                      ? "color-mix(in srgb, var(--accent) 55%, transparent)"
+                      : "color-mix(in srgb, var(--border) 65%, transparent)",
+                    boxShadow: isHighlighted ? "0 0 40px var(--glow-1)" : "none",
+                  }}
+                >
+                  <div
+                    className="absolute top-0 left-0 w-12 h-12 rounded-tl-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      borderTop: "2px solid color-mix(in srgb, var(--accent) 65%, transparent)",
+                      borderLeft: "2px solid color-mix(in srgb, var(--accent) 65%, transparent)",
+                    }}
+                  />
+                  <div
+                    className="absolute bottom-0 right-0 w-12 h-12 rounded-br-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      borderBottom: "2px solid color-mix(in srgb, var(--accent) 65%, transparent)",
+                      borderRight: "2px solid color-mix(in srgb, var(--accent) 65%, transparent)",
+                    }}
+                  />
+
+                  <div
+                    className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 transition-transform duration-300"
+                    style={{
+                      background: "linear-gradient(135deg, var(--primary), var(--accent))",
+                      transform: isHighlighted ? "scale(1.08) rotate(6deg)" : undefined,
+                      boxShadow: "0 12px 35px color-mix(in srgb, var(--primary) 22%, transparent)",
+                    }}
+                  >
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+
+                  <h3 className="text-xl font-bold mb-3">{service.title[currentLang]}</h3>
+                  <p style={{ color: "var(--muted-foreground)" }} className="leading-relaxed">
+                    {service.description[currentLang]}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* DASHBOARD IMAGE */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div
-            className="relative rounded-3xl overflow-hidden border"
-            style={{
-              borderColor: "rgba(56,189,248,0.16)",
-              background: "rgba(255,255,255,0.03)",
-              boxShadow: "0 0 60px rgba(56,189,248,0.10)",
-            }}
+            className="relative rounded-3xl overflow-hidden border shadow-2xl"
+            style={{ borderColor: "color-mix(in srgb, var(--border) 60%, transparent)" }}
           >
             <img
               src="/modern-ai-integration-dashboard-with-enterprise-sy.jpg"
               alt="AI Integration Dashboard"
-              className="w-full h-[600px] object-cover"
+              className="w-full h-auto"
             />
+
             <div
               className="absolute inset-0"
-              style={{ background: "linear-gradient(180deg, transparent, rgba(2,6,23,0.85))" }}
+              style={{
+                background:
+                  "linear-gradient(to top, color-mix(in srgb, var(--page-bg) 75%, transparent), transparent, transparent)",
+              }}
             />
-            <div className="absolute bottom-8 left-8 right-8">
-              <h3 className="text-3xl font-bold text-white mb-3">
-                {currentLang === "en" ? "Real-Time AI Integration Platform" : "منصة التكامل الحية للذكاء الاصطناعي"}
-              </h3>
-              <p className="text-lg" style={{ color: "rgba(255,255,255,0.75)" }}>
-                {currentLang === "en"
-                  ? "Monitor, manage, and orchestrate AI models across your entire enterprise ecosystem."
-                  : "راقب وأدر وانسق نماذج الذكاء الاصطناعي عبر نظام المؤسسة بأكمله."}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Services Grid */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-5">
-              {currentLang === "en" ? "Comprehensive AI Integration Services" : "خدمات التكامل الشاملة"}
-            </h2>
-            <p className="text-xl max-w-3xl mx-auto" style={{ color: "rgba(255,255,255,0.70)" }}>
-              {currentLang === "en"
-                ? "End-to-end AI integration capabilities that transform enterprise operations"
-                : "قدرات تكامل شاملة تحول العمليات المؤسسية"}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => {
-              const Icon = service.icon
-              return (
-                <div
-                  key={index}
-                  className="group relative rounded-2xl p-6 transition-all duration-300 hover:scale-105"
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(56,189,248,0.16)",
-                    backdropFilter: "blur(10px)",
-                    boxShadow: "0 0 28px rgba(56,189,248,0.08)",
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.06), rgba(167,139,250,0.05))" }}
-                  />
-
-                  <div className="relative z-10">
-                    <div
-                      className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
-                      style={{ backgroundImage: "linear-gradient(135deg, var(--primary), var(--accent))" }}
-                    >
-                      <Icon className="w-7 h-7 text-white" />
+            <div className="absolute bottom-8 left-8 right-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div
+                className="backdrop-blur-md rounded-xl p-4 border"
+                style={{
+                  background: "color-mix(in srgb, var(--page-bg) 35%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-8 h-8" style={{ color: "var(--accent)" }} />
+                  <div>
+                    <div className="text-2xl font-bold">99%</div>
+                    <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                      {currentLang === "en" ? "Integration Success" : "نجاح التكامل"}
                     </div>
-
-                    <h3 className="text-lg font-semibold text-white mb-2">
-                      {currentLang === "en" ? service.title : service.titleAr}
-                    </h3>
-
-                    <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.72)" }}>
-                      {currentLang === "en" ? service.description : service.descriptionAr}
-                    </p>
                   </div>
                 </div>
-              )
-            })}
+              </div>
+
+              <div
+                className="backdrop-blur-md rounded-xl p-4 border"
+                style={{
+                  background: "color-mix(in srgb, var(--page-bg) 35%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <Shield className="w-8 h-8" style={{ color: "var(--primary)" }} />
+                  <div>
+                    <div className="text-2xl font-bold">Zero</div>
+                    <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                      {currentLang === "en" ? "Data Leakage" : "تسرب بيانات"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="backdrop-blur-md rounded-xl p-4 border"
+                style={{
+                  background: "color-mix(in srgb, var(--page-bg) 35%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <Activity className="w-8 h-8" style={{ color: "var(--accent)" }} />
+                  <div>
+                    <div className="text-2xl font-bold">6+</div>
+                    <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                      {currentLang === "en" ? "Systems Connected" : "أنظمة متصلة"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* end stats */}
           </div>
         </div>
       </section>
@@ -427,10 +528,10 @@ export default function AIIntegrationPage() {
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-4xl font-bold mb-4">
               {currentLang === "en" ? "Integrated AI Platforms" : "منصات الذكاء الاصطناعي المدمجة"}
             </h2>
-            <p className="text-lg" style={{ color: "rgba(255,255,255,0.70)" }}>
+            <p className="text-xl" style={{ color: "var(--muted-foreground)" }}>
               {currentLang === "en"
                 ? "Seamless integration with leading AI providers"
                 : "تكامل سلس مع مزودي الذكاء الاصطناعي الرائدين"}
@@ -441,141 +542,110 @@ export default function AIIntegrationPage() {
             {providers.map((p, index) => (
               <div
                 key={index}
-                className="flex items-center justify-center p-6 rounded-2xl transition-all duration-300 hover:scale-105"
+                className="flex items-center justify-center p-6 rounded-2xl border"
                 style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(56,189,248,0.16)",
-                  backdropFilter: "blur(10px)",
+                  background: "color-mix(in srgb, var(--card) 18%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
                 }}
               >
-                <img
-                  src={p.logo || "/placeholder.svg"}
-                  alt={p.name}
-                  className="h-12 w-auto object-contain opacity-75 hover:opacity-100 transition-opacity"
-                />
+                <img src={p.logo || "/placeholder.svg"} alt={p.name} className="h-12 w-auto object-contain opacity-90" />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Security & Compliance */}
+      {/* Security */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-4xl font-bold text-white">
-                {currentLang === "en" ? "Enterprise-Grade Security & Governance" : "أمان وحوكمة على مستوى المؤسسات"}
-              </h2>
-              <p className="text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.72)" }}>
-                {currentLang === "en"
-                  ? "Every AI integration follows strict enterprise standards ensuring data privacy, security, and compliance."
-                  : "كل تكامل للذكاء الاصطناعي يتبع معايير مؤسسية صارمة تضمن خصوصية البيانات والأمان والامتثال."}
-              </p>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              {currentLang === "en" ? "Security & Governance" : "الأمن والحوكمة"}
+            </h2>
+            <p className="text-xl" style={{ color: "var(--muted-foreground)" }}>
+              {currentLang === "en"
+                ? "Enterprise-grade controls for AI deployments"
+                : "ضوابط مؤسسية لنشر الذكاء الاصطناعي"}
+            </p>
+          </div>
 
-              <div className="space-y-4">
-                {[
-                  { icon: Lock, text: currentLang === "en" ? "Data Privacy & Encryption" : "خصوصية وتشفير البيانات" },
-                  {
-                    icon: Shield,
-                    text: currentLang === "en" ? "Identity & Access Control" : "التحكم في الهوية والصلاحيات",
-                  },
-                  {
-                    icon: Activity,
-                    text: currentLang === "en" ? "Model Governance & Explainability" : "حوكمة النماذج والشفافية",
-                  },
-                  {
-                    icon: CheckCircle2,
-                    text: currentLang === "en" ? "Monitoring & Auditing" : "المراقبة والتدقيق المستمر",
-                  },
-                ].map((item, idx) => {
-                  const Icon = item.icon
-                  return (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:scale-[1.01]"
-                      style={{
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(56,189,248,0.16)",
-                        backdropFilter: "blur(10px)",
-                      }}
-                    >
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center"
-                        style={{ backgroundImage: "linear-gradient(135deg, var(--primary), var(--accent))" }}
-                      >
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <span className="text-white font-medium">{item.text}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div className="relative">
-              <div
-                className="relative rounded-3xl overflow-hidden border"
-                style={{
-                  borderColor: "rgba(56,189,248,0.16)",
-                  boxShadow: "0 0 60px rgba(56,189,248,0.10)",
-                }}
-              >
-                <img
-                  src="/cybersecurity-dashboard-with-ai-governance-metrics.jpg"
-                  alt="AI Security Dashboard"
-                  className="w-full h-[520px] object-cover"
-                />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: Lock, en: "Data Privacy & Encryption", ar: "خصوصية وتشفير البيانات" },
+              { icon: Shield, en: "Identity & Access Control", ar: "الهوية والتحكم بالصلاحيات" },
+              { icon: Activity, en: "Monitoring & Audit Trails", ar: "المراقبة وسجلات التدقيق" },
+              { icon: CheckCircle2, en: "Compliance & Policies", ar: "الامتثال والسياسات" },
+            ].map((it, idx) => {
+              const Icon = it.icon
+              return (
                 <div
-                  className="absolute inset-0"
-                  style={{ background: "linear-gradient(90deg, rgba(2,6,23,0.75), transparent, rgba(2,6,23,0.75))" }}
-                />
-              </div>
-            </div>
+                  key={idx}
+                  className="p-6 rounded-2xl border"
+                  style={{
+                    background: "color-mix(in srgb, var(--card) 18%, transparent)",
+                    borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+                  }}
+                >
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center mb-4"
+                    style={{
+                      background: "linear-gradient(135deg, var(--primary), var(--accent))",
+                      boxShadow: "0 12px 35px color-mix(in srgb, var(--primary) 22%, transparent)",
+                    }}
+                  >
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="text-white font-semibold">{currentLang === "en" ? it.en : it.ar}</div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 relative overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(900px 520px at 40% 30%, rgba(34,211,238,0.20), transparent 60%)" }}
-        />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            {currentLang === "en"
-              ? "Ready to Integrate AI Into Your Enterprise?"
-              : "جاهز لدمج الذكاء الاصطناعي في مؤسستك؟"}
-          </h2>
-          <p className="text-xl mb-8" style={{ color: "rgba(255,255,255,0.72)" }}>
-            {currentLang === "en"
-              ? "Let's build intelligent, automated, and scalable AI solutions together"
-              : "لنبني معاً حلول ذكاء اصطناعي ذكية وآلية وقابلة للتوسع"}
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div
+            className="relative p-12 rounded-3xl border overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(135deg, color-mix(in srgb, var(--primary) 16%, transparent), color-mix(in srgb, var(--accent) 12%, transparent))",
+              borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <div className="absolute inset-0 opacity-10">
+              <div
+                className="absolute top-0 left-0 w-full h-full"
+                style={{
+                  backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+                  backgroundSize: "30px 30px",
+                  animation: "movePattern 20s linear infinite",
+                }}
+              />
+            </div>
+
+            <h2 className="text-4xl font-bold mb-6 relative z-10">
+              {currentLang === "en" ? "Ready to Integrate AI Into Your Enterprise?" : "جاهز لدمج الذكاء الاصطناعي في مؤسستك؟"}
+            </h2>
+
+            <p className="text-xl mb-8 relative z-10" style={{ color: "var(--muted-foreground)" }}>
+              {currentLang === "en"
+                ? "Partner with Affinity Technology to deploy AI securely and at scale."
+                : "تعاون مع Affinity Technology لنشر الذكاء الاصطناعي بأمان وعلى نطاق واسع."}
+            </p>
+
             <Link
               href="/contact"
-              className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+              className="px-10 py-4 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg relative z-10 inline-block"
               style={{
-                backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
-                boxShadow: "0 0 44px rgba(56,189,248,0.18)",
-                color: "#fff",
+                background: "linear-gradient(90deg, var(--primary), var(--accent))",
+                color: "white",
+                boxShadow: "0 14px 45px color-mix(in srgb, var(--primary) 25%, transparent)",
               }}
             >
               {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
-            </Link>
-            <Link
-              href="/shop"
-              className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(56,189,248,0.18)",
-                color: "#fff",
-                backdropFilter: "blur(10px)",
-              }}
-            >
-              {currentLang === "en" ? "Explore AI Solutions" : "استكشف حلول AI"}
             </Link>
           </div>
         </div>
@@ -583,39 +653,39 @@ export default function AIIntegrationPage() {
 
       <SharedFooter />
 
-      {/* Theme Vars + Animations */}
+      {/* ✅ نفس Animations Style اللي عندك بالضبط :contentReference[oaicite:4]{index=4} */}
       <style jsx global>{`
-        :root {
-          --page-bg: ${themeMode === "light" ? "#f8fafc" : "#020617"};
-          --page-fg: ${themeMode === "light" ? "#0b1220" : "#ffffff"};
-          --primary: ${themeMode === "light" ? "#0284c7" : "#38bdf8"};
-          --secondary: ${themeMode === "light" ? "#06b6d4" : "#22d3ee"};
-          --accent: ${themeMode === "light" ? "#7c3aed" : "#a78bfa"};
-          --border: rgba(56, 189, 248, 0.18);
-          --glow-1: rgba(56, 189, 248, 0.18);
-          --glow-2: rgba(34, 211, 238, 0.14);
-        }
-      `}</style>
-
-      <style jsx>{`
-        @keyframes spinSlow {
-          from {
+        @keyframes orbitClockwise {
+          0% {
             transform: rotate(0deg);
           }
-          to {
+          100% {
             transform: rotate(360deg);
           }
         }
-        @keyframes pulseSoft {
-          0%,
+        @keyframes counterRotate {
+          0% {
+            transform: rotate(0deg);
+          }
           100% {
-            transform: scale(1);
-            filter: brightness(1);
+            transform: rotate(-360deg);
           }
-          50% {
-            transform: scale(1.03);
-            filter: brightness(1.15);
+        }
+        @keyframes movePattern {
+          0% {
+            transform: translate(0, 0);
           }
+          100% {
+            transform: translate(30px, 30px);
+          }
+        }
+        .orbit-rotator {
+          animation: orbitClockwise 22s linear infinite;
+          transform-origin: center;
+        }
+        .orbit-counter {
+          animation: counterRotate 22s linear infinite;
+          transform-origin: center;
         }
       `}</style>
     </div>

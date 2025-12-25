@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react"
 import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
 import { SharedFooter } from "@/components/shared-footer"
 import { ScreenCarousel } from "@/components/screen-carousel"
 import { useTheme } from "@/contexts/theme-context"
@@ -454,7 +453,9 @@ export default function lowcurrentmainpage() {
                         {isAr ? "مقطع صوت (تجريبي)" : "Audio Demo (Placeholder)"}
                       </div>
                       <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                        {isAr ? "ضع MP3 في publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3" : "Put MP3 at publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3"}
+                        {isAr
+                          ? "ضع MP3 في publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3"
+                          : "Put MP3 at publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3"}
                       </div>
                     </div>
                   </div>
@@ -473,7 +474,10 @@ export default function lowcurrentmainpage() {
 
                 <div className="mt-5">
                   <audio controls muted autoPlay playsInline className="w-full" onPlay={(e) => (e.currentTarget.muted = false)}>
-                    <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3" type="audio/mpeg" />
+                    <source
+                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3"
+                      type="audio/mpeg"
+                    />
                   </audio>
                 </div>
               </div>
@@ -978,7 +982,9 @@ function SwitchToggle({
       <div
         className="relative w-[54px] h-[30px] rounded-full border"
         style={{
-          background: checked ? `linear-gradient(90deg, ${accent}, color-mix(in srgb, ${accent} 45%, rgba(34,211,238,0.55)))` : "color-mix(in srgb, var(--card) 18%, transparent)",
+          background: checked
+            ? `linear-gradient(90deg, ${accent}, color-mix(in srgb, ${accent} 45%, rgba(34,211,238,0.55)))`
+            : "color-mix(in srgb, var(--card) 18%, transparent)",
           borderColor: checked ? `color-mix(in srgb, ${accent} 35%, transparent)` : "color-mix(in srgb, var(--page-fg) 14%, transparent)",
           boxShadow: checked ? `0 0 22px color-mix(in srgb, ${accent} 28%, transparent)` : "none",
         }}
