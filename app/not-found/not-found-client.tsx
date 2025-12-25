@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import NotFoundClient from "./not-found/not-found-client"
+import NotFoundClient from "./not-found-client"
 
 export default function NotFoundPage() {
   return (

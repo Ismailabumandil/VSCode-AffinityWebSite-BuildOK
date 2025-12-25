@@ -1,10 +1,11 @@
 "use client"
 
 import { useTheme } from "@/contexts/theme-context"
+import { useEffect, useMemo, useState } from "react"
 import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
 import { ChatWidget } from "@/components/chat-widget"
 import { ScrollToTop } from "@/components/scroll-to-top"
+
 import {
   Brain,
   Target,
@@ -190,7 +191,6 @@ export default function AITransformationStrategyPage() {
       }}
     >
       <Navbar />
-      <Breadcrumb currentLang={currentLang as any} currentTheme={currentTheme as any} />
       <ChatWidget />
       <ScrollToTop />
 
