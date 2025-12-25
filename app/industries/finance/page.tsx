@@ -14,7 +14,7 @@ import { useTheme } from "@/contexts/theme-context"
 export default function FinancePage() {
   // ✅ Global theme + language
   const { theme, language, getCurrentThemeColors } = useTheme()
-  const currentTheme = useMemo(() => getCurrentThemeColors(), [theme, getCurrentThemeColors])
+  const currentTheme = useMemo(() => getCurrentThemeColors(), [theme])
 
   useEffect(() => {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr"
@@ -59,10 +59,9 @@ export default function FinancePage() {
 
                 {/* ✅ فكرة زيادة خفيفة: Tags */}
                 <div className="flex flex-wrap gap-3 mt-8">
-                  {(
-                    language === "en"
-                      ? ["Core Banking", "Payments", "Fraud", "Compliance"]
-                      : ["الخدمات المصرفية", "المدفوعات", "الاحتيال", "الامتثال"]
+                  {(language === "en"
+                    ? ["Core Banking", "Payments", "Fraud", "Compliance"]
+                    : ["الخدمات المصرفية", "المدفوعات", "الاحتيال", "الامتثال"]
                   ).map((tag) => (
                     <span
                       key={tag}
@@ -79,7 +78,10 @@ export default function FinancePage() {
                 </div>
               </div>
 
-              <div className="relative h-96 rounded-3xl overflow-hidden border" style={{ borderColor: "var(--border)" }}>
+              <div
+                className="relative h-96 rounded-3xl overflow-hidden border"
+                style={{ borderColor: "var(--border)" }}
+              >
                 <Image
                   src="/modern-banking-office-with-financial-technology-sol.jpg"
                   alt="Finance & Banking"
@@ -95,24 +97,23 @@ export default function FinancePage() {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
-            {(
-              language === "en"
-                ? [
-                    { title: "Core Banking Systems", icon: "🏦" },
-                    { title: "Payment Gateways", icon: "💳" },
-                    { title: "Fraud Detection", icon: "🛡️" },
-                    { title: "Mobile Banking", icon: "📱" },
-                    { title: "Blockchain Solutions", icon: "⛓️" },
-                    { title: "Regulatory Compliance", icon: "📋" },
-                  ]
-                : [
-                    { title: "أنظمة الخدمات المصرفية الأساسية", icon: "🏦" },
-                    { title: "بوابات الدفع", icon: "💳" },
-                    { title: "كشف الاحتيال", icon: "🛡️" },
-                    { title: "الخدمات المصرفية عبر الهاتف المحمول", icon: "📱" },
-                    { title: "حلول بلوك تشين", icon: "⛓️" },
-                    { title: "الامتثال التنظيمي", icon: "📋" },
-                  ]
+            {(language === "en"
+              ? [
+                  { title: "Core Banking Systems", icon: "🏦" },
+                  { title: "Payment Gateways", icon: "💳" },
+                  { title: "Fraud Detection", icon: "🛡️" },
+                  { title: "Mobile Banking", icon: "📱" },
+                  { title: "Blockchain Solutions", icon: "⛓️" },
+                  { title: "Regulatory Compliance", icon: "📋" },
+                ]
+              : [
+                  { title: "أنظمة الخدمات المصرفية الأساسية", icon: "🏦" },
+                  { title: "بوابات الدفع", icon: "💳" },
+                  { title: "كشف الاحتيال", icon: "🛡️" },
+                  { title: "الخدمات المصرفية عبر الهاتف المحمول", icon: "📱" },
+                  { title: "حلول بلوك تشين", icon: "⛓️" },
+                  { title: "الامتثال التنظيمي", icon: "📋" },
+                ]
             ).map((solution, index) => (
               <ScrollReveal key={index} direction="up" delay={index * 100}>
                 <div
@@ -135,7 +136,7 @@ export default function FinancePage() {
 
       <ChatWidget />
       <ScrollToTop />
-      <SharedFooter/>
+      <SharedFooter />
     </div>
   )
 }

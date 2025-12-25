@@ -623,7 +623,7 @@ export default function ChatbotIntegrationPage() {
         </div>
       </section>
 
-      <SharedFooter  />
+      <SharedFooter theme={sharedFooterTheme} />
     </div>
   )
 }

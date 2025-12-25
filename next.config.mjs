@@ -7,8 +7,9 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
+  turbopack: {},
 }
 
 export default nextConfig

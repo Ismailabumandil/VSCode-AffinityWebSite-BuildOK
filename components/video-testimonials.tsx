@@ -29,6 +29,7 @@ export function VideoTestimonials({ currentTheme, currentLang }: VideoTestimonia
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isAutoPlay, setIsAutoPlay] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const testimonials: VideoTestimonial[] = [
@@ -142,11 +143,15 @@ export function VideoTestimonials({ currentTheme, currentLang }: VideoTestimonia
   }
 
   useEffect(() => {
-    if (isAutoPlay && !isPlaying) {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted || (isAutoPlay && !isPlaying)) {
       const interval = setInterval(nextSlide, 8000)
       return () => clearInterval(interval)
     }
-  }, [currentIndex, isAutoPlay, isPlaying])
+  }, [currentIndex, isAutoPlay, isPlaying, isMounted])
 
   return (
     <section className="py-20 px-4 relative overflow-hidden">

@@ -13,9 +13,16 @@ export function TextReveal({ text, children, className = "", delay = 50 }: TextR
   const content = text || children || ""
   const [revealedText, setRevealedText] = useState("")
   const [isVisible, setIsVisible] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !isVisible) {
@@ -30,10 +37,10 @@ export function TextReveal({ text, children, className = "", delay = 50 }: TextR
     }
 
     return () => observer.disconnect()
-  }, [isVisible])
+  }, [isVisible, isMounted])
 
   useEffect(() => {
-    if (!isVisible || !content) return
+    if (!isVisible || !content || !isMounted) return
 
     let currentIndex = 0
     const interval = setInterval(() => {
@@ -46,7 +53,15 @@ export function TextReveal({ text, children, className = "", delay = 50 }: TextR
     }, delay)
 
     return () => clearInterval(interval)
-  }, [isVisible, content, delay])
+  }, [isVisible, content, delay, isMounted])
+
+  if (!isMounted) {
+    return (
+      <div ref={ref} className={className}>
+        {content}
+      </div>
+    )
+  }
 
   return (
     <div ref={ref} className={className}>

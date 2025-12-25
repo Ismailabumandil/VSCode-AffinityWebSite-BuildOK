@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState, useRef } from "react"
 import Image from "next/image"
-
 import Navbar from "@/components/navbar"
 import { SharedFooterComponent as SharedFooter } from "@/components/shared-footer"
 import ScrollToTop from "@/components/scroll-to-top"

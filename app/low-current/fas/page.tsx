@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { useTheme } from "@/contexts/theme-context"
+import { useState, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
+import { Breadcrumb } from "@/components/breadcrumb"
+import ChatWidget from "@/components/chat-widget"
+import ScrollToTop from "@/components/scroll-to-top"
 import { SharedFooter } from "@/components/shared-footer"
 import { Flame, AlertTriangle, Bell, Shield } from "lucide-react"
+import { useTheme } from "@/contexts/theme-context"
 
 export default function FASPage() {
   const { language } = useTheme()
@@ -60,6 +61,7 @@ export default function FASPage() {
       }}
     >
       <Navbar />
+      <Breadcrumb currentLang={language} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -135,7 +137,9 @@ export default function FASPage() {
                   >
                     <div
                       className={`w-24 h-24 rounded-xl flex flex-col items-center justify-center transition-all duration-500 ${
-                        alarmActive ? "bg-red-500/20 border-2 border-red-500" : "backdrop-blur border"
+                        alarmActive
+                          ? "bg-red-500/20 border-2 border-red-500"
+                          : "backdrop-blur border"
                       }`}
                       style={
                         alarmActive
@@ -146,8 +150,16 @@ export default function FASPage() {
                             }
                       }
                     >
-                      <detector.icon className={`w-10 h-10 mb-1 ${alarmActive ? "text-red-400" : "text-sky-400"}`} />
-                      <p className={`text-xs font-semibold ${alarmActive ? "text-red-300" : "text-sky-300"}`}>
+                      <detector.icon
+                        className={`w-10 h-10 mb-1 ${
+                          alarmActive ? "text-red-400" : "text-sky-400"
+                        }`}
+                      />
+                      <p
+                        className={`text-xs font-semibold ${
+                          alarmActive ? "text-red-300" : "text-sky-300"
+                        }`}
+                      >
                         {detector.type}
                       </p>
                     </div>

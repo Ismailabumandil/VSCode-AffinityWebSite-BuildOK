@@ -5,9 +5,9 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useTheme } from "@/contexts/theme-context"
 
-export default function NotFoundClient() {
+export default function NotFoundPage() {
   const { theme, language, getCurrentThemeColors } = useTheme()
-  const currentTheme = useMemo(() => getCurrentThemeColors(), [theme, getCurrentThemeColors])
+  const currentTheme = useMemo(() => getCurrentThemeColors(), [theme])
 
   const [searchQuery, setSearchQuery] = useState("")
 

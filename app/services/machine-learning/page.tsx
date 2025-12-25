@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import { Breadcrumb } from "@/components/breadcrumb"
 import ChatWidget from "@/components/chat-widget"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { SharedFooter } from "@/components/shared-footer"
@@ -164,6 +165,9 @@ export default function MachineLearningPage() {
   return (
     <div className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]" dir={isRTL ? "rtl" : "ltr"}>
       <Navbar />
+
+     
+
       <ChatWidget />
       <ScrollToTop />
 

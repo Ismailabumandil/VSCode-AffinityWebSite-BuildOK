@@ -26,9 +26,16 @@ export function AnimatedCounter({
   const [count, setCount] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [hasAnimated, setHasAnimated] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated) {
@@ -44,12 +51,14 @@ export function AnimatedCounter({
     }
 
     return () => observer.disconnect()
-  }, [hasAnimated])
+  }, [hasAnimated, isMounted])
 
   useEffect(() => {
-    if (!isVisible) return
+    if (!isVisible || !isMounted) return
 
     let startTime: number | null = null
+    let animationId: number
+
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime
       const progress = Math.min((currentTime - startTime) / duration, 1)
@@ -58,14 +67,30 @@ export function AnimatedCounter({
       setCount(Math.floor(easeOutQuart * end))
 
       if (progress < 1) {
-        requestAnimationFrame(animate)
+        animationId = requestAnimationFrame(animate)
       } else {
         setCount(end)
       }
     }
 
-    requestAnimationFrame(animate)
-  }, [isVisible, end, duration])
+    animationId = requestAnimationFrame(animate)
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId)
+      }
+    }
+  }, [isVisible, end, duration, isMounted])
+
+  if (!isMounted) {
+    return (
+      <div ref={ref} className={className} style={style}>
+        {prefix}
+        {end.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
+        {suffix}
+      </div>
+    )
+  }
 
   return (
     <div ref={ref} className={className} style={style}>

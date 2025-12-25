@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
 import Navbar from "@/components/navbar"
 import SharedFooter from "@/components/shared-footer"
 import BackgroundTLogos from "@/components/background-t-logos"
@@ -37,8 +38,9 @@ function isPage(item: SearchResult): item is Page {
   return item.type === "page"
 }
 
-export default function SearchPage() {
-  const [query, setQuery] = useState("")
+function SearchResults() {
+  const searchParams = useSearchParams()
+  const query = searchParams.get("q") || ""
 
   const [currentTheme, setCurrentTheme] = useState({
     bg: "#25064c",
@@ -50,13 +52,6 @@ export default function SearchPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [recentSearches, setRecentSearches] = useState<string[]>([])
 
-  // 🔹 جلب query من URL بدون useSearchParams
-  useEffect(() => {
-    const qs = new URLSearchParams(window.location.search)
-    const q = qs.get("q") ?? ""
-    setQuery(q)
-  }, [])
-
   useEffect(() => {
     const themes = {
       brand: { bg: "#25064c", text: "#ffffff", accent: "#836d98" },
@@ -67,8 +62,10 @@ export default function SearchPage() {
   }, [theme])
 
   useEffect(() => {
-    document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr"
-    document.documentElement.lang = currentLang
+    if (typeof document !== "undefined") {
+      document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr"
+      document.documentElement.lang = currentLang
+    }
   }, [currentLang])
 
   useEffect(() => {
@@ -86,6 +83,16 @@ export default function SearchPage() {
       setRecentSearches(updated)
     }
   }, [query])
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme)
+    localStorage.setItem("theme", newTheme)
+  }
+
+  const handleLangChange = (newLang: string) => {
+    setCurrentLang(newLang)
+    localStorage.setItem("language", newLang)
+  }
 
   const allProducts: Product[] = [
     {
@@ -171,15 +178,18 @@ export default function SearchPage() {
 
     if (isProduct(item)) {
       const name = currentLang === "en" ? item.name : item.nameAr
-      return name.toLowerCase().includes(searchText)
-    } else {
+      return name.toLowerCase().includes(searchText) || item.category.toLowerCase().includes(searchText)
+    } else if (isPage(item)) {
       const title = currentLang === "en" ? item.title : item.titleAr
       const desc = currentLang === "en" ? item.description : item.descriptionAr
       return title.toLowerCase().includes(searchText) || desc.toLowerCase().includes(searchText)
     }
+    return false
   })
 
-  const highlightText = (text: string) => {
+  const popularSearches = ["PC", "Laptop", "Support", "Cloud Services", "Mission", "ROI Calculator"]
+
+  const highlightText = (text: string, query: string) => {
     if (!query) return text
     const parts = text.split(new RegExp(`(${query})`, "gi"))
     return parts.map((part, i) =>
@@ -204,7 +214,7 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: currentTheme.bg, color: currentTheme.text }}>
       <BackgroundTLogos />
-      <Navbar />
+      <Navbar/>
 
       <main className="relative z-10 pt-32 pb-20 px-6">
         <div className="max-w-6xl mx-auto">
@@ -220,41 +230,147 @@ export default function SearchPage() {
             </p>
           )}
 
-          {/* النتائج */}
-          <div className="space-y-6">
-            {searchResults.length > 0 ? (
-              searchResults.map((result, index) => (
-                <Link
-                  key={index}
-                  href={result.url}
-                  className="block p-6 rounded-2xl border-2 transition-all hover:scale-[1.02]"
-                  style={{
-                    backgroundColor: `${currentTheme.accent}05`,
-                    borderColor: `${currentTheme.accent}30`,
-                  }}
+          <div className="flex flex-wrap gap-3 mb-8">
+            {["all", "product", "page"].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className="px-6 py-2.5 rounded-xl font-semibold transition-all hover:scale-105"
+                style={{
+                  backgroundColor: selectedCategory === cat ? currentTheme.accent : `${currentTheme.accent}20`,
+                  color: selectedCategory === cat ? currentTheme.bg : currentTheme.text,
+                  border: `2px solid ${selectedCategory === cat ? currentTheme.accent : "transparent"}`,
+                }}
+              >
+                {currentLang === "en"
+                  ? cat === "all"
+                    ? "All"
+                    : cat === "product"
+                      ? "Products"
+                      : "Pages"
+                  : cat === "all"
+                    ? "الكل"
+                    : cat === "product"
+                      ? "المنتجات"
+                      : "الصفحات"}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 space-y-6">
+              {searchResults.length > 0 ? (
+                searchResults.map((result, index) => (
+                  <Link
+                    key={index}
+                    href={result.url}
+                    className="block p-6 rounded-2xl border-2 transition-all hover:scale-[1.02] hover:shadow-2xl"
+                    style={{
+                      backgroundColor: `${currentTheme.accent}05`,
+                      borderColor: `${currentTheme.accent}30`,
+                    }}
+                  >
+                    {isProduct(result) ? (
+                      <div className="flex gap-4">
+                        <img
+                          src={result.image || "/placeholder.svg"}
+                          alt={result.name}
+                          className="w-24 h-24 object-cover rounded-xl"
+                        />
+                        <div className="flex-1">
+                          <p className="text-xs font-semibold mb-1 opacity-60">{result.category}</p>
+                          <h2 className="text-2xl font-bold mb-2" style={{ color: currentTheme.accent }}>
+                            {highlightText(currentLang === "en" ? result.name : result.nameAr, query)}
+                          </h2>
+                          <p className="text-xl font-bold" style={{ color: currentTheme.accent }}>
+                            ${result.price}
+                          </p>
+                        </div>
+                      </div>
+                    ) : isPage(result) ? (
+                      <>
+                        <h2 className="text-2xl font-bold mb-2" style={{ color: currentTheme.accent }}>
+                          {highlightText(currentLang === "en" ? result.title : result.titleAr, query)}
+                        </h2>
+                        <p className="opacity-80">
+                          {highlightText(currentLang === "en" ? result.description : result.descriptionAr, query)}
+                        </p>
+                      </>
+                    ) : null}
+                  </Link>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <svg
+                    className="w-24 h-24 mx-auto mb-4 opacity-30"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  <p className="text-xl mb-2" style={{ color: currentTheme.text }}>
+                    {currentLang === "en" ? "No results found" : "لم يتم العثور على نتائج"}
+                  </p>
+                  <p className="opacity-60">
+                    {currentLang === "en"
+                      ? "Try different keywords or browse categories"
+                      : "جرب كلمات مفتاحية مختلفة أو تصفح الفئات"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              {recentSearches.length > 0 && (
+                <div
+                  className="p-6 rounded-2xl border-2"
+                  style={{ backgroundColor: `${currentTheme.accent}05`, borderColor: `${currentTheme.accent}30` }}
                 >
-                  {isProduct(result) ? (
-                    <div>
-                      <h2 className="text-2xl font-bold mb-2" style={{ color: currentTheme.accent }}>
-                        {highlightText(currentLang === "en" ? result.name : result.nameAr)}
-                      </h2>
-                      <p>${result.price}</p>
-                    </div>
-                  ) : (
-                    <>
-                      <h2 className="text-2xl font-bold mb-2" style={{ color: currentTheme.accent }}>
-                        {highlightText(currentLang === "en" ? result.title : result.titleAr)}
-                      </h2>
-                      <p>{highlightText(currentLang === "en" ? result.description : result.descriptionAr)}</p>
-                    </>
-                  )}
-                </Link>
-              ))
-            ) : (
-              <p className="opacity-70">
-                {currentLang === "en" ? "No results found" : "لم يتم العثور على نتائج"}
-              </p>
-            )}
+                  <h3 className="font-bold text-lg mb-4" style={{ color: currentTheme.accent }}>
+                    {currentLang === "en" ? "Recent Searches" : "عمليات البحث الأخيرة"}
+                  </h3>
+                  <div className="space-y-2">
+                    {recentSearches.map((search, i) => (
+                      <Link
+                        key={i}
+                        href={`/search?q=${encodeURIComponent(search)}`}
+                        className="block px-4 py-2 rounded-lg hover:scale-105 transition-all"
+                        style={{ backgroundColor: `${currentTheme.accent}10` }}
+                      >
+                        {search}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div
+                className="p-6 rounded-2xl border-2"
+                style={{ backgroundColor: `${currentTheme.accent}05`, borderColor: `${currentTheme.accent}30` }}
+              >
+                <h3 className="font-bold text-lg mb-4" style={{ color: currentTheme.accent }}>
+                  {currentLang === "en" ? "Popular Searches" : "عمليات البحث الشائعة"}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {popularSearches.map((search, i) => (
+                    <Link
+                      key={i}
+                      href={`/search?q=${encodeURIComponent(search)}`}
+                      className="px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition-all"
+                      style={{ backgroundColor: `${currentTheme.accent}20` }}
+                    >
+                      {search}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -262,5 +378,13 @@ export default function SearchPage() {
       <SharedFooter />
       <ChatWidget />
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchResults />
+    </Suspense>
   )
 }
