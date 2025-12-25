@@ -1,12 +1,14 @@
+import { ReactNode } from "react"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import CookieConsent from "@/components/cookie-consent"
-import { ThemeProvider } from "@/contexts/theme-context"
 import { LoadingBar } from "@/components/loading-bar"
 import ScrollToTopOnRoute from "@/components/scroll-to-top-on-route"
 import QuickNav from "@/components/quick-nav"
-import "./globals.css"
 import { Providers } from "./providers"
+import "./globals.css"
+
+
 
 /* Fonts */
 const _geist = Geist({
@@ -44,7 +46,7 @@ export const metadata = {
   },
 }
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     
     <html lang="en">
