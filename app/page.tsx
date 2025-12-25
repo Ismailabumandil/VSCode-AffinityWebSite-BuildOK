@@ -1,5 +1,5 @@
 "use client"
-
+/// Vibe of Ismail Abumandil
 import React, { useEffect, useMemo, useState, useRef } from "react"
 import Image from "next/image"
 import Navbar from "@/components/navbar"
