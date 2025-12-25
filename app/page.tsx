@@ -1,5 +1,5 @@
 "use client"
-// for the memory if Ismail Vibe Codeing 25/12/2025 Time : 10:05 PM
+
 import React, { useEffect, useMemo, useState, useRef } from "react"
 import Image from "next/image"
 import Navbar from "@/components/navbar"
