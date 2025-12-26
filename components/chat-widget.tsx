@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MessageCircle, Send, X } from "lucide-react"
+import { MessageCircle, Send, X, Loader2 } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 import FloatingCircle from "@/components/ui/floating-circle"
+
+type ChatMsg = { role: "user" | "bot"; text: string }
 
 export function ChatWidget() {
   const { theme: currentThemeMode, language: currentLang, getCurrentThemeColors } = useTheme()
@@ -11,35 +13,70 @@ export function ChatWidget() {
   const isAr = currentLang === "ar"
 
   const [showChat, setShowChat] = useState(false)
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "bot"; text: string }>>([])
+  const [chatMessages, setChatMessages] = useState<ChatMsg[]>([])
   const [chatInput, setChatInput] = useState("")
+  const [isSending, setIsSending] = useState(false)
 
   useEffect(() => {
     setChatMessages([
       {
         role: "bot",
-        text: currentLang === "en"
-          ? "Hello! How can I help you today?"
-          : "مرحباً! كيف يمكنني مساعدتك اليوم؟",
+        text:
+          currentLang === "en"
+            ? "Hello! How can I help you today?"
+            : "مرحباً! كيف يمكنني مساعدتك اليوم؟",
       },
     ])
   }, [currentLang])
 
-  const handleChatSend = () => {
-    if (!chatInput.trim()) return
+  const handleChatSend = async () => {
+    const text = chatInput.trim()
+    if (!text) return
+    if (isSending) return
 
-    setChatMessages((prev) => [
-      ...prev,
-      { role: "user", text: chatInput },
-      {
-        role: "bot",
-        text:
-          currentLang === "en"
-            ? "Thank you for your message. Our team will assist you shortly!"
-            : "شكراً لرسالتك. سيساعدك فريقنا قريباً!",
-      },
-    ])
+    // 1) أضف رسالة المستخدم فوراً
+    setChatMessages((prev) => [...prev, { role: "user", text }])
     setChatInput("")
+    setIsSending(true)
+
+    try {
+      // 2) نداء API حق الأيجنت
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+
+      if (!res.ok) {
+        const details = data?.error || data?.details || "Request failed"
+        throw new Error(details)
+      }
+
+      const reply =
+        (typeof data?.reply === "string" && data.reply.trim()) ||
+        (currentLang === "en"
+          ? "Sorry, I couldn't generate a reply. Please try again."
+          : "عذرًا، ما قدرت أجهّز رد الآن. جرّب مرة ثانية.")
+
+      // 3) أضف رد البوت
+      setChatMessages((prev) => [...prev, { role: "bot", text: reply }])
+    } catch (e: any) {
+      // 4) رسالة خطأ لطيفة
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text:
+            currentLang === "en"
+              ? "I ran into an issue connecting to the assistant. Please try again in a moment."
+              : "صار عندي مشكلة في الاتصال بالمساعد. جرّب مرة ثانية بعد لحظة.",
+        },
+      ])
+    } finally {
+      setIsSending(false)
+    }
   }
 
   return (
@@ -84,7 +121,7 @@ export function ChatWidget() {
                   {currentLang === "en" ? "AI Assistant" : "المساعد الذكي"}
                 </div>
                 <div className="text-[11px] opacity-90">
-                  {currentLang === "en" ? "Online" : "متصل"}
+                  {isSending ? (currentLang === "en" ? "Typing..." : "يكتب الآن...") : currentLang === "en" ? "Online" : "متصل"}
                 </div>
               </div>
             </div>
@@ -100,10 +137,7 @@ export function ChatWidget() {
           {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
             {chatMessages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
                   className="px-4 py-3 rounded-2xl max-w-[80%] text-sm"
                   style={
@@ -128,33 +162,36 @@ export function ChatWidget() {
           </div>
 
           {/* Input */}
-          <div
-            className="p-4 border-t"
-            style={{ borderColor: colors.border, backgroundColor: colors.bg }}
-          >
+          <div className="p-4 border-t" style={{ borderColor: colors.border, backgroundColor: colors.bg }}>
             <div className="flex gap-2">
               <input
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleChatSend()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleChatSend()
+                }}
                 placeholder={currentLang === "en" ? "Type your message..." : "اكتب رسالتك..."}
                 className="flex-1 px-4 py-3 rounded-full outline-none"
+                disabled={isSending}
                 style={{
                   backgroundColor: currentThemeMode === "light" ? "#f3f4f6" : "#0f172a",
                   color: colors.text,
                   border: `1px solid ${colors.border}`,
+                  opacity: isSending ? 0.75 : 1,
                 }}
               />
+
               <button
                 onClick={handleChatSend}
-                className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition"
+                disabled={isSending || !chatInput.trim()}
+                className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition disabled:opacity-60 disabled:hover:scale-100"
                 style={{
                   backgroundColor: colors.accent,
                   color: "#fff",
                   boxShadow: `0 0 15px ${colors.accent}55`,
                 }}
               >
-                <Send size={18} />
+                {isSending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
               </button>
             </div>
           </div>
