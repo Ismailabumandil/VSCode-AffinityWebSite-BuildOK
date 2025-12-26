@@ -41,7 +41,7 @@ export function ChatWidget() {
 
     try {
       // 2) نداء API حق الأيجنت
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/talk-to-us/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
