@@ -430,17 +430,17 @@ export default function Home() {
       ar: {
         hero: {
           title: "Affinity Technology",
-          tagline: "Beyond Technology. Into Intelligence.",
-          subtitle: "تمكين مستقبل مؤسستك",
+          tagline: "Beyond Technology , Into Intelligence.",
+          subtitle: "تمكين مستقبل منشأتك",
           description:
-            "حلول مؤسسية، ريادة في الأمن السيبراني، وأطر تحول رقمي—مصممة لتحديث العمليات وتعزيز الثقة وتسريع النمو.",
+            "حلول الشركات ، ريادة في الأمن السيبراني، وأطر تحول رقمي—مصممة لتحديث العمليات وتعزيز الثقة وتسريع النمو.",
           ctaPrimary: "ابدأ رحلتك",
           ctaSecondary: "استعرض الحلول",
           highlights: [
             { icon: BadgeCheck, title: "معايير عالمية", desc: "NIST • ISO 27001 • CIS • ITIL • COBIT" },
             { icon: ShieldCheck, title: "الأمان أولاً", desc: "حوكمة • مخاطر • امتثال • اختبارات اختراق" },
             { icon: Network, title: "منظومة متكاملة", desc: "واجهات ربط آمنة • قابلية توسع" },
-            { icon: Sparkles, title: "تحول مدعوم بالذكاء", desc: "أتمتة • تحليلات • وكلاء ذكيين" },
+            { icon: Sparkles, title: "تحول مدعوم بالذكاءالصناعي", desc: "أتمتة • تحليلات • وكلاء ذكيين" },
           ],
           trust: ["القطاع الحكومي", "القطاع المالي", "الضيافة", "المؤسسات", "F&B", "الاتصالات"],
         },
@@ -509,8 +509,8 @@ export default function Home() {
 
         solutions: {
           kicker: "الحلول",
-          title: "حوّل مؤسستك بأنظمة مؤسسية ذكية",
-          subtitle: "منصات جاهزة للمؤسسات ومصممة للبيئات الكبيرة ومتعددة الأقسام.",
+          title: "حوّل منشأتك بأنظمة ذكية",
+          subtitle: "منصات جاهزة للمنشآت ومصممة للبيئات الكبيرة ومتعددة الأقسام.",
           items: [
             {
               icon: Boxes,
@@ -537,11 +537,11 @@ export default function Home() {
 
         digital: {
           kicker: "التحول الرقمي",
-          title: "تمكين مستقبل مؤسستك بذكاء وكفاءة",
+          title: "تمكين مستقبل منشأتك بذكاء وكفاءة",
           subtitle: "توافق استراتيجي • حوكمة مؤسسية • خارطة طريق قابلة للتوسع • تحديث مدعوم بالذكاء الاصطناعي.",
           cards: [
             {
-              title: "التحول المؤسسي",
+              title: "التحول الرقمي والتقنية",
               bullets: ["الاستراتيجية الرقمية والتحليل", "تنفيذ التقنيات الحديثة", "حوكمة تقنية المعلومات والسياسات"],
             },
             {
@@ -1280,8 +1280,8 @@ export default function Home() {
               <div className="relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-4 mb-14">
                 {/* Add connection line animations and highlight active/past steps */}
                 {[
-                  { icon: Database, label: language === "en" ? "Data Input" : "إدخال البيانات" },
-                  { icon: Settings, label: language === "en" ? "Processing" : "المعالجة" },
+                  { icon: Database, label: language === "en" ? "Data Input & processing" : "إدخال البيانات ومعالجتها" },
+                  { icon: Settings, label: language === "en" ? "Deep Processing" : "المعالجة الدقيقة" },
                   { icon: CheckCircle2, label: language === "en" ? "Validation" : "التحقق" },
                   { icon: Mail, label: language === "en" ? "Notification" : "الإشعارات" },
                   { icon: BarChart3, label: language === "en" ? "Reporting" : "التقارير" },

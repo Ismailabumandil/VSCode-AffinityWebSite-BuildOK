@@ -20,7 +20,7 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
     setIsSubmitting(true)
     setStatus("")
 
-    console.log("[v0] Contact form submitting with data:", formData)
+    console.log("Affinity Technology Contact form submitting with data:", formData)
 
     try {
       const response = await fetch("/api/talk-to-us", {
@@ -33,8 +33,8 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
         }),
       })
 
-      console.log("[v0] API response status:", response.status)
-      console.log("[v0] API response headers:", Object.fromEntries(response.headers.entries()))
+      console.log("Affinity Technology API response status:", response.status)
+      console.log("Affinity Technology API response headers:", Object.fromEntries(response.headers.entries()))
 
       let data
       const contentType = response.headers.get("content-type")
@@ -43,7 +43,7 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
         console.log("[v0] API response data:", data)
       } else {
         const text = await response.text()
-        console.error("[v0] API returned non-JSON response:", text)
+        console.error("Affinity Technology API returned non-JSON response:", text)
         data = { ok: false, error: text }
       }
 

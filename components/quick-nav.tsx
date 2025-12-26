@@ -52,7 +52,6 @@ export default function QuickNav({ currentTheme, currentLang, theme: themeProp }
   const lang = (currentLang ?? ctx.language ?? "ar") as Lang
   const isAr = lang === "ar"
 
-  // ✅ عدّل الروابط هنا إذا مساراتك مختلفة
   const mainLinks: QuickLink[] = useMemo(
     () => [
       {
@@ -105,7 +104,7 @@ export default function QuickNav({ currentTheme, currentLang, theme: themeProp }
   const borderSoft = useMemo(() => `${theme.accent}40`, [theme.accent])
 
   // Tooltip direction
-  const tooltipSideClass = isAr ? "right-full mr-3" : "left-full ml-3"
+  const tooltipSideClass = isAr ? "left-full ml-3" : "right-full mr-3"
   const tooltipAlignClass = "top-1/2 -translate-y-1/2"
 
   return (
@@ -225,7 +224,7 @@ export default function QuickNav({ currentTheme, currentLang, theme: themeProp }
             </div>
 
             <div className="mt-4 text-[11px] opacity-70 text-center" style={{ color: theme.text }}>
-              {isAr ? "✨ تجربة Blue Neon" : "✨ Blue Neon Experience"}
+              {isAr ? "✨نحن نتهتم بالتفاصيل .قائمة سريعة لتصفح أسرع" : "✨Quick menu to navigate fast.We care "}
             </div>
           </div>
         </div>

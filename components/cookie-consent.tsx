@@ -6,20 +6,17 @@ import Link from "next/link"
 import { useTheme } from "@/contexts/theme-context"
 
 interface CookieConsentProps {
-  // optional override (لو تبغى)
   currentTheme?: {
     bg: string
     text: string
     accent: string
   }
-  // optional override (لو تبغى)
   currentLang?: "en" | "ar"
 }
 
 export default function CookieConsent({ currentTheme, currentLang }: CookieConsentProps) {
   const { language } = useTheme()
 
-  // ✅ Language global (لكن نخلي props شغالة لو حاب تستخدمها)
   const lang = (currentLang ?? language) as "en" | "ar"
 
   const [showBanner, setShowBanner] = useState(false)
