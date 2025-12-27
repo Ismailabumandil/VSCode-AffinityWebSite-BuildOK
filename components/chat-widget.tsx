@@ -32,54 +32,38 @@ export function ChatWidget() {
 }, [currentLang])
 
   const handleChatSend = async () => {
-    const text = chatInput.trim()
-    if (!text) return
-    if (isSending) return
+  const text = chatInput.trim()
+  if (!text || isSending) return
 
-    // 1) أضف رسالة المستخدم فوراً
-    setChatMessages((prev) => [...prev, { role: "user", text }])
-    setChatInput("")
-    setIsSending(true)
+  setChatMessages((prev) => [...prev, { role: "user", text }])
+  setChatInput("")
+  setIsSending(true)
 
-    try {
-      // 2) نداء API حق الأيجنت
-      const res = await fetch("app/api/talk-to-us/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
-      })
+  try {
+    const res = await fetch("/api/talk-to-us/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text }),
+    })
 
-      const data = await res.json().catch(() => ({} as any))
+    const data = await res.json().catch(() => ({} as any))
+    const reply =
+      (typeof data?.reply === "string" && data.reply.trim()) ||
+      (typeof data?.message === "string" && data.message.trim()) || // fallback لو الراوت يرجع message بدل reply
+      (typeof data?.output_text === "string" && data.output_text.trim()) ||
+      "ما وصلني رد من السيرفر. جرّب مرة ثانية."
 
-      if (!res.ok) {
-        const details = data?.error || data?.details || "Request failed"
-        throw new Error(details)
-      }
-
-      const reply =
-        (typeof data?.reply === "string" && data.reply.trim()) ||
-        (currentLang === "en"
-          ? "Sorry, I couldn't generate a reply. Please try again."
-          : "عذرًا، ما قدرت أجهّز رد الآن. جرّب مرة ثانية.")
-
-      // 3) أضف رد البوت
-      setChatMessages((prev) => [...prev, { role: "bot", text: reply }])
-    } catch (e: any) {
-      // 4) رسالة خطأ لطيفة
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          text:
-            currentLang === "en"
-              ? "I ran into an issue connecting to the assistant. Please try again in a moment."
-              : "صار عندي مشكلة في الاتصال بالمساعد. جرّب مرة ثانية بعد لحظة.",
-        },
-      ])
-    } finally {
-      setIsSending(false)
-    }
+    setChatMessages((prev) => [...prev, { role: "bot", text: reply }])
+  } catch (e) {
+    setChatMessages((prev) => [
+      ...prev,
+      { role: "bot", text: "صار خطأ في الاتصال. جرّب مرة ثانية." },
+    ])
+  } finally {
+    setIsSending(false)
   }
+}
+
 
   return (
     <div
