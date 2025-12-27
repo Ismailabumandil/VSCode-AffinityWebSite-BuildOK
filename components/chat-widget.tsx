@@ -18,16 +18,18 @@ export function ChatWidget() {
   const [isSending, setIsSending] = useState(false)
 
   useEffect(() => {
-    setChatMessages([
+  setChatMessages((prev) => {
+    if (prev.length > 0) return prev // لا تصفر المحادثة
+    return [
       {
         role: "bot",
-        text:
-          currentLang === "en"
-            ? "Hello! How can I help you today?"
-            : "مرحباً! كيف يمكنني مساعدتك اليوم؟",
+        text: currentLang === "en"
+          ? "Hello! How can I help you today?"
+          : "مرحباً! كيف يمكنني مساعدتك اليوم؟",
       },
-    ])
-  }, [currentLang])
+    ]
+  })
+}, [currentLang])
 
   const handleChatSend = async () => {
     const text = chatInput.trim()
@@ -41,7 +43,7 @@ export function ChatWidget() {
 
     try {
       // 2) نداء API حق الأيجنت
-      const res = await fetch("/api/talk-to-us/chat", {
+      const res = await fetch("app/api/talk-to-us/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
