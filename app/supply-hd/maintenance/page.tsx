@@ -173,7 +173,7 @@ export default function MaintenancePage() {
               "فني في الموقع",
               "صيانة شهرية",
               "تحليلات تنبؤية",
-              "SLA مخصص",
+              "SLA ",
               "استبدال أجهزة",
             ],
           },
