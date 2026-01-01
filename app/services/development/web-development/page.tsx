@@ -18,8 +18,7 @@ import {
   Shield,
   Rocket,
 } from "lucide-react"
-import { Navbar } from "@/components/navbar"
-import { SharedFooter } from "@/components/shared-footer"
+
 import Link from "next/link"
 import { useTheme } from "@/contexts/theme-context"
 
@@ -30,6 +29,8 @@ export default function WebDevelopmentPage() {
   useEffect(() => {
     setIsVisible(true)
   }, [])
+
+  const accentColor = "var(--accent)"
 
   const content = {
     en: {
@@ -187,7 +188,7 @@ export default function WebDevelopmentPage() {
 
   return (
     <div className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]">
-      <Navbar />
+
 
       {/* Hero Section with Animated Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -229,13 +230,15 @@ export default function WebDevelopmentPage() {
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
-
+              <Link href="/book-demo">  
               <button
                 className="px-8 py-4 rounded-lg font-semibold text-lg border-2 transition-all duration-300 hover:scale-105"
                 style={{ borderColor: "var(--accent)", color: "var(--accent)" }}
               >
                 {lang.hero.learnMore}
+                
               </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -391,7 +394,6 @@ export default function WebDevelopmentPage() {
         </div>
       </section>
 
-      <SharedFooter />
 
       <style jsx global>{`
         @keyframes blob {

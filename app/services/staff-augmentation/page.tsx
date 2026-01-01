@@ -16,12 +16,8 @@ import {
   Globe,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import { useTheme } from "@/contexts/theme-context"
+import Link from "next/link"
 
 export default function StaffAugmentationPage() {
   const { language: currentLang } = useTheme()
@@ -114,23 +110,12 @@ export default function StaffAugmentationPage() {
   ]
 
   return (
-    <div className="min-h-screen overflow-hidden" style={{ backgroundColor: currentTheme.bg, color: currentTheme.text }}>
-      <Navbar />
+    <div
+      className="min-h-screen overflow-hidden"
+      style={{ backgroundColor: currentTheme.bg, color: currentTheme.text }}
+    >
+      
 
-      <Breadcrumb
-        items={[
-          { label: currentLang === "en" ? "Services" : "الخدمات", href: "/services" },
-          {
-            label: currentLang === "en" ? "Staff Augmentation" : "دعم وتوسعة الفرق",
-            href: "/services/staff-augmentation",
-          },
-        ]}
-        currentTheme={sharedFooterTheme}
-        currentLang={currentLang}
-      />
-
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -192,28 +177,18 @@ export default function StaffAugmentationPage() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Button
-                  size="lg"
-                  style={{
-                    backgroundImage: `linear-gradient(90deg, ${currentTheme.primary}, ${currentTheme.secondary})`,
-                    color: currentTheme.text,
-                    boxShadow: `0 0 35px ${currentTheme.glow1}`,
-                  }}
-                >
-                  {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent"
-                  style={{
-                    borderColor: "color-mix(in srgb, var(--accent) 35%, transparent)",
-                    color: currentTheme.accent,
-                  }}
-                >
-                  {currentLang === "en" ? "View Talent Pool" : "استعرض المواهب"}
-                </Button>
+                <Link href="/talk-to-us">
+                  <Button
+                    size="lg"
+                    style={{
+                      backgroundImage: `linear-gradient(90deg, ${currentTheme.primary}, ${currentTheme.secondary})`,
+                      color: currentTheme.text,
+                      boxShadow: `0 0 35px ${currentTheme.glow1}`,
+                    }}
+                  >
+                    {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -244,10 +219,8 @@ export default function StaffAugmentationPage() {
 
               {/* Orbiting Role Icons */}
               {roles.map((role, index) => {
-                const angle = (index / roles.length) * 2 * Math.PI
+                const angle = (index / roles.length) * 2 * Math.PI - Math.PI / 2
                 const radius = 180
-                const x = Math.cos(angle) * radius
-                const y = Math.sin(angle) * radius
 
                 return (
                   <motion.div
@@ -256,19 +229,32 @@ export default function StaffAugmentationPage() {
                     style={{
                       left: "50%",
                       top: "50%",
+                      marginLeft: "-40px",
+                      marginTop: "-40px",
                       backgroundColor: "color-mix(in srgb, var(--card) 55%, transparent)",
                       border: "1px solid color-mix(in srgb, var(--accent) 28%, transparent)",
                     }}
                     animate={{
-                      x: [x, x * 1.1, x],
-                      y: [y, y * 1.1, y],
+                      x: Math.cos(angle) * radius,
+                      y: Math.sin(angle) * radius,
                       rotate: [0, 360],
                     }}
                     transition={{
-                      duration: 8,
-                      delay: index * 0.3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: "easeInOut",
+                      x: {
+                        duration: 20,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: "linear",
+                      },
+                      y: {
+                        duration: 20,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: "linear",
+                      },
+                      rotate: {
+                        duration: 20,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: "linear",
+                      },
                     }}
                     whileHover={{ scale: 1.2, zIndex: 30 }}
                   >
@@ -405,7 +391,10 @@ export default function StaffAugmentationPage() {
             </div>
 
             <div className="relative z-10 text-center max-w-3xl mx-auto">
-              <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+              >
                 <Globe className="w-16 h-16 mx-auto mb-6" style={{ color: currentTheme.accent }} />
               </motion.div>
 
@@ -425,36 +414,25 @@ export default function StaffAugmentationPage() {
               </p>
 
               <div className="flex flex-wrap gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="text-lg px-8"
-                  style={{
-                    backgroundImage: `linear-gradient(90deg, ${currentTheme.primary}, ${currentTheme.secondary})`,
-                    color: currentTheme.text,
-                    boxShadow: `0 0 35px ${currentTheme.glow2}`,
-                  }}
-                >
-                  {currentLang === "en" ? "Request Talent" : "اطلب موهبة"}
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent text-lg px-8"
-                  style={{
-                    borderColor: "color-mix(in srgb, var(--accent) 35%, transparent)",
-                    color: currentTheme.accent,
-                  }}
-                >
-                  {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
-                </Button>
+                <Link href="/book-demo">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="bg-transparent text-lg px-8"
+                    style={{
+                      borderColor: "color-mix(in srgb, var(--accent) 35%, transparent)",
+                      color: currentTheme.accent,
+                    }}
+                  >
+                    {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
         </section>
       </main>
 
-      <SharedFooter/>
     </div>
   )
 }

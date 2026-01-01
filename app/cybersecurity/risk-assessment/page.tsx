@@ -2,11 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
+import { motion } from "framer-motion"
+import Link from "next/link"
 import {
   Shield,
   AlertTriangle,
@@ -21,6 +18,8 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react"
+
+const MotionLink = motion(Link)
 
 export default function RiskAssessmentPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
@@ -140,9 +139,6 @@ export default function RiskAssessmentPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
@@ -154,9 +150,6 @@ export default function RiskAssessmentPage() {
           style={{ background: "radial-gradient(circle, var(--glow-2), transparent 70%)" }}
         />
       </div>
-
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Hero */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
@@ -172,7 +165,10 @@ export default function RiskAssessmentPage() {
                 }}
               >
                 <Shield className="w-4 h-4" style={{ color: "var(--accent)" }} />
-                <span className="text-sm" style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}>
+                <span
+                  className="text-sm"
+                  style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}
+                >
                   {currentLang === "en" ? "Enterprise Cyber Risk Management" : "إدارة المخاطر السيبرانية للمؤسسات"}
                 </span>
               </div>
@@ -201,31 +197,42 @@ export default function RiskAssessmentPage() {
                 )}
               </h1>
 
-              <p className="text-xl leading-relaxed" style={{ color: "color-mix(in srgb, var(--page-fg) 80%, var(--muted-foreground) 20%)" }}>
+              <p
+                className="text-xl leading-relaxed"
+                style={{ color: "color-mix(in srgb, var(--page-fg) 80%, var(--muted-foreground) 20%)" }}
+              >
                 {currentLang === "en"
                   ? "Comprehensive cybersecurity risk assessment and crisis management built on globally recognized standards including NIST, ISO 27005, FAIR, and MITRE ATT&CK."
                   : "برنامج متكامل لتقييم مخاطر الأمن السيبراني وإدارة الأزمات وفقاً لأقوى الأطر العالمية بما في ذلك NIST وISO 27005 وFAIR وMITRE ATT&CK."}
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <button
-                  className="px-8 py-4 rounded-lg font-semibold text-white transition-all hover:scale-105 flex items-center gap-2"
+                {/* ✅ زر رئيسي صار MotionLink */}
+                <MotionLink
+                  href="/talk-to-us"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-white transition-all shadow-lg"
                   style={{ background: "linear-gradient(90deg, var(--primary), var(--accent))" }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   {currentLang === "en" ? "Start Risk Assessment" : "ابدأ تقييم المخاطر"}
                   <ArrowRight className="w-5 h-5" />
-                </button>
+                </MotionLink>
 
-                <button
-                  className="px-8 py-4 rounded-lg font-semibold transition-all hover:scale-105 border"
+                {/* ✅ زر ثانوي صار MotionLink (غيّر المسار حسب صفحتك) */}
+                <MotionLink
+                  href="/book-demo"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold border"
                   style={{
                     borderColor: "color-mix(in srgb, var(--border) 70%, transparent)",
                     background: "transparent",
                     color: "var(--page-fg)",
                   }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  {currentLang === "en" ? "View Frameworks" : "عرض الأطر"}
-                </button>
+                  {currentLang === "en" ? "Book Demo" : "احجز عرضًا"}
+                </MotionLink>
               </div>
             </div>
 
@@ -348,7 +355,10 @@ export default function RiskAssessmentPage() {
       </section>
 
       {/* Tools */}
-      <section className="py-20 px-6" style={{ background: "color-mix(in srgb, var(--page-bg) 70%, var(--primary) 6%)" }}>
+      <section
+        className="py-20 px-6"
+        style={{ background: "color-mix(in srgb, var(--page-bg) 70%, var(--primary) 6%)" }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: "var(--page-fg)" }}>
@@ -394,8 +404,6 @@ export default function RiskAssessmentPage() {
           </div>
         </div>
       </section>
-
-      <SharedFooter/>
 
       <style jsx global>{`
         @keyframes orbitClockwise {

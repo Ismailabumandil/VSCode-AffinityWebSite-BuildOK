@@ -2,10 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
 import {
   Shield,
   ShieldCheck,
@@ -20,12 +16,15 @@ import {
   Brain,
   Network,
 } from "lucide-react"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
 
 export default function GRCStrategyPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
   const [activeFramework, setActiveFramework] = useState(0)
   const [activeService, setActiveService] = useState(0)
+
+  // ✅ Helper: make SSR + Client output identical
+  const round = (n: number, digits = 3) => Number(n.toFixed(digits))
 
   // 🌍 Global theme (from global.css)
   const currentTheme = useMemo(
@@ -51,64 +50,70 @@ export default function GRCStrategyPage() {
     accent: currentTheme.accent,
   }
 
-  const frameworks = [
-    { name: "NIST CSF", icon: Shield },
-    { name: "ISO 27001/27002", icon: ShieldCheck },
-    { name: "CIS Controls v8", icon: Lock },
-    { name: "COBIT 2019", icon: FileCheck },
-    { name: "MITRE ATT&CK", icon: AlertTriangle },
-  ]
+  const frameworks = useMemo(
+    () => [
+      { name: "NIST CSF", icon: Shield },
+      { name: "ISO 27001/27002", icon: ShieldCheck },
+      { name: "CIS Controls v8", icon: Lock },
+      { name: "COBIT 2019", icon: FileCheck },
+      { name: "MITRE ATT&CK", icon: AlertTriangle },
+    ],
+    [],
+  )
 
-  const services = [
-    {
-      icon: Target,
-      title: { en: "Strategic Assessment & Benchmarking", ar: "تقييم استراتيجي ومقارنة معيارية" },
-      description: {
-        en: "Evaluate current security maturity using NIST CSF, ISO 27001, CIS Controls, and COBIT 2019",
-        ar: "تقييم مستوى النضج الأمني باستخدام أطر عالمية مثل NIST وISO وCIS وCOBIT",
+  const services = useMemo(
+    () => [
+      {
+        icon: Target,
+        title: { en: "Strategic Assessment & Benchmarking", ar: "تقييم استراتيجي ومقارنة معيارية" },
+        description: {
+          en: "Evaluate current security maturity using NIST CSF, ISO 27001, CIS Controls, and COBIT 2019",
+          ar: "تقييم مستوى النضج الأمني باستخدام أطر عالمية مثل NIST وISO وCIS وCOBIT",
+        },
       },
-    },
-    {
-      icon: Brain,
-      title: { en: "Multi-Year Strategy Development", ar: "استراتيجية متعددة السنوات" },
-      description: {
-        en: "Build structured cybersecurity strategies with threat analysis, risk mapping, and Zero-Trust adoption",
-        ar: "بناء استراتيجية أمن سيبراني متعددة السنوات مع تحليل التهديدات وتبني Zero Trust",
+      {
+        icon: Brain,
+        title: { en: "Multi-Year Strategy Development", ar: "استراتيجية متعددة السنوات" },
+        description: {
+          en: "Build structured cybersecurity strategies with threat analysis, risk mapping, and Zero-Trust adoption",
+          ar: "بناء استراتيجية أمن سيبراني متعددة السنوات مع تحليل التهديدات وتبني Zero Trust",
+        },
       },
-    },
-    {
-      icon: Network,
-      title: { en: "Threat Intelligence Integration", ar: "دمج استخبارات التهديدات" },
-      description: {
-        en: "Leverage global intelligence sources for informed prioritization and decision-making",
-        ar: "الاستفادة من مصادر استخبارات عالمية لتحديد الأولويات واتخاذ قرارات دقيقة",
+      {
+        icon: Network,
+        title: { en: "Threat Intelligence Integration", ar: "دمج استخبارات التهديدات" },
+        description: {
+          en: "Leverage global intelligence sources for informed prioritization and decision-making",
+          ar: "الاستفادة من مصادر استخبارات عالمية لتحديد الأولويات واتخاذ قرارات دقيقة",
+        },
       },
-    },
-    {
-      icon: FileCheck,
-      title: { en: "Governance Framework Design", ar: "تصميم إطار الحوكمة" },
-      description: {
-        en: "Design policies, control frameworks, and accountability structures with measurable KPIs",
-        ar: "تصميم السياسات والضوابط وهياكل الحوكمة مع مؤشرات أداء قابلة للقياس",
+      {
+        icon: FileCheck,
+        title: { en: "Governance Framework Design", ar: "تصميم إطار الحوكمة" },
+        description: {
+          en: "Design policies, control frameworks, and accountability structures with measurable KPIs",
+          ar: "تصميم السياسات والضوابط وهياكل الحوكمة مع مؤشرات أداء قابلة للقياس",
+        },
       },
-    },
-    {
-      icon: Globe,
-      title: { en: "Regulatory Alignment", ar: "المواءمة التنظيمية" },
-      description: {
-        en: "Align with national cybersecurity frameworks, GDPR, and data protection standards",
-        ar: "مواءمة المتطلبات مع الأطر الوطنية ومعايير حماية البيانات والخصوصية",
+      {
+        icon: Globe,
+        title: { en: "Regulatory Alignment", ar: "المواءمة التنظيمية" },
+        description: {
+          en: "Align with national cybersecurity frameworks, GDPR, and data protection standards",
+          ar: "مواءمة المتطلبات مع الأطر الوطنية ومعايير حماية البيانات والخصوصية",
+        },
       },
-    },
-    {
-      icon: TrendingUp,
-      title: { en: "Implementation Roadmap", ar: "خارطة طريق تنفيذية" },
-      description: {
-        en: "A detailed roadmap with quick wins, phased capabilities, and resilience initiatives",
-        ar: "خارطة طريق تفصيلية تتضمن مكاسب سريعة ومراحل بناء قدرات ومبادرات مرونة",
+      {
+        icon: TrendingUp,
+        title: { en: "Implementation Roadmap", ar: "خارطة طريق تنفيذية" },
+        description: {
+          en: "A detailed roadmap with quick wins, phased capabilities, and resilience initiatives",
+          ar: "خارطة طريق تفصيلية تتضمن مكاسب سريعة ومراحل بناء قدرات ومبادرات مرونة",
+        },
       },
-    },
-  ]
+    ],
+    [],
+  )
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -124,6 +129,24 @@ export default function GRCStrategyPage() {
     return () => clearInterval(interval)
   }, [services.length])
 
+  // ✅ Precompute deterministic positions (rounded) so SSR === Client
+  const orbit = useMemo(() => {
+    const radius = 165
+    const cx = 210
+    const cy = 210
+
+    return frameworks.map((framework, index) => {
+      const angle = (index / frameworks.length) * 2 * Math.PI
+      const x = round(Math.cos(angle) * radius, 3)
+      const y = round(Math.sin(angle) * radius, 3)
+
+      const x2 = round(cx + Math.cos(angle) * radius, 3)
+      const y2 = round(cy + Math.sin(angle) * radius, 3)
+
+      return { framework, index, x, y, x2, y2 }
+    })
+  }, [frameworks, round])
+
   return (
     <div
       className="min-h-screen"
@@ -137,10 +160,6 @@ export default function GRCStrategyPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-      <ChatWidget />
-      <ScrollToTop  />
 
       {/* HERO */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -212,7 +231,8 @@ export default function GRCStrategyPage() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <button
+                <Link
+                  href="/talk-to-us"
                   className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
                   style={{
                     background: "linear-gradient(90deg, var(--primary), var(--accent))",
@@ -221,9 +241,10 @@ export default function GRCStrategyPage() {
                   }}
                 >
                   {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
-                </button>
+                </Link>
 
-                <button
+                <Link
+                  href="/book-demo"
                   className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border"
                   style={{
                     background: "color-mix(in srgb, var(--card) 10%, transparent)",
@@ -231,20 +252,16 @@ export default function GRCStrategyPage() {
                   }}
                 >
                   {currentLang === "en" ? "Learn More" : "اعرف المزيد"}
-                </button>
+                </Link>
               </div>
             </div>
 
-            {/* Right - Correct Orbit Animation */}
+            {/* Right - Orbit Animation */}
             <div className="relative h-[520px] flex items-center justify-center">
               <div className="relative w-[420px] h-[420px]">
                 {/* Orbit Rotator */}
                 <div className="absolute inset-0 orbit-rotator">
-                  {frameworks.map((framework, index) => {
-                    const angle = (index / frameworks.length) * 2 * Math.PI
-                    const radius = 165
-                    const x = Math.cos(angle) * radius
-                    const y = Math.sin(angle) * radius
+                  {orbit.map(({ framework, index, x, y }) => {
                     const Icon = framework.icon
                     const isActive = index === activeFramework
 
@@ -292,20 +309,13 @@ export default function GRCStrategyPage() {
 
                 {/* Connection lines */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ filter: "blur(0.6px)" }}>
-                  {frameworks.map((_, index) => {
-                    const angle = (index / frameworks.length) * 2 * Math.PI
-                    const radius = 165
-                    const cx = 210
-                    const cy = 210
-                    const x2 = cx + Math.cos(angle) * radius
-                    const y2 = cy + Math.sin(angle) * radius
+                  {orbit.map(({ index, x2, y2 }) => {
                     const isActive = index === activeFramework
-
                     return (
                       <line
                         key={index}
-                        x1={cx}
-                        y1={cy}
+                        x1={210}
+                        y1={210}
                         x2={x2}
                         y2={y2}
                         stroke={isActive ? "var(--accent)" : "color-mix(in srgb, var(--primary) 25%, transparent)"}
@@ -532,21 +542,21 @@ export default function GRCStrategyPage() {
                 : "شاركنا لبناء استراتيجية أمن سيبراني قوية ومرنة ومتوافقة مع المعايير العالمية."}
             </p>
 
-            <button
-              className="px-10 py-4 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg"
-              style={{
-                background: "linear-gradient(90deg, var(--primary), var(--accent))",
-                color: "white",
-                boxShadow: "0 14px 45px color-mix(in srgb, var(--primary) 25%, transparent)",
-              }}
-            >
-              {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
-            </button>
+           <Link
+            href="/talk-to-us"
+            className="relative z-10 px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+            style={{
+              background: "linear-gradient(90deg, var(--primary), var(--accent))",
+              color: "white",
+              boxShadow: "0 12px 40px color-mix(in srgb, var(--primary) 25%, transparent)",
+            }}
+          >
+            {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
+          </Link>
           </div>
         </div>
       </section>
 
-      <SharedFooter />
 
       {/* Animations */}
       <style jsx global>{`

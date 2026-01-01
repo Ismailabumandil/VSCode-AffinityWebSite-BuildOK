@@ -2,11 +2,8 @@
 
 import React, { useMemo, useState } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { SharedFooter } from "@/components/shared-footer"
 import { ScreenCarousel } from "@/components/screen-carousel"
-
+import Link from "next/link"
 // Icons (اختياري – لو عندك lucide-react)
 import {
   Sparkles,
@@ -169,7 +166,6 @@ export default function mainservicepage() {
 
   return (
     <div className="min-h-screen neon-bg">
-      <Navbar />
       {/* ---------- HERO ---------- */}
       <section className="relative pt-28 pb-14 px-4">
         <div className="max-w-7xl mx-auto">
@@ -236,38 +232,13 @@ export default function mainservicepage() {
                   </div>
                 </div>
 
-                {/* Language Switch */}
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-1) 65%, transparent)",
-                    }}
-                    onClick={() => setLanguage("en")}
-                  >
-                    English
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--secondary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-2) 60%, transparent)",
-                    }}
-                    onClick={() => setLanguage("ar")}
-                  >
-                    العربية
-                  </button>
-                </div>
+                
               </div>
 
               {/* CTA Row */}
               <div className="mt-8 flex flex-wrap gap-4">
-                <button
+                <Link
+                  href="/talk-to-us"
                   className="px-8 py-4 rounded-xl font-bold border hover:scale-105 transition"
                   style={{
                     background: "linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%)",
@@ -277,7 +248,7 @@ export default function mainservicepage() {
                   }}
                 >
                   {isAr ? "ابدأ الآن" : "Get Started"}
-                </button>
+                </Link>
 
                 <a
                   href="#menus"
@@ -562,7 +533,6 @@ export default function mainservicepage() {
         </div>
       </section>
 
-      <SharedFooter />
     </div>
   )
 }

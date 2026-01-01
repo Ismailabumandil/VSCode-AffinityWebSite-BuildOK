@@ -2,11 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import Navbar from "@/components/navbar"
-import Breadcrumb from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import ScrollToTop from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
+
 import { useTheme } from "@/contexts/theme-context"
 import {
   BarChart,
@@ -139,8 +135,6 @@ export default function DataAnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]" dir={isRTL ? "rtl" : "ltr"}>
-      <Navbar />
-
       <div className="container mx-auto px-4 pt-24">
       </div>
 
@@ -356,10 +350,7 @@ export default function DataAnalyticsPage() {
         </div>
       </section>
 
-      <SharedFooter />
-
-      <ChatWidget />
-      <ScrollToTop />
+     
     </div>
   )
 }

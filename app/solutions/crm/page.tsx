@@ -1,12 +1,6 @@
 "use client"
-
 import { useState, useEffect } from "react"
-import { Navbar } from "@/components/navbar"
 import { useTheme } from "@/contexts/theme-context"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import { motion } from "framer-motion"
 import {
   Users,
@@ -27,9 +21,10 @@ import {
   Phone,
   Calendar,
 } from "lucide-react"
+import Link from "next/link"
 
 export default function CRMSolutionsPage() {
-    const { language: currentLang, theme: themeMode } = useTheme()
+  const { language: currentLang, theme: themeMode } = useTheme()
 
   const [activeStep, setActiveStep] = useState(0)
 
@@ -45,7 +40,6 @@ export default function CRMSolutionsPage() {
     glow2: "var(--glow-2)",
     mode: themeMode,
   }
-
 
   const sharedFooterTheme = {
     bg: currentTheme.background,
@@ -156,9 +150,6 @@ export default function CRMSolutionsPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar/>
-
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
 
       {/* Hero Section with Animated Process Flow */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -449,22 +440,21 @@ export default function CRMSolutionsPage() {
                   ? "Let us help you implement a powerful CRM solution tailored to your business needs"
                   : "دعنا نساعدك في تنفيذ حل CRM قوي مصمم خصيصًا لاحتياجات عملك"}
               </p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-purple-600 to-purple-800 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-purple-900 transition-all duration-300 shadow-lg hover:shadow-purple-500/50 inline-flex items-center gap-2"
-              >
-                {currentLang === "en" ? "Get Started Today" : "ابدأ اليوم"}
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
+              <Link href="/talk-to-us">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-purple-600 to-purple-800 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-purple-900 transition-all duration-300 shadow-lg hover:shadow-purple-500/50 inline-flex items-center gap-2"
+                >
+                  {currentLang === "en" ? "Get Started Today" : "ابدأ اليوم"}
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <SharedFooter/>
-      <ChatWidget />
-      <ScrollToTop />
     </div>
   )
 }

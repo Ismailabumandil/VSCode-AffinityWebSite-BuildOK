@@ -14,11 +14,6 @@ import {
   TrendingUp,
   Award,
 } from "lucide-react"
-import { SharedFooter } from "@/components/shared-footer"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function MaintenancePage() {
@@ -208,8 +203,6 @@ export default function MaintenancePage() {
         color: ui.fg,
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={language} />
 
       {/* Hero */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -385,9 +378,6 @@ export default function MaintenancePage() {
         </div>
       </section>
 
-      <SharedFooter/>
-      <ChatWidget/>
-      <ScrollToTop />
 
       <style jsx>{`
         @keyframes orbit {

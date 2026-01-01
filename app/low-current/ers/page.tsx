@@ -1,13 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import { Radio, TowerControl, MapPin } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
+import Link from "next/link"
+import { motion } from "framer-motion"
 
 export default function ERSPage() {
   const { language } = useTheme()
@@ -62,8 +59,6 @@ export default function ERSPage() {
         color: ui.text,
       }}
     >
-      <Navbar/>
-      <Breadcrumb currentLang={language} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -216,10 +211,47 @@ export default function ERSPage() {
           </div>
         </div>
       </section>
-
-      <SharedFooter  />
-      <ChatWidget />
-      <ScrollToTop />
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative p-12 rounded-2xl overflow-hidden"
+            style={{
+              backgroundImage:
+                "linear-gradient(135deg, rgba(56,189,248,0.20), rgba(34,211,238,0.10), rgba(2,6,23,0.55))",
+              border: "1px solid rgba(56,189,248,0.20)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+              
+            <div className="relative text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                {language === "en" ? "Ready to improve Public Call System " : "هل أنت مستعد لتحسين ادوات الأخلاء المبكر الخاص بك؟"}
+              </h2>
+              <p className="text-white/80 mb-8 max-w-2xl mx-auto">
+                {language === "en"
+                  ? "Partner with us to build a comprehensive Public Call System that drives sustainable growth and innovation for your Orgnization."
+                  : "شاركنا لبناء استراتيجية منظومة النداء و الأنذار العام  يدعم النمو المستدام والابتكارلمنشأتك."}
+              </p>
+              <Link href="/book-demo">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 rounded-lg font-semibold hover:shadow-xl transition-all"
+                  style={{
+                    background: "#ffffff",
+                    color: "#0ea5e9",
+                  }}
+                >
+                  {language === "en" ? "Schedule a Consultation" : "احجز استشارة"}
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   )
 }

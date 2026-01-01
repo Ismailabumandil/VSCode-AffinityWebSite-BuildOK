@@ -1,12 +1,7 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { SharedFooter } from "@/components/shared-footer"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
+import Link from "next/link"
 import {
   Ticket,
   MapPin,
@@ -14,7 +9,7 @@ import {
   Zap,
   BarChart3,
   Cloud,
-  Link,
+  LinkIcon,
   Brain,
   Users,
   Clock,
@@ -94,7 +89,7 @@ export default function TicketingFieldServicesPage() {
             "Update tasks, capture photos, record signatures, scan QR codes, access job details, and complete forms on the go.",
         },
         {
-          icon: Link,
+          icon: LinkIcon,
           title: "Seamless ERP/CRM Integration",
           description:
             "Full synchronization with existing enterprise systems for tickets, field jobs, inventory, billing, and customer updates.",
@@ -197,7 +192,7 @@ export default function TicketingFieldServicesPage() {
           description: "تحديث المهام، التقاط صور، تسجيل توقيع، مسح QR، والوصول لتفاصيل العمل.",
         },
         {
-          icon: Link,
+          icon: LinkIcon,
           title: "تكامل كامل مع ERP/CRM",
           description: "تزامن كامل مع الأنظمة الأساسية للتذاكر، الأعمال، المخزون، الفوترة، والعملاء.",
         },
@@ -282,9 +277,7 @@ export default function TicketingFieldServicesPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar/>
 
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -319,7 +312,10 @@ export default function TicketingFieldServicesPage() {
               {t.title}
             </h1>
 
-            <p className="text-xl md:text-2xl mb-4 max-w-4xl mx-auto" style={{ color: "color-mix(in srgb, var(--page-fg) 78%, var(--muted-foreground) 22%)" }}>
+            <p
+              className="text-xl md:text-2xl mb-4 max-w-4xl mx-auto"
+              style={{ color: "color-mix(in srgb, var(--page-fg) 78%, var(--muted-foreground) 22%)" }}
+            >
               {t.subtitle}
             </p>
 
@@ -387,7 +383,11 @@ export default function TicketingFieldServicesPage() {
               <div className="absolute inset-0 opacity-10">
                 <div className="grid grid-cols-10 grid-rows-10 h-full w-full">
                   {Array.from({ length: 100 }).map((_, i) => (
-                    <div key={i} className="border" style={{ borderColor: "color-mix(in srgb, var(--border) 45%, transparent)" }} />
+                    <div
+                      key={i}
+                      className="border"
+                      style={{ borderColor: "color-mix(in srgb, var(--border) 45%, transparent)" }}
+                    />
                   ))}
                 </div>
               </div>
@@ -520,7 +520,8 @@ export default function TicketingFieldServicesPage() {
                   <div
                     className="absolute top-0 right-0 w-20 h-20 rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     style={{
-                      background: "linear-gradient(135deg, color-mix(in srgb, var(--primary) 22%, transparent), transparent)",
+                      background:
+                        "linear-gradient(135deg, color-mix(in srgb, var(--primary) 22%, transparent), transparent)",
                     }}
                   />
 
@@ -560,7 +561,13 @@ export default function TicketingFieldServicesPage() {
               <div className="relative">
                 <div className="relative mx-auto w-72 h-[600px] bg-gray-900 rounded-[3rem] border-8 border-gray-800 shadow-2xl overflow-hidden">
                   {/* Phone Screen */}
-                  <div className="h-full p-6 overflow-hidden" style={{ background: "linear-gradient(135deg, var(--page-bg), color-mix(in srgb, var(--page-bg) 70%, var(--primary) 30%))" }}>
+                  <div
+                    className="h-full p-6 overflow-hidden"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, var(--page-bg), color-mix(in srgb, var(--page-bg) 70%, var(--primary) 30%))",
+                    }}
+                  >
                     <div className="text-white text-center mb-6">
                       <div className="text-lg font-bold">{t.mobileFeatures}</div>
                     </div>
@@ -668,7 +675,14 @@ export default function TicketingFieldServicesPage() {
               background: "linear-gradient(135deg, var(--primary), var(--accent))",
             }}
           >
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+              }}
+            />
             <div className="relative z-10">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 {currentLang === "en" ? "Ready to Transform Your Field Operations?" : "جاهز لتحويل عملياتك الميدانية؟"}
@@ -678,20 +692,20 @@ export default function TicketingFieldServicesPage() {
                   ? "Schedule a demo to see how our ticketing and field service platform can streamline your operations."
                   : "احجز عرضًا توضيحيًا لترى كيف يمكن لمنصتنا تحسين عملياتك الميدانية."}
               </p>
-              <button className="px-8 py-4 bg-white rounded-xl font-semibold transition-colors shadow-xl hover:shadow-2xl transform hover:scale-105"
-                style={{ color: "var(--primary)" }}
-              >
-                {currentLang === "en" ? "Schedule a Demo" : "احجز عرضًا توضيحيًا"}
-              </button>
+              <Link href="/book-demo">
+                <button
+                  className="px-8 py-4 bg-white rounded-xl font-semibold transition-colors shadow-xl hover:shadow-2xl transform hover:scale-105"
+                  style={{ color: "var(--primary)" }}
+                >
+                  {currentLang === "en" ? "Schedule a Demo" : "احجز عرضًا توضيحيًا"}
+                </button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <SharedFooter  />
 
-      <ChatWidget  />
-      <ScrollToTop  />
     </div>
   )
 }

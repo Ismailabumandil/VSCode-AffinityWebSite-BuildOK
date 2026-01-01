@@ -17,8 +17,6 @@ import {
   HardDrive,
   Zap,
 } from "lucide-react"
-import Navbar from "@/components/navbar"
-import { SharedFooter } from "@/components/shared-footer"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function DatabaseDesignPage() {
@@ -191,7 +189,6 @@ export default function DatabaseDesignPage() {
 
   return (
     <div className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]">
-      <Navbar />
 
       {/* Hero Section with Animated Database Visualization */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -341,7 +338,6 @@ export default function DatabaseDesignPage() {
         </div>
       </section>
 
-      <SharedFooter />
 
       <style jsx>{`
         @keyframes float {

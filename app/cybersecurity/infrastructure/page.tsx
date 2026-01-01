@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useTheme } from "@/contexts/theme-context"
+import Link from "next/link"
+
 import {
   Network,
   Shield,
@@ -15,12 +17,6 @@ import {
   Key,
   FileText,
 } from "lucide-react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
-
 export default function InfrastructureSecurityPage() {
   const { language: currentLang, theme } = useTheme()
   const [activeLayer, setActiveLayer] = useState(0)
@@ -82,8 +78,6 @@ export default function InfrastructureSecurityPage() {
       dir={currentLang === "ar" ? "rtl" : "ltr"}
       style={{ background: currentTheme.background, color: currentTheme.text }}
     >
-      <Navbar  />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
 
       {/* HERO */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -115,7 +109,8 @@ export default function InfrastructureSecurityPage() {
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
-              <button
+              <Link
+                href="/talk-to-us"
                 className="px-8 py-4 rounded-lg font-semibold transition-all hover:scale-105"
                 style={{
                   background: "var(--primary)",
@@ -124,9 +119,9 @@ export default function InfrastructureSecurityPage() {
                 }}
               >
                 {currentLang === "en" ? "Request Implementation" : "طلب تنفيذ"}
-              </button>
-
-              <button
+              </Link>
+              <Link
+                href="/book-demo"
                 className="px-8 py-4 rounded-lg font-semibold transition-all hover:scale-105"
                 style={{
                   background: "color-mix(in srgb, var(--card) 75%, transparent)",
@@ -134,7 +129,7 @@ export default function InfrastructureSecurityPage() {
                 }}
               >
                 {currentLang === "en" ? "View Security Layers" : "عرض طبقات الأمان"}
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -307,10 +302,6 @@ export default function InfrastructureSecurityPage() {
           </div>
         </div>
       </section>
-
-      <SharedFooter />
-      <ChatWidget />
-      <ScrollToTop />
     </div>
   )
 }

@@ -3,10 +3,6 @@
 import type React from "react"
 import type { ReactElement } from "react"
 import { useEffect, useMemo } from "react"
-import Navbar from "@/components/navbar"
-import SharedFooter from "@/components/shared-footer"
-import ChatWidget from "@/components/chat-widget"
-import ScrollToTop from "@/components/scroll-to-top"
 import { Mail, Phone, MapPin, MessageCircle, Clock, Globe, ArrowRight } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 import { useRouter } from "next/navigation"
@@ -121,7 +117,6 @@ export default function TalkToUsPage(): ReactElement {
       className="min-h-screen bg-gradient-to-br from-background via-background to-background text-foreground"
       dir={language === "ar" ? "rtl" : "ltr"}
     >
-      <Navbar />
 
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
@@ -223,9 +218,6 @@ export default function TalkToUsPage(): ReactElement {
         </div>
       </div>
 
-      <SharedFooter />
-      <ChatWidget />
-      <ScrollToTop />
     </div>
   )
 }

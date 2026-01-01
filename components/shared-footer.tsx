@@ -4,7 +4,7 @@ import type React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Facebook, Twitter, Linkedin, Search, Mail } from "lucide-react"
+import { Facebook, Linkedin, Search, Mail, Github, Instagram } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 
 const SharedFooterComponent = () => {
@@ -667,6 +667,21 @@ const SharedFooterComponent = () => {
                 }}
               />
             </Link>
+
+            <Link
+              href="/book-demo"
+              className="group relative text-sm font-medium transition-all duration-300"
+              style={{ color: "#0EA5E9" }}
+            >
+              <span className="relative z-10">{currentLang === "en" ? "Book a Demo" : "احجز عرضًا"}</span>
+              <span
+                className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
+                style={{
+                  background: "linear-gradient(90deg, #0EA5E9 0%, #22D3EE 100%)",
+                  boxShadow: "0 0 8px rgba(14, 165, 233, 0.6)",
+                }}
+              />
+            </Link>
           </div>
         </div>
 
@@ -678,35 +693,69 @@ const SharedFooterComponent = () => {
             <Link
               href="https://facebook.com"
               target="_blank"
+              rel="noopener noreferrer"
               className="w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
               style={{
                 backgroundColor: `color-mix(in oklab, var(--accent) 20%, transparent)`,
                 color: "var(--accent)",
               }}
+              aria-label="Facebook"
             >
-              <Facebook />
+              <Facebook size={20} />
             </Link>
             <Link
-              href="https://twitter.com"
+              href="https://x.com"
               target="_blank"
+              rel="noopener noreferrer"
               className="w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
               style={{
                 backgroundColor: `color-mix(in oklab, var(--accent) 20%, transparent)`,
                 color: "var(--accent)",
               }}
+              aria-label="X (formerly Twitter)"
             >
-              <Twitter />
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
             </Link>
             <Link
               href="https://linkedin.com"
               target="_blank"
+              rel="noopener noreferrer"
               className="w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
               style={{
                 backgroundColor: `color-mix(in oklab, var(--accent) 20%, transparent)`,
                 color: "var(--accent)",
               }}
+              aria-label="LinkedIn"
             >
-              <Linkedin />
+              <Linkedin size={20} />
+            </Link>
+            <Link
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
+              style={{
+                backgroundColor: `color-mix(in oklab, var(--accent) 20%, transparent)`,
+                color: "var(--accent)",
+              }}
+              aria-label="GitHub"
+            >
+              <Github size={20} />
+            </Link>
+            <Link
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110"
+              style={{
+                backgroundColor: `color-mix(in oklab, var(--accent) 20%, transparent)`,
+                color: "var(--accent)",
+              }}
+              aria-label="Instagram"
+            >
+              <Instagram size={20} />
             </Link>
           </div>
 

@@ -1,9 +1,6 @@
 "use client"
 
 import React, { useMemo, useState } from "react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { SharedFooter } from "@/components/shared-footer"
 import { ScreenCarousel } from "@/components/screen-carousel"
 import { useTheme } from "@/contexts/theme-context"
 
@@ -214,7 +211,6 @@ export default function AISolutionsPage() {
 
   return (
     <div className="min-h-screen neon-bg">
-      <Navbar />
 
       {/* HERO (Neural + Robot cinema) */}
       <section className="relative pt-28 pb-10 px-4">
@@ -308,39 +304,14 @@ export default function AISolutionsPage() {
                         color: "var(--page-fg)",
                       }}
                     >
-                      {isAr ? "شاهد البروسس" : "See the Process"}
+                      {isAr ? "شاهد تنفيذ العملية" : "See the Process"}
                       {isAr ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
                     </a>
                   </div>
                 </div>
 
                 {/* Language Switch */}
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-1) 65%, transparent)",
-                    }}
-                    onClick={() => setLanguage("en")}
-                  >
-                    English
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--secondary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-2) 60%, transparent)",
-                    }}
-                    onClick={() => setLanguage("ar")}
-                  >
-                    العربية
-                  </button>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -488,7 +459,7 @@ export default function AISolutionsPage() {
             </div>
             <div className="mt-4">
               <a
-                href="/contact"
+                href="/talk-to-us"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold border hover:scale-105 transition"
                 style={{
                   background: `linear-gradient(90deg, var(--primary) 0%, ${t.aiPink} 55%, var(--secondary) 100%)`,
@@ -614,7 +585,6 @@ export default function AISolutionsPage() {
         </div>
       </section>
 
-      <SharedFooter />
     </div>
   )
 }

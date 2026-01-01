@@ -1,85 +1,260 @@
 "use client"
+import ChatWelcomeModal from "@/components/chat-welcome-modal"
 
-import { useState, useEffect } from "react"
-import { MessageCircle, Send, X, Loader2 } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { MessageCircle, Send, X, Loader2, Mic } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 import FloatingCircle from "@/components/ui/floating-circle"
 
 type ChatMsg = { role: "user" | "bot"; text: string }
 
+function buildTranscript(msgs: ChatMsg[]) {
+  return msgs.map((m) => `${m.role === "user" ? "USER" : "BOT"}: ${m.text}`).join("\n\n")
+}
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms))
+}
+
+/** ✅ إرسال إيميل عند الإغلاق (مقاوم للإغلاق) — مسارك: /api/talk-to-us/email */
+function sendEmailOnClose(payload: any) {
+  const url = "/api/talk-to-us/email"
+  const body = JSON.stringify(payload)
+
+  if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
+    const blob = new Blob([body], { type: "application/json" })
+    navigator.sendBeacon(url, blob)
+    return
+  }
+
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+    keepalive: true,
+  }).catch(() => {})
+}
+
 export function ChatWidget() {
   const { theme: currentThemeMode, language: currentLang, getCurrentThemeColors } = useTheme()
   const colors = getCurrentThemeColors()
   const isAr = currentLang === "ar"
+  const lang: "ar" | "en" = isAr ? "ar" : "en"
 
   const [showChat, setShowChat] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>([])
   const [chatInput, setChatInput] = useState("")
   const [isSending, setIsSending] = useState(false)
+  const [isBotTyping, setIsBotTyping] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const endRef = useRef<HTMLDivElement | null>(null)
+  const hasUserMessageRef = useRef(false)           // هل المستخدم كتب شيء؟
+  const lastSentSignatureRef = useRef<string>("")   // توقيع آخر ترانسكربت أرسلناه
+  const sessionIdRef = useRef<string>("")           // جلسة واحدة للشات
+const [showWelcome, setShowWelcome] = useState(false)
+const hasAcceptedRef = useRef(false)
 
+useEffect(() => {
+  if (typeof window === "undefined") return
+  const accepted = localStorage.getItem("affinity_chat_welcome_accepted") === "1"
+  hasAcceptedRef.current = accepted
+}, [])
+
+
+  // Greeting once
   useEffect(() => {
-  setChatMessages((prev) => {
-    if (prev.length > 0) return prev // لا تصفر المحادثة
-    return [
-      {
-        role: "bot",
-        text: currentLang === "en"
-          ? "Hello! How can I help you today?"
-          : "مرحباً! كيف يمكنني مساعدتك اليوم؟",
-      },
-    ]
-  })
-}, [currentLang])
+    setChatMessages((prev) => {
+      if (prev.length > 0) return prev
+      return [
+        {
+          role: "bot",
+          text:
+            lang === "en"
+              ? "Hi 👋 I’m Affinity’s assistant. Ask me anything about our services (AI / Web / Digital Transformation)."
+              : "هلا 👋 أنا مساعد Affinity. اسألني أي شيء عن خدماتنا (الذكاء الاصطناعي / الويب / التحول الرقمي).",
+        },
+      ]
+    })
+  }, [lang])
+
+  // z-index control
+  useEffect(() => {
+    if (showChat) document.body.classList.add("chat-open")
+    else document.body.classList.remove("chat-open")
+    return () => document.body.classList.remove("chat-open")
+  }, [showChat])
+
+  // Auto-scroll
+  useEffect(() => {
+    if (!showChat) return
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+  }, [chatMessages, showChat, isBotTyping, isSending])
+
+  const callAgent = async (message: string) => {
+    setIsSending(true)
+    try {
+      const payload = { message, lang }
+
+      const res = await fetch("/api/talk-to-us/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+      const reply =
+        (typeof data?.reply === "string" && data.reply.trim()) ||
+        (lang === "en" ? "No reply received. Try again." : "ما وصلني رد من السيرفر. جرّب مرة ثانية.")
+
+      setChatMessages((prev) => [...prev, { role: "bot", text: reply }])
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "bot", text: lang === "en" ? "Connection issue. Please try again." : "صار خطأ في الاتصال. جرّب مرة ثانية." },
+      ])
+    } finally {
+      setIsSending(false)
+    }
+  }
+useEffect(() => {
+  if (typeof window === "undefined") return
+
+  // session id ثابت لكل session (غيره لو تبغاه لكل refresh)
+  const existing = localStorage.getItem("affinity_chat_session_id")
+  const sid = existing || `sid_${Date.now()}_${Math.random().toString(16).slice(2)}`
+  localStorage.setItem("affinity_chat_session_id", sid)
+  sessionIdRef.current = sid
+
+  // آخر شيء أرسلناه (عشان ما نكرر)
+  lastSentSignatureRef.current = localStorage.getItem(`affinity_chat_last_sent_${sid}`) || ""
+}, [])
 
   const handleChatSend = async () => {
-  const text = chatInput.trim()
-  if (!text || isSending) return
+    const text = chatInput.trim()
+    if (!text || isSending) return
 
-  setChatMessages((prev) => [...prev, { role: "user", text }])
-  setChatInput("")
-  setIsSending(true)
+    setChatMessages((prev) => [...prev, { role: "user", text }])
+    hasUserMessageRef.current = true
 
-  try {
-    const res = await fetch("/api/talk-to-us/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text }),
-    })
+    setChatInput("")
 
-    const data = await res.json().catch(() => ({} as any))
-    const reply =
-      (typeof data?.reply === "string" && data.reply.trim()) ||
-      (typeof data?.message === "string" && data.message.trim()) || // fallback لو الراوت يرجع message بدل reply
-      (typeof data?.output_text === "string" && data.output_text.trim()) ||
-      "ما وصلني رد من السيرفر. جرّب مرة ثانية."
+    // Bubble typing (fake small delay)
+    setIsBotTyping(true)
+    await sleep(200)
+    setIsBotTyping(false)
 
-    setChatMessages((prev) => [...prev, { role: "bot", text: reply }])
-  } catch (e) {
-    setChatMessages((prev) => [
-      ...prev,
-      { role: "bot", text: "صار خطأ في الاتصال. جرّب مرة ثانية." },
-    ])
-  } finally {
-    setIsSending(false)
+    await callAgent(text)
   }
-}
 
+  const startVoice = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert(isAr ? "المتصفح لا يدعم الإملاء الصوتي." : "Voice input is not supported in this browser.")
+      return
+    }
+
+    try {
+      const rec = new SpeechRecognition()
+      rec.lang = isAr ? "ar-SA" : "en-US"
+      rec.interimResults = false
+      rec.maxAlternatives = 1
+
+      rec.onstart = () => setIsListening(true)
+      rec.onend = () => setIsListening(false)
+      rec.onerror = () => setIsListening(false)
+
+      rec.onresult = (event: any) => {
+        const t = event?.results?.[0]?.[0]?.transcript ?? ""
+        if (t) setChatInput((prev) => (prev ? prev + " " + t : t))
+      }
+
+      rec.start()
+    } catch {
+      setIsListening(false)
+    }
+  }
+
+ const handleClose = () => {
+  // ✅ 1) لو المستخدم ما كتب ولا شيء: لا ترسل
+  if (!hasUserMessageRef.current) {
+    setShowChat(false)
+    return
+  }
+
+  const transcript = buildTranscript(chatMessages).trim()
+
+  // أمان: لو ما فيه نص فعلي
+  if (!transcript) {
+    setShowChat(false)
+    return
+  }
+
+  // ✅ 2) توقيع بسيط يمنع تكرار نفس الإرسال
+  // (طول + آخر 120 حرف كافي جداً كسجنتشر سريع بدون مكتبات)
+  const signature = `${transcript.length}:${transcript.slice(-120)}`
+  const sid = sessionIdRef.current || "default"
+
+  // لو نفس التوقيع أرسلناه قبل: لا ترسل مرة ثانية
+  if (signature === lastSentSignatureRef.current) {
+    setShowChat(false)
+    return
+  }
+
+  // خزنه محليًا حتى لو المستخدم فتح/قفل
+  lastSentSignatureRef.current = signature
+  if (typeof window !== "undefined") {
+    localStorage.setItem(`affinity_chat_last_sent_${sid}`, signature)
+  }
+
+  // ✅ إرسال الإيميل الآن (مرة واحدة لكل تغيير)
+  sendEmailOnClose({
+    lang,
+    category: "Unknown",
+    score: 10,
+    intent: "chat_closed_auto_email",
+    pageUrl: typeof window !== "undefined" ? window.location.href : "",
+    conversationSummary: lang === "en" ? "Chat closed by user (auto email)." : "المستخدم أغلق الشات (إيميل تلقائي).",
+    notes: transcript,
+    answers: {},
+    sessionId: sid,
+  })
+
+  setShowChat(false)
+}
 
   return (
     <div
-      className="fixed bottom-6 z-[9000] flex flex-col items-end gap-4"
+      className="chat-widget-root fixed bottom-6 z-[10000] flex flex-col items-end gap-4"
       style={{ [isAr ? "left" : "right"]: "1rem" }}
       dir={isAr ? "rtl" : "ltr"}
     >
-      {/* ✅ زر الشات – موحّد مع باقي الدوائر */}
-      <FloatingCircle
-        ariaLabel={currentLang === "en" ? "Open chat" : "فتح الشات"}
-        onClick={() => setShowChat((s) => !s)}
-      >
+      <FloatingCircle ariaLabel={lang === "en" ? "Open chat" : "فتح الشات"} 
+onClick={() => {
+  // لو وافق سابقًا افتح الشات مباشرة
+  if (hasAcceptedRef.current || (typeof window !== "undefined" && localStorage.getItem("affinity_chat_welcome_accepted") === "1")) {
+    setShowChat((s) => !s)
+    return
+  }
+
+  // أول مرة: اعرض المودال بدل فتح الشات
+  setShowWelcome(true)
+}}
+        >
         <MessageCircle size={22} />
       </FloatingCircle>
+<ChatWelcomeModal
+  isOpen={showWelcome}
+  onDecline={() => setShowWelcome(false)}
+  onAccept={() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("affinity_chat_welcome_accepted", "1")
+    }
+    hasAcceptedRef.current = true
+    setShowWelcome(false)
+    setShowChat(true) // افتح الشات بعد الموافقة
+  }}
+/>
 
-      {/* نافذة الشات */}
       {showChat && (
         <div
           className="w-96 max-w-[calc(100vw-2rem)] h-[500px] rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-in slide-in-from-bottom-4"
@@ -90,7 +265,6 @@ export function ChatWidget() {
             boxShadow: `0 18px 60px ${colors.accent}35`,
           }}
         >
-          {/* Header */}
           <div
             className="p-4 flex justify-between items-center"
             style={{
@@ -103,24 +277,29 @@ export function ChatWidget() {
                 <MessageCircle size={18} color={colors.accent} />
               </div>
               <div>
-                <div className="font-bold text-sm">
-                  {currentLang === "en" ? "AI Assistant" : "المساعد الذكي"}
-                </div>
-                <div className="text-[11px] opacity-90">
-                  {isSending ? (currentLang === "en" ? "Typing..." : "يكتب الآن...") : currentLang === "en" ? "Online" : "متصل"}
+                <div className="font-bold text-sm">{lang === "en" ? "AI Assistant" : "المساعد الذكي"}</div>
+                <div className="text-[11px] opacity-90 flex items-center gap-2">
+                  <span>{isSending ? (lang === "en" ? "Typing..." : "يكتب الآن...") : lang === "en" ? "Online" : "متصل"}</span>
+
+                  {isListening && (
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                      <span className="text-[11px]">{lang === "en" ? "Listening…" : "يسمع…"}</span>
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
             <button
-              onClick={() => setShowChat(false)}
+              onClick={handleClose}
               className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:scale-110 transition"
+              aria-label={lang === "en" ? "Close" : "إغلاق"}
             >
               <X size={18} />
             </button>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
             {chatMessages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -128,35 +307,44 @@ export function ChatWidget() {
                   className="px-4 py-3 rounded-2xl max-w-[80%] text-sm"
                   style={
                     msg.role === "user"
-                      ? {
-                          backgroundColor: colors.accent,
-                          color: "#fff",
-                          borderBottomRightRadius: 6,
-                        }
-                      : {
-                          backgroundColor: colors.bg,
-                          color: colors.text,
-                          border: `1px solid ${colors.border}`,
-                          borderBottomLeftRadius: 6,
-                        }
+                      ? { backgroundColor: colors.accent, color: "#fff", borderBottomRightRadius: 6 }
+                      : { backgroundColor: colors.bg, color: colors.text, border: `1px solid ${colors.border}`, borderBottomLeftRadius: 6 }
                   }
                 >
                   {msg.text}
                 </div>
               </div>
             ))}
+
+            {(isSending || isBotTyping) && (
+              <div className="flex justify-start">
+                <div
+                  className="px-4 py-3 rounded-2xl max-w-[80%] text-sm"
+                  style={{ backgroundColor: colors.bg, color: colors.text, border: `1px solid ${colors.border}`, borderBottomLeftRadius: 6 }}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    {lang === "en" ? "Typing…" : "يكتب…"}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div ref={endRef} />
           </div>
 
-          {/* Input */}
           <div className="p-4 border-t" style={{ borderColor: colors.border, backgroundColor: colors.bg }}>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <input
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleChatSend()
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    handleChatSend()
+                  }
                 }}
-                placeholder={currentLang === "en" ? "Type your message..." : "اكتب رسالتك..."}
+                placeholder={lang === "en" ? "Type your message..." : "اكتب رسالتك..."}
                 className="flex-1 px-4 py-3 rounded-full outline-none"
                 disabled={isSending}
                 style={{
@@ -168,14 +356,23 @@ export function ChatWidget() {
               />
 
               <button
+                type="button"
+                onClick={startVoice}
+                className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition relative"
+                style={{ backgroundColor: "transparent", border: `1px solid ${colors.border}`, color: colors.text }}
+                title={isAr ? "تحدث" : "Speak"}
+                aria-label={isAr ? "تحدث" : "Speak"}
+              >
+                <Mic size={18} className={isListening ? "animate-pulse" : ""} />
+                {isListening && <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-400 animate-pulse" />}
+              </button>
+
+              <button
                 onClick={handleChatSend}
                 disabled={isSending || !chatInput.trim()}
                 className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition disabled:opacity-60 disabled:hover:scale-100"
-                style={{
-                  backgroundColor: colors.accent,
-                  color: "#fff",
-                  boxShadow: `0 0 15px ${colors.accent}55`,
-                }}
+                style={{ backgroundColor: colors.accent, color: "#fff", boxShadow: `0 0 15px ${colors.accent}55` }}
+                aria-label={lang === "en" ? "Send" : "إرسال"}
               >
                 {isSending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
               </button>

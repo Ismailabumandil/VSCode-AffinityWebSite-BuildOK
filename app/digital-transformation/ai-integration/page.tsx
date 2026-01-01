@@ -3,11 +3,6 @@
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import {
   Brain,
   Database,
@@ -32,6 +27,7 @@ export default function AIIntegrationPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
   const [activePoint, setActivePoint] = useState(0)
   const [activeService, setActiveService] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
 
   // ✅ نفس مبدأ GRCStrategyPage: useMemo للثيم :contentReference[oaicite:1]{index=1}
   const currentTheme = useMemo(
@@ -142,11 +138,13 @@ export default function AIIntegrationPage() {
 
   // ✅ نفس مبدأ intervals في الصفحة الشغالة :contentReference[oaicite:2]{index=2}
   useEffect(() => {
+    setIsMounted(true)
+
     const interval = setInterval(() => {
       setActivePoint((prev) => (prev + 1) % integrationPoints.length)
     }, 2500)
     return () => clearInterval(interval)
-  }, [integrationPoints.length])
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -168,10 +166,6 @@ export default function AIIntegrationPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* HERO */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -242,7 +236,7 @@ export default function AIIntegrationPage() {
 
               <div className="flex flex-wrap gap-4">
                 <Link
-                  href="/contact"
+                  href="/talk-to-us"
                   className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
                   style={{
                     background: "linear-gradient(90deg, var(--primary), var(--accent))",
@@ -254,7 +248,7 @@ export default function AIIntegrationPage() {
                 </Link>
 
                 <Link
-                  href="/shop"
+                  href="/book-demo"
                   className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 border"
                   style={{
                     background: "color-mix(in srgb, var(--card) 10%, transparent)",
@@ -268,87 +262,92 @@ export default function AIIntegrationPage() {
 
             {/* Right - Orbit (نفس مبدأ الصفحة الشغالة: rotator + counter) :contentReference[oaicite:3]{index=3} */}
             <div className="relative h-[520px] flex items-center justify-center">
-              <div className="relative w-[420px] h-[420px]">
-                {/* Rotator */}
-                <div className="absolute inset-0 orbit-rotator">
-                  {integrationPoints.map((p, index) => {
-                    const angle = (index / integrationPoints.length) * 2 * Math.PI
-                    const radius = 165
-                    const x = Math.cos(angle) * radius
-                    const y = Math.sin(angle) * radius
-                    const Icon = p.icon
-                    const isActive = index === activePoint
+              <div className="relative w-[420px] h-[420px] mx-auto">
+                <div
+                  className="absolute inset-0 rounded-full border-2 border-dashed opacity-20"
+                  style={{ borderColor: "var(--primary)" }}
+                />
 
-                    return (
-                      <div
-                        key={index}
-                        className="absolute"
-                        style={{
-                          left: "50%",
-                          top: "50%",
-                          transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                        }}
-                      >
-                        <div className="orbit-counter">
+                {isMounted && (
+                  <>
+                    <div className="absolute inset-0 orbit-rotator">
+                      {integrationPoints.map((p, index) => {
+                        const angle = (index / integrationPoints.length) * 2 * Math.PI
+                        const radius = 165
+                        const x = Math.cos(angle) * radius
+                        const y = Math.sin(angle) * radius
+                        const Icon = p.icon
+                        const isActive = index === activePoint
+
+                        return (
                           <div
-                            className="w-20 h-20 rounded-xl flex items-center justify-center border transition-all duration-500"
+                            key={index}
+                            className="absolute"
                             style={{
-                              background: isActive
-                                ? "linear-gradient(135deg, var(--primary), var(--accent))"
-                                : "color-mix(in srgb, var(--card) 18%, transparent)",
-                              borderColor: isActive
-                                ? "color-mix(in srgb, var(--accent) 55%, transparent)"
-                                : "color-mix(in srgb, var(--border) 65%, transparent)",
-                              boxShadow: isActive ? "0 0 30px var(--glow-2)" : "none",
-                              transform: isActive ? "scale(1.12)" : "scale(1)",
+                              left: "50%",
+                              top: "50%",
+                              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
                             }}
                           >
-                            <Icon className="w-10 h-10 text-white" />
+                            <div className="orbit-counter">
+                              <div
+                                className="w-20 h-20 rounded-xl flex items-center justify-center border transition-all duration-500"
+                                style={{
+                                  background: isActive
+                                    ? "linear-gradient(135deg, var(--primary), var(--accent))"
+                                    : "color-mix(in srgb, var(--card) 18%, transparent)",
+                                  borderColor: isActive
+                                    ? "color-mix(in srgb, var(--accent) 55%, transparent)"
+                                    : "color-mix(in srgb, var(--border) 65%, transparent)",
+                                  boxShadow: isActive ? "0 0 30px var(--glow-2)" : "none",
+                                  transform: isActive ? "scale(1.12)" : "scale(1)",
+                                }}
+                              >
+                                <Icon className="w-10 h-10 text-white" />
+                              </div>
+
+                              <div className="mt-2 text-center">
+                                <span
+                                  className="text-xs font-medium"
+                                  style={{ color: isActive ? "var(--page-fg)" : "var(--muted-foreground)" }}
+                                >
+                                  {currentLang === "en" ? p.name : p.nameAr}
+                                </span>
+                              </div>
+                            </div>
                           </div>
+                        )
+                      })}
+                    </div>
 
-                          <div className="mt-2 text-center">
-                            <span
-                              className="text-xs font-medium"
-                              style={{ color: isActive ? "var(--page-fg)" : "var(--muted-foreground)" }}
-                            >
-                              {currentLang === "en" ? p.name : p.nameAr}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                    <svg
+                      className="absolute inset-0 w-full h-full pointer-events-none"
+                      style={{ filter: "blur(0.7px)" }}
+                    >
+                      {integrationPoints.map((_, index) => {
+                        const angle = (index / integrationPoints.length) * 2 * Math.PI
+                        const radius = 165
+                        const x = 210 + Math.cos(angle) * radius
+                        const y = 210 + Math.sin(angle) * radius
+                        return (
+                          <line
+                            key={index}
+                            x1={210}
+                            y1={210}
+                            x2={x}
+                            y2={y}
+                            stroke="color-mix(in srgb, var(--primary) 25%, transparent)"
+                            strokeWidth={1}
+                            opacity={0.35}
+                            className="transition-all duration-700"
+                          />
+                        )
+                      })}
+                    </svg>
+                  </>
+                )}
 
-                {/* Lines */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ filter: "blur(0.6px)" }}>
-                  {integrationPoints.map((_, index) => {
-                    const angle = (index / integrationPoints.length) * 2 * Math.PI
-                    const radius = 165
-                    const cx = 210
-                    const cy = 210
-                    const x2 = cx + Math.cos(angle) * radius
-                    const y2 = cy + Math.sin(angle) * radius
-                    const isActive = index === activePoint
-
-                    return (
-                      <line
-                        key={index}
-                        x1={cx}
-                        y1={cy}
-                        x2={x2}
-                        y2={y2}
-                        stroke={isActive ? "var(--accent)" : "color-mix(in srgb, var(--primary) 25%, transparent)"}
-                        strokeWidth={isActive ? 2.5 : 1}
-                        opacity={isActive ? 0.85 : 0.35}
-                        className="transition-all duration-700"
-                      />
-                    )
-                  })}
-                </svg>
-
-                {/* Center Hub */}
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                   <div className="relative">
                     <div
                       className="w-32 h-32 rounded-2xl flex items-center justify-center border shadow-2xl"
@@ -548,7 +547,11 @@ export default function AIIntegrationPage() {
                   borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
                 }}
               >
-                <img src={p.logo || "/placeholder.svg"} alt={p.name} className="h-12 w-auto object-contain opacity-90" />
+                <img
+                  src={p.logo || "/placeholder.svg"}
+                  alt={p.name}
+                  className="h-12 w-auto object-contain opacity-90"
+                />
               </div>
             ))}
           </div>
@@ -627,7 +630,9 @@ export default function AIIntegrationPage() {
             </div>
 
             <h2 className="text-4xl font-bold mb-6 relative z-10">
-              {currentLang === "en" ? "Ready to Integrate AI Into Your Enterprise?" : "جاهز لدمج الذكاء الاصطناعي في مؤسستك؟"}
+              {currentLang === "en"
+                ? "Ready to Integrate AI Into Your Enterprise?"
+                : "جاهز لدمج الذكاء الاصطناعي في مؤسستك؟"}
             </h2>
 
             <p className="text-xl mb-8 relative z-10" style={{ color: "var(--muted-foreground)" }}>
@@ -637,7 +642,7 @@ export default function AIIntegrationPage() {
             </p>
 
             <Link
-              href="/contact"
+              href="/talk-to-us"
               className="px-10 py-4 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg relative z-10 inline-block"
               style={{
                 background: "linear-gradient(90deg, var(--primary), var(--accent))",
@@ -651,9 +656,7 @@ export default function AIIntegrationPage() {
         </div>
       </section>
 
-      <SharedFooter />
 
-      {/* ✅ نفس Animations Style اللي عندك بالضبط :contentReference[oaicite:4]{index=4} */}
       <style jsx global>{`
         @keyframes orbitClockwise {
           0% {

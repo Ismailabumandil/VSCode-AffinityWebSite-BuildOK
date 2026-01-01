@@ -1,15 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import BackgroundTLogos from "@/components/background-t-logos"
-import Navbar from "@/components/navbar"
-import SharedFooter from "@/components/shared-footer"
-import ChatWidget from "@/components/chat-widget"
-import ReadingProgress from "@/components/reading-progress"
 import ScrollReveal from "@/components/scroll-reveal"
-import QuickNav from "@/components/quick-nav"
-import KeyboardShortcuts from "@/components/keyboard-shortcuts"
-import PageTransition from "@/components/page-transition"
 
 export default function MissionPage() {
   const [theme, setTheme] = useState("brand")
@@ -95,13 +87,7 @@ export default function MissionPage() {
 
   return (
     <div style={{ backgroundColor: currentTheme.bg, color: currentTheme.text }} className="min-h-screen">
-      <ReadingProgress />
-      <QuickNav />
-      <KeyboardShortcuts />
-      <PageTransition />
-
-      <BackgroundTLogos />
-      <Navbar/>
+      
 
       {/* Hero Section */}
       <ScrollReveal direction="fade">
@@ -175,11 +161,7 @@ export default function MissionPage() {
         </section>
       </ScrollReveal>
 
-      {/* Chat Widget */}
-      <ChatWidget />
-
-      {/* Footer */}
-      <SharedFooter />
+      
     </div>
   )
 }

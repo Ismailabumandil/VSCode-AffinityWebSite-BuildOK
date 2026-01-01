@@ -1,16 +1,12 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import ScrollToTop from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import { Cable, Network, Layers, Zap, CheckCircle, Settings } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
+import Link from "next/link"
 
 export default function CablesPage() {
-  const { language } = useTheme()
+  const { language, theme } = useTheme()
   const [activeService, setActiveService] = useState(0)
 
   const services = useMemo(
@@ -91,8 +87,6 @@ export default function CablesPage() {
         color: ui.text,
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={language} />
 
       {/* Hero */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -229,10 +223,35 @@ export default function CablesPage() {
           })}
         </div>
       </section>
+{/* CTA */}
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div
+            className="p-12 rounded-3xl border"
+            style={{
+              background: "linear-gradient(135deg, rgba(239,68,68,0.14), rgba(168,85,247,0.10))",
+              borderColor: "color-mix(in srgb, var(--border) 60%, transparent)",
+            }}
+          >
+            <Cable className="w-16 h-16 mx-auto mb-6" style={{ color: "rgba(14, 181, 231, 0.95)" }} />
+            <h2 className="text-4xl font-bold mb-6">
+              {language === "en" ? "Ready to Test Your Security?" : "مستعد لاختبار أمانك؟"}
+            </h2>
 
-      <SharedFooter />
-      <ChatWidget />
-      <ScrollToTop />
+            <Link
+              href="/talk-to-us"
+              className="px-10 py-5 rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-2xl inline-block"
+              style={{
+                background: "linear-gradient(90deg, rgba(14, 181, 231, 0.95), rgba(168,85,247,1))",
+                boxShadow: "0 0 30px rgba(191, 68, 239, 0.35)",
+                color: "white",
+              }}
+            >
+              {language === "en" ? "Request Survey" : "طلب دراسة الموقع"}
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

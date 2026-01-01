@@ -7,6 +7,7 @@ import { Breadcrumb } from "@/components/breadcrumb"
 import { ChatWidget } from "@/components/chat-widget"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
 import {
   Server,
   Cloud,
@@ -181,7 +182,7 @@ export default function TechnologyImplementationPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar/>
+      <Navbar />
       <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
       <ChatWidget />
       <ScrollToTop />
@@ -234,28 +235,17 @@ export default function TechnologyImplementationPage() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <button
-                  className="px-8 py-4 text-white rounded-lg font-semibold hover:scale-105 transition-all duration-300"
-                  style={{
-                    backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
-                    boxShadow: "0 0 34px rgba(56,189,248,0.18)",
-                  }}
-                >
-                  {currentLang === "en" ? "Start Implementation" : "ابدأ التنفيذ"}
-                </button>
-
-                <button
-                  className="px-8 py-4 text-white rounded-lg font-semibold transition-all duration-300 border"
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    borderColor: "rgba(56,189,248,0.22)",
-                    backdropFilter: "blur(10px)",
-                  }}
-                  onMouseEnter={(e) => ((e.currentTarget.style.background = "rgba(255,255,255,0.10)"))}
-                  onMouseLeave={(e) => ((e.currentTarget.style.background = "rgba(255,255,255,0.06)"))}
-                >
-                  {currentLang === "en" ? "View Portfolio" : "عرض الأعمال"}
-                </button>
+                <Link href="/talk-to-us">
+                  <button
+                    className="px-8 py-4 text-white rounded-lg font-semibold hover:scale-105 transition-all duration-300"
+                    style={{
+                      backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
+                      boxShadow: "0 0 34px rgba(56,189,248,0.18)",
+                    }}
+                  >
+                    {currentLang === "en" ? "Start Implementation" : "ابدأ التنفيذ"}
+                  </button>
+                </Link>
               </div>
             </div>
 
@@ -295,7 +285,8 @@ export default function TechnologyImplementationPage() {
                         style={
                           isActive
                             ? {
-                                backgroundImage: "linear-gradient(135deg, rgba(56,189,248,0.90), rgba(34,211,238,0.85))",
+                                backgroundImage:
+                                  "linear-gradient(135deg, rgba(56,189,248,0.90), rgba(34,211,238,0.85))",
                                 boxShadow: "0 0 40px rgba(56,189,248,0.22)",
                                 borderColor: "rgba(255,255,255,0.55)",
                               }
@@ -454,13 +445,18 @@ export default function TechnologyImplementationPage() {
                   alt="Technology Implementation"
                   className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(2,6,23,0.90), transparent 60%)" }} />
+                <div
+                  className="absolute inset-0"
+                  style={{ background: "linear-gradient(to top, rgba(2,6,23,0.90), transparent 60%)" }}
+                />
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h3 className="text-2xl font-bold text-white mb-2">
                     {currentLang === "en" ? "Enterprise-Grade Implementation" : "تنفيذ على مستوى المؤسسات"}
                   </h3>
                   <p style={{ color: "rgba(255,255,255,0.75)" }}>
-                    {currentLang === "en" ? "Precision deployment with minimal disruption" : "تطبيق دقيق بأقل تأثير ممكن"}
+                    {currentLang === "en"
+                      ? "Precision deployment with minimal disruption"
+                      : "تطبيق دقيق بأقل تأثير ممكن"}
                   </p>
                 </div>
               </div>
@@ -516,7 +512,13 @@ export default function TechnologyImplementationPage() {
               backdropFilter: "blur(10px)",
             }}
           >
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+              }}
+            />
 
             <div className={`relative z-10 text-center ${currentLang === "ar" ? "text-right" : "text-left"}`}>
               <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
@@ -527,18 +529,20 @@ export default function TechnologyImplementationPage() {
                   ? "Let's implement enterprise-grade technology solutions that drive your business forward."
                   : "دعنا ننفذ حلول تقنية على مستوى المؤسسات تدفع أعمالك إلى الأمام."}
               </p>
-              <button
-                className="px-8 py-4 rounded-lg font-semibold hover:scale-105 transition-all duration-300 shadow-2xl"
-                style={{ background: "#fff", color: "#0ea5e9" }}
-              >
-                {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
-              </button>
+              <Link href="/book-demo">
+                <button
+                  className="px-8 py-4 rounded-lg font-semibold hover:scale-105 transition-all duration-300 shadow-2xl"
+                  style={{ background: "#fff", color: "#0ea5e9" }}
+                >
+                  {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
+                </button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <SharedFooter/>
+      <SharedFooter />
 
       <style jsx global>{`
         :root {

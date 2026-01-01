@@ -3,11 +3,7 @@
 import { useState, useEffect } from "react"
 import { useTheme } from "@/contexts/theme-context"
 import { Smartphone, Globe, Code, Shield, Lock, Zap, CheckCircle, Server, Cloud, Database } from "lucide-react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
 
 export default function AppAssessmentPage() {
   const { language: currentLang, theme } = useTheme()
@@ -106,8 +102,6 @@ export default function AppAssessmentPage() {
       }}
     >
       {/* Navbar and Breadcrumb */}
-      <Navbar />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -150,7 +144,8 @@ export default function AppAssessmentPage() {
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <button
+                <Link
+                  href="/talk-to-us"
                   className="px-8 py-4 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg"
                   style={{
                     background: "linear-gradient(90deg, var(--primary), var(--accent))",
@@ -159,8 +154,11 @@ export default function AppAssessmentPage() {
                   }}
                 >
                   {currentLang === "en" ? "Request Assessment" : "طلب تقييم"}
-                </button>
-                <button
+                </Link>
+
+
+                <Link
+                  href="/book-demo"
                   className="px-8 py-4 rounded-lg font-semibold transition-all hover:scale-105 backdrop-blur-sm border"
                   style={{
                     background: "color-mix(in srgb, var(--card-bg) 55%, transparent)",
@@ -169,7 +167,7 @@ export default function AppAssessmentPage() {
                   }}
                 >
                   {currentLang === "en" ? "View OWASP Coverage" : "عرض تغطية OWASP"}
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -370,7 +368,8 @@ export default function AppAssessmentPage() {
                 ? "Get comprehensive security testing for your web and mobile applications"
                 : "احصل على اختبار أمني شامل لتطبيقات الويب والجوال"}
             </p>
-            <button
+            <Link
+              href="/talk-to-us"
               className="px-10 py-5 rounded-xl font-bold text-lg transition-all hover:scale-105"
               style={{
                 background: "linear-gradient(90deg, var(--primary), var(--accent))",
@@ -379,16 +378,11 @@ export default function AppAssessmentPage() {
               }}
             >
               {currentLang === "en" ? "Start Assessment" : "بدء التقييم"}
-            </button>
+            </Link>
           </div>
         </div>
       </section>
 
-      <SharedFooter />
-
-      {/* ChatWidget and ScrollToTop */}
-      <ChatWidget  />
-      <ScrollToTop />
     </div>
   )
 }

@@ -1,8 +1,5 @@
 "use client"
 
-import Navbar from "@/components/navbar"
-import SharedFooter from "@/components/shared-footer"
-import Breadcrumb from "@/components/breadcrumb"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function TermsOfServicePage() {
@@ -40,18 +37,8 @@ export default function TermsOfServicePage() {
       }}
     >
       {/* ✅ Navbar الصحيح */}
-      <Navbar />
 
-      <Breadcrumb
-        items={[
-          {
-            label: language === "en" ? "Terms of Service" : "شروط الخدمة",
-            href: "/terms-of-service",
-          },
-        ]}
-        currentLang={language}
-        currentTheme={themeColors as any}
-      />
+        
 
       <div className="container mx-auto px-4 py-16">
         <div
@@ -123,7 +110,6 @@ export default function TermsOfServicePage() {
         </div>
       </div>
 
-      <SharedFooter />
     </div>
   )
 }

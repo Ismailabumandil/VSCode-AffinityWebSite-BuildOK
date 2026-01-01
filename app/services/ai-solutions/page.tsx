@@ -17,11 +17,6 @@ import {
   Cpu,
   Network,
 } from "lucide-react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function AIAnalyticsPage() {
@@ -149,11 +144,6 @@ export default function AIAnalyticsPage() {
       className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <Navbar />
-
-      
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Hero */}
       <section className="relative py-20 px-4 overflow-hidden">
@@ -266,7 +256,6 @@ export default function AIAnalyticsPage() {
         </Link>
       </section>
 
-      <SharedFooter />
 
       <style jsx>{`
         @keyframes float {

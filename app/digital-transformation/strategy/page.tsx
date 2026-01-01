@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
 import {
   TrendingUp,
   Target,
@@ -28,6 +24,7 @@ export default function DigitalStrategyPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
 
   const [activePhase, setActivePhase] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
   const [digitalProgress, setDigitalProgress] = useState(0)
 
   // ✅ Global Theme (Neon Sky) via CSS variables
@@ -51,6 +48,7 @@ export default function DigitalStrategyPage() {
 
   // Auto-cycle through transformation phases
   useEffect(() => {
+    setIsMounted(true)
     const interval = setInterval(() => {
       setActivePhase((prev) => (prev + 1) % 6)
     }, 3000)
@@ -139,10 +137,10 @@ export default function DigitalStrategyPage() {
 
   const digitalElements = [
     // ✅ changed to Neon Sky palette (global)
-    { icon: Database, label: "Data", color: "#22d3ee" },   // cyan
-    { icon: Cloud, label: "Cloud", color: "#38bdf8" },     // sky
-    { icon: Cpu, label: "AI", color: "#34d399" },          // emerald
-    { icon: Network, label: "IoT", color: "#a78bfa" },     // violet accent
+    { icon: Database, label: "Data", color: "#22d3ee" }, // cyan
+    { icon: Cloud, label: "Cloud", color: "#38bdf8" }, // sky
+    { icon: Cpu, label: "AI", color: "#34d399" }, // emerald
+    { icon: Network, label: "IoT", color: "#a78bfa" }, // violet accent
   ]
 
   return (
@@ -158,32 +156,29 @@ export default function DigitalStrategyPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-25">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 rounded-full"
-            style={{ backgroundColor: "rgba(56,189,248,0.9)" }} // ✅ sky neon dots
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{
-              opacity: [0, 1, 0],
-              scale: [0, 1, 0],
-              x: Math.random() * (typeof window !== "undefined" ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== "undefined" ? window.innerHeight : 800),
-            }}
-            transition={{
-              duration: 3,
-              repeat: Number.POSITIVE_INFINITY,
-              delay: i * 0.2,
-            }}
-          />
-        ))}
+        {isMounted &&
+          [...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 rounded-full"
+              style={{ backgroundColor: "rgba(56,189,248,0.9)" }} // ✅ sky neon dots
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1, 0],
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+              }}
+              transition={{
+                duration: 3,
+                repeat: Number.POSITIVE_INFINITY,
+                delay: i * 0.2,
+              }}
+            />
+          ))}
       </div>
 
       {/* Hero Section with Transformation Visualization */}
@@ -263,18 +258,36 @@ export default function DigitalStrategyPage() {
                 </div>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 rounded-lg font-semibold flex items-center gap-2 transition-all"
-                style={{
-                  backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
-                  boxShadow: "0 0 30px rgba(56,189,248,0.18)",
-                }}
-              >
-                {currentLang === "en" ? "Start Your Transformation" : "ابدأ التحول الآن"}
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
+              <div className="flex flex-col md:flex-row gap-4 justify-center">
+                <Link href="/talk-to-us">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 rounded-lg font-semibold flex items-center gap-2 transition-all"
+                    style={{
+                      backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
+                      boxShadow: "0 0 30px rgba(56,189,248,0.18)",
+                    }}
+                  >
+                    {currentLang === "en" ? "Start Your Transformation" : "ابدأ التحول الآن"}
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                </Link>
+
+                <Link href="/book-demo">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 rounded-lg font-semibold hover:shadow-xl transition-all"
+                    style={{
+                      background: "#ffffff",
+                      color: "#0ea5e9",
+                    }}
+                  >
+                    {currentLang === "en" ? "Schedule a Consultation" : "احجز استشارة"}
+                  </motion.button>
+                </Link>
+              </div>
             </motion.div>
 
             {/* Right - Transformation Phases Visualization */}
@@ -296,58 +309,65 @@ export default function DigitalStrategyPage() {
               </div>
 
               {/* Orbiting Phase Icons */}
-              {transformationPhases.map((phase, index) => {
-                const angle = index * 60 * (Math.PI / 180)
-                const radius = 180
-                const x = Math.cos(angle) * radius
-                const y = Math.sin(angle) * radius
-                const Icon = phase.icon
-                const isActive = activePhase === index
+              {isMounted &&
+                transformationPhases.map((phase, index) => {
+                  const angle = index * 60 * (Math.PI / 180)
+                  const radius = 180
+                  const x = Math.cos(angle) * radius
+                  const y = Math.sin(angle) * radius
+                  const Icon = phase.icon
+                  const isActive = activePhase === index
 
-                return (
-                  <motion.div
-                    key={index}
-                    className="absolute top-1/2 left-1/2"
-                    style={{ x: x - 40, y: y - 40 }}
-                    animate={{ scale: isActive ? 1.2 : 1, rotate: isActive ? 360 : 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <div
-                      className="w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all duration-300"
-                      style={
-                        isActive
-                          ? {
-                              backgroundImage: "linear-gradient(135deg, var(--primary), var(--accent))",
-                              boxShadow: "0 0 28px rgba(56,189,248,0.25)",
-                            }
-                          : {
-                              background: "rgba(2,6,23,0.55)",
-                              border: "1px solid rgba(56,189,248,0.22)",
-                              backdropFilter: "blur(10px)",
-                            }
-                      }
+                  return (
+                    <motion.div
+                      key={index}
+                      className="absolute top-1/2 left-1/2"
+                      style={{ x: x - 40, y: y - 40 }}
+                      animate={{ scale: isActive ? 1.2 : 1, rotate: isActive ? 360 : 0 }}
+                      transition={{ duration: 0.5 }}
                     >
-                      <Icon className={`w-8 h-8 ${isActive ? "text-white" : ""}`} style={!isActive ? { color: "var(--primary)" } : undefined} />
-                      <span className={`text-[10px] mt-1 ${isActive ? "text-white font-bold" : ""}`} style={!isActive ? { color: "rgba(255,255,255,0.72)" } : undefined}>
-                        {currentLang === "en" ? phase.label : phase.labelAr}
-                      </span>
-                    </div>
+                      <div
+                        className="w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all duration-300"
+                        style={
+                          isActive
+                            ? {
+                                backgroundImage: "linear-gradient(135deg, var(--primary), var(--accent))",
+                                boxShadow: "0 0 28px rgba(56,189,248,0.25)",
+                              }
+                            : {
+                                background: "rgba(2,6,23,0.55)",
+                                border: "1px solid rgba(56,189,248,0.22)",
+                                backdropFilter: "blur(10px)",
+                              }
+                        }
+                      >
+                        <Icon
+                          className={`w-8 h-8 ${isActive ? "text-white" : ""}`}
+                          style={!isActive ? { color: "var(--primary)" } : undefined}
+                        />
+                        <span
+                          className={`text-[10px] mt-1 ${isActive ? "text-white font-bold" : ""}`}
+                          style={!isActive ? { color: "rgba(255,255,255,0.72)" } : undefined}
+                        >
+                          {currentLang === "en" ? phase.label : phase.labelAr}
+                        </span>
+                      </div>
 
-                    {/* Connection Line to Center */}
-                    {isActive && (
-                      <motion.div
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        className="absolute top-1/2 left-1/2 w-44 h-0.5 origin-left"
-                        style={{
-                          backgroundImage: "linear-gradient(90deg, var(--primary), transparent)",
-                          transform: `rotate(${-angle * (180 / Math.PI)}deg) translateY(-50%)`,
-                        }}
-                      />
-                    )}
-                  </motion.div>
-                )
-              })}
+                      {/* Connection Line to Center */}
+                      {isActive && (
+                        <motion.div
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          className="absolute top-1/2 left-1/2 w-44 h-0.5 origin-left"
+                          style={{
+                            backgroundImage: "linear-gradient(90deg, var(--primary), transparent)",
+                            transform: `rotate(${-angle * (180 / Math.PI)}deg) translateY(-50%)`,
+                          }}
+                        />
+                      )}
+                    </motion.div>
+                  )
+                })}
 
               {/* Orbiting Digital Elements */}
               {digitalElements.map((element, index) => {
@@ -448,8 +468,10 @@ export default function DigitalStrategyPage() {
                       {currentLang === "en" ? service.description : service.descriptionAr}
                     </p>
 
-                    <div className="mt-4 flex items-center gap-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
-                         style={{ color: "var(--primary)" }}>
+                    <div
+                      className="mt-4 flex items-center gap-2 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{ color: "var(--primary)" }}
+                    >
                       {currentLang === "en" ? "Learn More" : "اعرف المزيد"}
                       <ArrowRight className="w-4 h-4" />
                     </div>
@@ -470,33 +492,15 @@ export default function DigitalStrategyPage() {
             viewport={{ once: true }}
             className="relative p-12 rounded-2xl overflow-hidden"
             style={{
-              backgroundImage: "linear-gradient(135deg, rgba(56,189,248,0.20), rgba(34,211,238,0.10), rgba(2,6,23,0.55))",
+              backgroundImage:
+                "linear-gradient(135deg, rgba(56,189,248,0.20), rgba(34,211,238,0.10), rgba(2,6,23,0.55))",
               border: "1px solid rgba(56,189,248,0.20)",
               backdropFilter: "blur(10px)",
             }}
           >
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-10">
-              {[...Array(20)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-2 h-2 bg-white rounded-full"
-                  animate={{
-                    x: [0, Math.random() * 100 - 50],
-                    y: [0, Math.random() * 100 - 50],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    delay: i * 0.2,
-                  }}
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                  }}
-                />
-              ))}
+             
             </div>
 
             <div className="relative text-center">
@@ -508,23 +512,24 @@ export default function DigitalStrategyPage() {
                   ? "Partner with us to build a comprehensive digital strategy that drives sustainable growth and innovation."
                   : "شاركنا لبناء استراتيجية رقمية شاملة تدعم النمو المستدام والابتكار."}
               </p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 rounded-lg font-semibold hover:shadow-xl transition-all"
-                style={{
-                  background: "#ffffff",
-                  color: "#0ea5e9",
-                }}
-              >
-                {currentLang === "en" ? "Schedule a Consultation" : "احجز استشارة"}
-              </motion.button>
+              <Link href="/book-demo">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 rounded-lg font-semibold hover:shadow-xl transition-all"
+                  style={{
+                    background: "#ffffff",
+                    color: "#0ea5e9",
+                  }}
+                >
+                  {currentLang === "en" ? "Schedule a Consultation" : "احجز استشارة"}
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <SharedFooter />
     </div>
   )
 }

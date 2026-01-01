@@ -3,10 +3,6 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
 import {
   Brain,
   Users,
@@ -24,7 +20,9 @@ import {
   Cloud,
   Database,
 } from "lucide-react"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
+
+const MotionLink = motion(Link)
 
 export default function GRCAwarenessPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
@@ -140,9 +138,6 @@ export default function GRCAwarenessPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar  />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-30">
         <motion.div
@@ -172,7 +167,10 @@ export default function GRCAwarenessPage() {
                   borderColor: "color-mix(in srgb, var(--primary) 30%, transparent)",
                 }}
               >
-                <span className="text-sm font-medium" style={{ color: "color-mix(in srgb, var(--page-fg) 80%, var(--muted-foreground) 20%)" }}>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "color-mix(in srgb, var(--page-fg) 80%, var(--muted-foreground) 20%)" }}
+                >
                   🎓 {currentLang === "en" ? "GRC Awareness Services" : "خدمات التوعية الأمنية"}
                 </span>
               </div>
@@ -181,14 +179,20 @@ export default function GRCAwarenessPage() {
                 {currentLang === "en" ? (
                   <>
                     Transform Your Team Into a{" "}
-                    <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))" }}>
+                    <span
+                      className="text-transparent bg-clip-text"
+                      style={{ backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))" }}
+                    >
                       Human Firewall
                     </span>
                   </>
                 ) : (
                   <>
                     حوّل فريقك إلى{" "}
-                    <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))" }}>
+                    <span
+                      className="text-transparent bg-clip-text"
+                      style={{ backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))" }}
+                    >
                       جدار دفاع بشري
                     </span>
                   </>
@@ -201,14 +205,16 @@ export default function GRCAwarenessPage() {
                   : "برامج توعية سيبرانية متقدمة تحوّل الموظفين إلى أبطال أمنيين استباقيين باستخدام أدوات رائدة وذكاء سلوكي."}
               </p>
 
-              <motion.button
-                className="px-8 py-4 rounded-lg font-semibold text-white shadow-lg"
+              {/* ✅ MotionLink بدل motion.button */}
+              <MotionLink
+                href="/talk-to-us"
+                className="inline-block px-8 py-4 rounded-lg font-semibold text-white shadow-lg"
                 style={{ background: "linear-gradient(90deg, var(--primary), var(--accent))" }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {currentLang === "en" ? "Start Awareness Program" : "ابدأ برنامج التوعية"}
-              </motion.button>
+              </MotionLink>
             </motion.div>
 
             {/* Right - Orbit Clockwise */}
@@ -221,7 +227,7 @@ export default function GRCAwarenessPage() {
               {/* Rotating ring */}
               <motion.div
                 className="absolute w-[420px] h-[420px]"
-                animate={{ rotate: 360 }}                 // ✅ clockwise
+                animate={{ rotate: 360 }} // ✅ clockwise
                 transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
               >
                 {trainingModules.map((module, index) => {
@@ -232,12 +238,13 @@ export default function GRCAwarenessPage() {
                   const isActive = index === activeModule
 
                   return (
-                    <div key={index} className="absolute" style={{ left: "50%", top: "50%", transform: `translate(${x}px, ${y}px)` }}>
+                    <div
+                      key={index}
+                      className="absolute"
+                      style={{ left: "50%", top: "50%", transform: `translate(${x}px, ${y}px)` }}
+                    >
                       {/* counter-rotate to keep icon upright */}
-                      <motion.div
-                        animate={{ rotate: -360 }}
-                        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-                      >
+                      <motion.div animate={{ rotate: -360 }} transition={{ duration: 22, repeat: Infinity, ease: "linear" }}>
                         <motion.div
                           className="w-16 h-16 rounded-full flex items-center justify-center border"
                           style={{
@@ -350,19 +357,20 @@ export default function GRCAwarenessPage() {
             <p className="text-lg mb-8" style={{ color: "var(--muted-foreground)" }}>
               {currentLang === "en" ? "Start your comprehensive cybersecurity awareness program today" : "ابدأ برنامج التوعية الأمنية الشامل اليوم"}
             </p>
-            <button
-              className="px-10 py-4 rounded-lg font-semibold text-white shadow-xl transition-all hover:scale-105"
+
+            {/* ✅ MotionLink بدل button */}
+            <MotionLink
+              href="/talk-to-us"
+              className="inline-block px-10 py-4 rounded-lg font-semibold text-white shadow-xl transition-all"
               style={{ background: "linear-gradient(90deg, var(--primary), var(--accent))" }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {currentLang === "en" ? "Contact Our Experts" : "تواصل مع خبرائنا"}
-            </button>
+            </MotionLink>
           </div>
         </div>
       </section>
-
-      <SharedFooter />
-      <ChatWidget  />
-      <ScrollToTop  />
     </div>
   )
 }

@@ -1,18 +1,10 @@
 "use client"
 
 import { useMemo } from "react"
-import BackgroundTLogos from "@/components/background-t-logos"
-import Navbar from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ScrollToTop from "@/components/scroll-to-top"
-import SharedFooter from "@/components/shared-footer"
-import ChatWidget from "@/components/chat-widget"
 import Image from "next/image"
 import ReadingProgress from "@/components/reading-progress"
 import ScrollReveal from "@/components/scroll-reveal"
-import QuickNav from "@/components/quick-nav"
 import KeyboardShortcuts from "@/components/keyboard-shortcuts"
-import PageTransition from "@/components/page-transition"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function InformationTechnologyPage() {
@@ -35,15 +27,10 @@ export default function InformationTechnologyPage() {
       }}
     >
       <ReadingProgress />
-      <QuickNav />
       <KeyboardShortcuts />
-      <PageTransition />
 
-      <BackgroundTLogos />
 
-      <Navbar/>
 
-      <Breadcrumb currentLang={language} />
 
       {/* Hero Section */}
       <ScrollReveal direction="fade">
@@ -193,7 +180,7 @@ export default function InformationTechnologyPage() {
               Ready to Transform Your IT Operations?
             </h2>
             <a
-              href="/"
+              href="/talk-to-us"
               className="inline-block px-12 py-4 rounded-full font-black text-xl transition-all duration-300 hover:scale-110"
               style={{
                 background: "linear-gradient(135deg, var(--primary), var(--secondary))",
@@ -206,9 +193,6 @@ export default function InformationTechnologyPage() {
         </section>
       </ScrollReveal>
 
-      <ChatWidget/>
-      <ScrollToTop />
-      <SharedFooter/>
     </div>
   )
 }

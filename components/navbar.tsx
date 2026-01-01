@@ -48,6 +48,14 @@ import {
   TrendingUp,
   Package,
   Box,
+  Heart,
+  Factory,
+  GraduationCap,
+  Landmark,
+  Utensils,
+  Hotel,
+  Volume2,
+  Building2,
 } from "lucide-react"
 
 import { useTheme } from "@/contexts/theme-context"
@@ -431,6 +439,12 @@ export function Navbar() {
               },
             ],
           },
+          {
+            label: language === "en" ? "IT Safety Instructions" : "تعليمات السلامة التقنية",
+            labelAr: "تعليمات السلامة التقنية",
+            icon: "shield-check",
+            href: "/cybersecurity/it-safety",
+          },
         ],
       },
 
@@ -512,7 +526,7 @@ export function Navbar() {
           {
             label: language === "en" ? "Manufacturing & Supply Chain" : "التصنيع وسلسلة التوريد",
             labelAr: "التصنيع وسلسلة التوريد",
-            icon: "cpu",
+            icon: "factory", // Changed from generic 'cpu' to 'factory' for manufacturing
             href: "/industries/manufacturing",
           },
           {
@@ -550,6 +564,12 @@ export function Navbar() {
             labelAr: "الضيافة والسياحة",
             icon: "hotel",
             href: "/industries/hospitality",
+          },
+          {
+            label: language === "en" ? "Wellness & Fitness" : "الصحة واللياقة",
+            labelAr: "الصحة واللياقة",
+            icon: "heart",
+            href: "/industries/wellness-gym",
           },
         ],
       },
@@ -662,6 +682,14 @@ export function Navbar() {
     package: Package,
     box: Box,
     monitor: Box, // Assuming monitor icon is intended to be represented by Box for now
+    heart: Heart, // Added for wellness industry
+    factory: Factory, // Added factory icon
+    "graduation-cap": GraduationCap,
+    landmark: Landmark,
+    utensils: Utensils,
+    hotel: Hotel,
+    "volume-2": Volume2,
+    "building-2": Building2,
   }
 
   const renderIcon = (iconName: string | undefined, className = "w-4 h-4") => {

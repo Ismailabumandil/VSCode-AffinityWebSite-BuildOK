@@ -3,13 +3,7 @@
 import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { VideoTestimonials } from "@/components/video-testimonials"
 
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import {
   Users,
   Building2,
@@ -48,7 +42,6 @@ export default function AboutPage() {
     []
   )
 
-  const sharedFooterTheme = { bg: currentTheme.background, text: currentTheme.text, accent: currentTheme.accent }
 
   // ✅ Auto slider
   useEffect(() => {
@@ -130,13 +123,7 @@ export default function AboutPage() {
         color: "var(--page-fg)",
       }}
     >
-      {/* ✅ نفس هيدر نظامك */}
-      <Navbar  />
-      
-      <ChatWidget  />
-      <ScrollToTop />
 
-      {/* ✅ Animated Background (نفس فكرة صفحتك) */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-25">
         <div className="absolute top-20 left-20 w-96 h-96 rounded-full blur-3xl animate-pulse" style={{ background: "rgba(56,189,248,0.18)" }} />
         <div
@@ -256,7 +243,7 @@ export default function AboutPage() {
                     <div className="text-left">
                       <div className="text-2xl font-bold text-white">{slides[activeSlide].title}</div>
                       <div style={{ color: "rgba(255,255,255,0.72)" }}>{slides[activeSlide].desc}</div>
-                    </div>
+                    </div>  
                   </div>
 
                   {/* dots */}
@@ -363,7 +350,7 @@ export default function AboutPage() {
                 </div>
 
                 <a
-                  href="/careers"
+                  href="/coming-soon"
                   className="inline-flex items-center gap-2 mt-5 px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
                   style={{
                     backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
@@ -394,7 +381,7 @@ export default function AboutPage() {
                 </div>
 
                 <a
-                  href="/contact"
+                  href="/talk-to-us"
                   className="block mt-5 text-center px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
                   style={{
                     backgroundImage: "linear-gradient(90deg, var(--primary), var(--accent))",
@@ -455,7 +442,6 @@ export default function AboutPage() {
         </div>
       </main>
       
-      <SharedFooter  />
 
       {/* ✅ نفس طريقة الـ CSS variables عندك */}
       <style jsx global>{`

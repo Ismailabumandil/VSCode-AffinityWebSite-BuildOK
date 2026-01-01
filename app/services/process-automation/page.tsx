@@ -20,12 +20,10 @@ import {
   Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Navbar from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { SharedFooter } from "@/components/shared-footer"
 import { AnimatedCounter } from "@/components/animated-counter"
 import Image from "next/image"
 import { useTheme } from "@/contexts/theme-context"
+import Link from "next/link"
 
 export default function ProcessAutomationPage() {
   const { language: currentLang } = useTheme()
@@ -65,10 +63,8 @@ export default function ProcessAutomationPage() {
 
   return (
     <div style={{ backgroundColor: currentTheme.bg, color: currentTheme.text, minHeight: "100vh" }}>
-      <Navbar />
 
       <div className="container mx-auto px-6 pt-24">
-        <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
       </div>
 
       {/* Hero Section with Animated Workflow */}
@@ -143,7 +139,10 @@ export default function ProcessAutomationPage() {
                       <motion.div
                         className="w-20 h-20 rounded-full flex items-center justify-center"
                         style={{
-                          backgroundColor: isActive || isPast ? currentTheme.accent : "color-mix(in srgb, var(--accent) 16%, transparent)",
+                          backgroundColor:
+                            isActive || isPast
+                              ? currentTheme.accent
+                              : "color-mix(in srgb, var(--accent) 16%, transparent)",
                           border: `3px solid ${
                             isActive ? currentTheme.accent : "color-mix(in srgb, var(--accent) 28%, transparent)"
                           }`,
@@ -206,17 +205,19 @@ export default function ProcessAutomationPage() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="text-center mt-12"
           >
-            <Button
-              className="text-lg px-8 py-6"
-              style={{
-                backgroundColor: currentTheme.accent,
-                color: currentTheme.text,
-                boxShadow: `0 0 30px ${currentTheme.glow1}`,
-              }}
-            >
-              {currentLang === "en" ? "Start Automating" : "ابدأ الأتمتة"}
-              <ArrowRight className="ml-2" />
-            </Button>
+            <Link href="/talk-to-us">
+              <Button
+                className="text-lg px-8 py-6"
+                style={{
+                  backgroundColor: currentTheme.accent,
+                  color: currentTheme.text,
+                  boxShadow: `0 0 30px ${currentTheme.glow1}`,
+                }}
+              >
+                {currentLang === "en" ? "Start Automating" : "ابدأ الأتمتة"}
+                <ArrowRight className="ml-2" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -282,7 +283,7 @@ export default function ProcessAutomationPage() {
               className="relative h-[500px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="/modern-it-office-with-developers-coding-on-multipl.jpg"
+                src="/business-process-automation-workflow.jpg"
                 alt="Business process automation"
                 fill
                 className="object-cover"
@@ -451,31 +452,31 @@ export default function ProcessAutomationPage() {
               : "حلول أتمتة مخصصة لكل صناعة، من الرعاية الصحية إلى التصنيع"}
           </motion.p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                image: "/professional-banking-office-with-financial-advisor.jpg",
+                image: "/modern-banking-office-with-financial-technology-sol.jpg",
                 title: "Banking & Finance",
                 titleAr: "الخدمات المالية والمصرفية",
                 desc: "Automate loan processing, compliance reporting, and customer onboarding",
                 descAr: "أتمتة معالجة القروض وتقارير الامتثال وتأهيل العملاء",
               },
               {
-                image: "/modern-warehouse-with-automated-systems-and-worker.jpg",
+                image: "/help-desk-technician.jpg",
                 title: "Supply Chain & Logistics",
                 titleAr: "سلسلة التوريد واللوجستيات",
                 desc: "Streamline inventory management, order fulfillment, and shipping workflows",
                 descAr: "تبسيط إدارة المخزون وتنفيذ الطلبات وسير عمل الشحن",
               },
               {
-                image: "/busy-restaurant-kitchen-with-chefs-preparing-food.jpg",
+                image: "/luxury-hotel-lobby-with-modern-technology-and-welc.jpg",
                 title: "Hospitality & Retail",
                 titleAr: "الضيافة والتجزئة",
                 desc: "Optimize reservations, point-of-sale, and customer service operations",
                 descAr: "تحسين الحجوزات ونقاط البيع وعمليات خدمة العملاء",
               },
               {
-                image: "/modern-it-office-with-developers-coding-on-multipl.jpg",
+                image: "/professional-it-support-team-working-with-multiple.jpg",
                 title: "Technology & IT",
                 titleAr: "التكنولوجيا وتقنية المعلومات",
                 desc: "Automate software deployment, testing, and IT service management",
@@ -594,22 +595,23 @@ export default function ProcessAutomationPage() {
                 : "دعنا نأتمت عملياتك ونطلق العنان لإمكانات فريقك. حدد موعدًا لاستشارة مجانية لاكتشاف كيف يمكن للأتمتة أن تحدث ثورة في عملياتك."}
             </p>
 
-            <Button
-              className="text-lg px-12 py-6"
-              style={{
-                backgroundColor: currentTheme.accent,
-                color: currentTheme.text,
-                boxShadow: `0 0 30px ${currentTheme.glow1}`,
-              }}
-            >
-              {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
-              <Zap className="ml-2" />
-            </Button>
+            <Link href="/talk-to-us">
+              <Button
+                className="text-lg px-12 py-6"
+                style={{
+                  backgroundColor: currentTheme.accent,
+                  color: currentTheme.text,
+                  boxShadow: `0 0 30px ${currentTheme.glow1}`,
+                }}
+              >
+                {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
+                <Zap className="ml-2" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </section>
 
-      <SharedFooter/>
     </div>
   )
 }

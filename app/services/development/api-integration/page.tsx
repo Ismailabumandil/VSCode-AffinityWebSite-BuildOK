@@ -22,8 +22,6 @@ import {
   Server,
   ArrowLeftRight,
 } from "lucide-react"
-import Navbar from "@/components/navbar"
-import { SharedFooter } from "@/components/shared-footer"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function APIIntegrationPage() {
@@ -195,7 +193,6 @@ export default function APIIntegrationPage() {
 
   return (
     <div className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]">
-      <Navbar />
 
       {/* Hero Section with Animated Background */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -343,7 +340,6 @@ export default function APIIntegrationPage() {
         </div>
       </section>
 
-      <SharedFooter />
 
       <style jsx>{`
         @keyframes float {

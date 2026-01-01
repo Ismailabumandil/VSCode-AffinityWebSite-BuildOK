@@ -1,11 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import { Monitor, Laptop, Smartphone, Wifi, ArrowRight, Package } from "lucide-react"
 import Link from "next/link"
 import { useTheme } from "@/contexts/theme-context"
@@ -137,8 +132,6 @@ export default function HardwareSectionsPage() {
       }}
       dir={language === "ar" ? "rtl" : "ltr"}
     >
-      <Navbar />
-      <Breadcrumb currentLang={language as any} />
 
       {/* Hero Section with Animated Hub */}
       <section className="relative py-20 overflow-hidden">
@@ -242,7 +235,7 @@ export default function HardwareSectionsPage() {
           {/* Browse All Button */}
           <div className="text-center">
             <Link
-              href="/shop"
+              href="/coming-soon"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
               style={{
                 background: `linear-gradient(135deg, var(--primary), var(--secondary))`,
@@ -345,9 +338,6 @@ export default function HardwareSectionsPage() {
         </div>
       </section>
 
-      <SharedFooter/>
-      <ChatWidget  />
-      <ScrollToTop  />
     </div>
   )
 }

@@ -261,7 +261,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true })
   } catch (error) {
-    console.error("[v0] Talk-to-us API unexpected error:", error)
     console.error("[v0] Error details:", {
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,

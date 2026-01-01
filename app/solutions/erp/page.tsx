@@ -1,12 +1,6 @@
 "use client"
-
-import { Navbar } from "@/components/navbar"
 import { useTheme } from "@/contexts/theme-context"
-
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
   ArrowRight,
@@ -210,8 +204,6 @@ export default function ERPSystemsPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
 
       {/* Hero Section with Side Image */}
       <section className="relative py-20 px-4 overflow-hidden">
@@ -238,7 +230,10 @@ export default function ERPSystemsPage() {
                   background: "color-mix(in srgb, var(--accent) 16%, transparent)",
                 }}
               >
-                <span className="text-sm font-medium" style={{ color: "color-mix(in srgb, var(--page-fg) 85%, var(--accent))" }}>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "color-mix(in srgb, var(--page-fg) 85%, var(--accent))" }}
+                >
                   {t.hero.subtitle}
                 </span>
               </div>
@@ -252,16 +247,18 @@ export default function ERPSystemsPage() {
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button
-                  className="px-8 py-6 text-lg rounded-full group"
-                  style={{
-                    background: "linear-gradient(90deg, var(--primary), var(--secondary))",
-                    color: "white",
-                  }}
-                >
-                  {t.hero.cta}
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link href="/talk-to-us">
+                  <Button
+                    className="px-8 py-6 text-lg rounded-full group"
+                    style={{
+                      background: "linear-gradient(90deg, var(--primary), var(--secondary))",
+                      color: "white",
+                    }}
+                  >
+                    {t.hero.cta}
+                    <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -270,7 +267,8 @@ export default function ERPSystemsPage() {
               <div
                 className="absolute inset-0 rounded-3xl blur-2xl"
                 style={{
-                  background: "linear-gradient(to right, color-mix(in srgb, var(--primary) 25%, transparent), color-mix(in srgb, var(--secondary) 25%, transparent))",
+                  background:
+                    "linear-gradient(to right, color-mix(in srgb, var(--primary) 25%, transparent), color-mix(in srgb, var(--secondary) 25%, transparent))",
                 }}
               />
               <img
@@ -307,9 +305,9 @@ export default function ERPSystemsPage() {
               }}
             >
               <img
-                src="/microsoft-dynamics-365-logo.png"
+                src="/MSDynamics365.jpg"
                 alt="Microsoft Dynamics 365"
-                className="w-full h-20 object-contain filter brightness-0 invert group-hover:scale-110 transition-transform"
+                className="w-full h-20 object-contain group-hover:scale-110 transition-transform"
               />
             </div>
 
@@ -322,9 +320,9 @@ export default function ERPSystemsPage() {
               }}
             >
               <img
-                src="/microsoft-power-bi-logo.jpg"
+                src="/powerBI.jpg"
                 alt="Power BI"
-                className="w-full h-20 object-contain filter brightness-0 invert group-hover:scale-110 transition-transform"
+                className="w-full h-20 object-contain group-hover:scale-110 transition-transform"
               />
             </div>
 
@@ -337,9 +335,9 @@ export default function ERPSystemsPage() {
               }}
             >
               <img
-                src="/sap-erp-logo.jpg"
+                src="/sap.jpg"
                 alt="SAP"
-                className="w-full h-20 object-contain filter brightness-0 invert group-hover:scale-110 transition-transform"
+                className="w-full h-20 object-contain group-hover:scale-110 transition-transform"
               />
             </div>
 
@@ -352,9 +350,9 @@ export default function ERPSystemsPage() {
               }}
             >
               <img
-                src="/oracle-erp-cloud-logo.jpg"
+                src="/oracle.jpg"
                 alt="Oracle"
-                className="w-full h-20 object-contain filter brightness-0 invert group-hover:scale-110 transition-transform"
+                className="w-full h-20 object-contain group-hover:scale-110 transition-transform"
               />
             </div>
           </div>
@@ -398,10 +396,7 @@ export default function ERPSystemsPage() {
                       <Icon className="w-7 h-7" style={{ color: "color-mix(in srgb, var(--accent) 80%, white)" }} />
                     </div>
 
-                    <h3
-                      className="text-xl font-bold mb-3 transition-colors"
-                      style={{ color: "var(--page-fg)" }}
-                    >
+                    <h3 className="text-xl font-bold mb-3 transition-colors" style={{ color: "var(--page-fg)" }}>
                       {service.title}
                     </h3>
 
@@ -535,24 +530,21 @@ export default function ERPSystemsPage() {
               ? "Let us help you implement a world-class ERP system tailored to your needs."
               : "دعنا نساعدك في تنفيذ نظام تخطيط موارد مؤسسات عالمي المستوى مصمم خصيصًا لاحتياجاتك."}
           </p>
-          <Button
-            className="px-12 py-6 text-lg rounded-full group"
-            style={{
-              background: "linear-gradient(90deg, var(--primary), var(--secondary))",
-              color: "white",
-            }}
-          >
-            {currentLang === "en" ? "Schedule a Consultation" : "حدد موعد استشارة"}
-            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <Link href="/book-demo">
+            <Button
+              className="px-12 py-6 text-lg rounded-full group"
+              style={{
+                background: "linear-gradient(90deg, var(--primary), var(--secondary))",
+                color: "white",
+              }}
+            >
+              {currentLang === "en" ? "Schedule a Consultation" : "حدد موعد استشارة"}
+              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
         </div>
       </section>
 
-      <SharedFooter />
-
-      {/* Keep same as your original structure */}
-      <ChatWidget  />
-      <ScrollToTop  />
     </div>
   )
 }

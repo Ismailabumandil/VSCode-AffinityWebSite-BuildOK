@@ -17,11 +17,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import SharedFooter from "@/components/shared-footer"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function EnterpriseConsultingPage() {
@@ -105,22 +100,8 @@ export default function EnterpriseConsultingPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: currentTheme.bg, color: currentTheme.text }}>
-      <Navbar />
 
-      <Breadcrumb
-        items={[
-          { label: currentLang === "en" ? "Services" : "الخدمات", href: "/services" },
-          {
-            label: currentLang === "en" ? "Consulting Services" : "الخدمات الاستشارية",
-            href: "/services/enterprise-consulting",
-          },
-        ]}
-        currentTheme={currentTheme}
-        currentLang={currentLang}
-      />
 
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Side-by-Side Hero Layout */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -171,31 +152,21 @@ export default function EnterpriseConsultingPage() {
                   : "مكّن منشأتك عبر استشارات تقنية استراتيجية لتحديث العمليات، رفع الكفاءة، وتحقيق نمو رقمي مستدام."}
               </p>
 
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  size="lg"
-                  className="group"
-                  style={{
-                    backgroundColor: currentTheme.accent,
-                    color: currentTheme.text,
-                    boxShadow: `0 0 30px ${currentTheme.glow1}`,
-                  }}
-                >
-                  {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent"
-                  style={{
-                    borderColor: "color-mix(in srgb, var(--accent) 30%, transparent)",
-                    color: currentTheme.accent,
-                  }}
-                >
-                  {currentLang === "en" ? "View Our Approach" : "اعرض منهجيتنا"}
-                </Button>
+              <div className="flex gap-6 flex-wrap">
+                <Link href="/book-demo">
+                  <Button
+                    size="lg"
+                    className="group"
+                    style={{
+                      backgroundColor: currentTheme.accent,
+                      color: currentTheme.text,
+                      boxShadow: `0 0 30px ${currentTheme.glow1}`,
+                    }}
+                  >
+                    {currentLang === "en" ? "Schedule Consultation" : "احجز استشارة"}
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </div>
 
               {/* Stats */}
@@ -303,10 +274,7 @@ export default function EnterpriseConsultingPage() {
       </section>
 
       {/* Active Service Details */}
-      <section
-        className="py-20 px-4"
-        style={{ backgroundColor: "color-mix(in srgb, var(--accent) 6%, transparent)" }}
-      >
+      <section className="py-20 px-4" style={{ backgroundColor: "color-mix(in srgb, var(--accent) 6%, transparent)" }}>
         <div className="max-w-7xl mx-auto">
           <Card
             className="backdrop-blur-md p-8 md:p-12"
@@ -409,7 +377,10 @@ export default function EnterpriseConsultingPage() {
                         backgroundColor: "color-mix(in srgb, var(--accent) 18%, transparent)",
                       }}
                     >
-                      <Icon className="w-8 h-8 group-hover:scale-110 transition-transform" style={{ color: currentTheme.accent }} />
+                      <Icon
+                        className="w-8 h-8 group-hover:scale-110 transition-transform"
+                        style={{ color: currentTheme.accent }}
+                      />
                     </div>
 
                     <h3 className="text-xl font-bold transition-colors" style={{ color: currentTheme.text }}>
@@ -439,10 +410,7 @@ export default function EnterpriseConsultingPage() {
       </section>
 
       {/* Consultation Process */}
-      <section
-        className="py-20 px-4"
-        style={{ backgroundColor: "color-mix(in srgb, var(--accent) 6%, transparent)" }}
-      >
+      <section className="py-20 px-4" style={{ backgroundColor: "color-mix(in srgb, var(--accent) 6%, transparent)" }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: currentTheme.text }}>
@@ -461,19 +429,22 @@ export default function EnterpriseConsultingPage() {
                 step: "01",
                 title: currentLang === "en" ? "Discovery" : "الاستكشاف",
                 icon: Search,
-                description: currentLang === "en" ? "Understand your business challenges and goals" : "فهم تحديات وأهداف العمل",
+                description:
+                  currentLang === "en" ? "Understand your business challenges and goals" : "فهم تحديات وأهداف العمل",
               },
               {
                 step: "02",
                 title: currentLang === "en" ? "Analysis" : "التحليل",
                 icon: BarChart3,
-                description: currentLang === "en" ? "Evaluate current systems and processes" : "تقييم الأنظمة والعمليات الحالية",
+                description:
+                  currentLang === "en" ? "Evaluate current systems and processes" : "تقييم الأنظمة والعمليات الحالية",
               },
               {
                 step: "03",
                 title: currentLang === "en" ? "Strategy" : "الاستراتيجية",
                 icon: Lightbulb,
-                description: currentLang === "en" ? "Develop comprehensive roadmap and solutions" : "تطوير خارطة طريق وحلول شاملة",
+                description:
+                  currentLang === "en" ? "Develop comprehensive roadmap and solutions" : "تطوير خارطة طريق وحلول شاملة",
               },
               {
                 step: "04",
@@ -500,10 +471,16 @@ export default function EnterpriseConsultingPage() {
                     }}
                   >
                     <div className="space-y-4">
-                      <div className="text-6xl font-bold" style={{ color: "color-mix(in srgb, var(--accent) 18%, transparent)" }}>
+                      <div
+                        className="text-6xl font-bold"
+                        style={{ color: "color-mix(in srgb, var(--accent) 18%, transparent)" }}
+                      >
                         {phase.step}
                       </div>
-                      <Icon className="w-12 h-12 group-hover:scale-110 transition-transform" style={{ color: currentTheme.accent }} />
+                      <Icon
+                        className="w-12 h-12 group-hover:scale-110 transition-transform"
+                        style={{ color: currentTheme.accent }}
+                      />
                       <h3 className="text-2xl font-bold" style={{ color: currentTheme.text }}>
                         {phase.title}
                       </h3>
@@ -542,23 +519,16 @@ export default function EnterpriseConsultingPage() {
                 : "احجز استشارة مع خبرائنا اليوم"}
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button size="lg" style={{ backgroundColor: "var(--background)", color: "var(--primary)" }}>
-                {currentLang === "en" ? "Book Consultation" : "احجز استشارة"}
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-transparent"
-                style={{ borderColor: "rgba(255,255,255,0.7)", color: "#fff" }}
-              >
-                {currentLang === "en" ? "Download Brochure" : "تحميل البروشور"}
-              </Button>
+              <Link href="/talk-to-us">
+                <Button size="lg" style={{ backgroundColor: "var(--background)", color: "var(--primary)" }}>
+                  {currentLang === "en" ? "Book Consultation" : "احجز استشارة"}
+                </Button>
+              </Link>
             </div>
           </Card>
         </div>
       </section>
 
-      <SharedFooter />
 
       {/* ✅ نفس الـ style block لكن بدون توليد ديناميكي */}
       <style jsx global>{`

@@ -15,13 +15,9 @@ import {
   Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import Image from "next/image"
 import { useTheme } from "@/contexts/theme-context"
+import Link from "next/link"
 
 export default function SupportTicketingPage() {
   const { theme: themeMode, language: currentLang } = useTheme()
@@ -128,22 +124,7 @@ export default function SupportTicketingPage() {
       className="min-h-screen overflow-hidden"
       style={{ backgroundColor: currentTheme.background, color: currentTheme.text }}
     >
-      <Navbar />
-
-      <Breadcrumb
-        items={[
-          { label: currentLang === "en" ? "Services" : "الخدمات", href: "/services" },
-          {
-            label: currentLang === "en" ? "Support & Ticketing" : "الدعم والتذاكر",
-            href: "/services/support-ticketing",
-          },
-        ]}
-        currentTheme={{ bg: currentTheme.background, text: currentTheme.text, accent: currentTheme.accent }}
-        currentLang={currentLang}
-      />
-
-      <ChatWidget />
-      <ScrollToTop />
+    
 
       {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -191,25 +172,18 @@ export default function SupportTicketingPage() {
                   : "خدمات دعم احترافية تضمن استمرارية الأنظمة، حل سريع للمشاكل، ومراقبة استباقية لبيئتك التقنية."}
               </p>
 
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  size="lg"
-                  className="text-white"
-                  style={{
-                    backgroundImage: `linear-gradient(to right, ${currentTheme.primary}, ${currentTheme.secondary})`,
-                  }}
-                >
-                  {currentLang === "en" ? "Get Support" : "احصل على الدعم"}
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent"
-                  style={{ borderColor: `${currentTheme.accent}`, color: `${currentTheme.secondary}` }}
-                >
-                  {currentLang === "en" ? "View SLA Plans" : "خطط SLA"}
-                </Button>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <Link href="/talk-to-us">
+                  <Button
+                    size="lg"
+                    className="text-white"
+                    style={{
+                      backgroundImage: `linear-gradient(to right, ${currentTheme.primary}, ${currentTheme.secondary})`,
+                    }}
+                  >
+                    {currentLang === "en" ? "Get Support" : "احصل على الدعم"}
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -468,31 +442,22 @@ export default function SupportTicketingPage() {
               </p>
 
               <div className="flex flex-wrap gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="text-lg px-8 text-white"
-                  style={{
-                    backgroundImage: `linear-gradient(to right, ${currentTheme.primary}, ${currentTheme.secondary})`,
-                  }}
-                >
-                  {currentLang === "en" ? "Open Ticket" : "افتح تذكرة"}
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-8 bg-transparent"
-                  style={{ borderColor: `${currentTheme.accent}`, color: `${currentTheme.secondary}` }}
-                >
-                  {currentLang === "en" ? "Contact Support Team" : "تواصل مع فريق الدعم"}
-                </Button>
+                <Link href="/book-demo">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg px-8 bg-transparent"
+                    style={{ borderColor: `${currentTheme.accent}`, color: `${currentTheme.secondary}` }}
+                  >
+                    {currentLang === "en" ? "Contact Support Team" : "تواصل مع فريق الدعم"}
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
         </section>
       </main>
 
-      <SharedFooter />
     </div>
   )
 }

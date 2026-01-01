@@ -14,10 +14,6 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react"
-import { Navbar } from "@/components/navbar"
-import ChatWidget from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function MachineLearningPage() {
@@ -163,9 +159,6 @@ export default function MachineLearningPage() {
 
   return (
     <div className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]" dir={isRTL ? "rtl" : "ltr"}>
-      <Navbar />
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Hero Section with Neural Network Animation */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden pt-24">
@@ -201,7 +194,7 @@ export default function MachineLearningPage() {
             <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 opacity-90 text-pretty">{t.description}</p>
 
             <Link
-              href="/book-demo"
+              href="/talk-to-us"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl"
               style={{ backgroundColor: "var(--accent)", color: "var(--page-bg)" }}
             >
@@ -332,7 +325,6 @@ export default function MachineLearningPage() {
         </div>
       </section>
 
-      <SharedFooter />
     </div>
   )
 }

@@ -2,10 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
 import {
   Shield,
   CheckCircle,
@@ -18,14 +14,15 @@ import {
   Server,
   AlertTriangle,
 } from "lucide-react"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
+import { motion } from "framer-motion"
 
+const MotionLink = motion(Link)
 export default function ComplianceAssessmentPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
   const [activeFramework, setActiveFramework] = useState(0)
   const [activeService, setActiveService] = useState(0)
 
-  // 🌍 Global theme (CSS Variables from global.css)
   const currentTheme = useMemo(
     () => ({
       background: "var(--page-bg)",
@@ -139,10 +136,6 @@ export default function ComplianceAssessmentPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar  />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* HERO */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -583,7 +576,74 @@ export default function ComplianceAssessmentPage() {
         </div>
       </section>
 
-      <SharedFooter  />
+{/* FINAL CTA */}
+<section className="py-24 px-4 relative">
+  <div className="max-w-4xl mx-auto text-center">
+    <div
+      className="relative p-12 rounded-3xl border overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--accent) 14%, transparent))",
+        borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+        backdropFilter: "blur(10px)",
+      }}
+    >
+      {/* Glow background */}
+      <div
+        className="absolute inset-0 opacity-20 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at top, var(--glow-1), transparent 70%)",
+        }}
+      />
+
+      <h2 className="text-4xl md:text-5xl font-bold mb-6 relative z-10">
+        {currentLang === "en"
+          ? "Ready for Compliance Confidence?"
+          : "جاهز للامتثال بثقة؟"}
+      </h2>
+
+      <p
+        className="text-xl mb-10 relative z-10"
+        style={{ color: "var(--muted-foreground)" }}
+      >
+        {currentLang === "en"
+          ? "Book a live demo or talk to our experts to start your compliance assessment journey."
+          : "احجز عرضًا مباشرًا أو تواصل مع خبرائنا لبدء رحلة تقييم الامتثال."}
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+        {/* Book Demo */}
+        <MotionLink
+          href="/book-demo"
+          className="inline-flex items-center justify-center px-10 py-4 rounded-lg font-semibold text-white shadow-xl"
+          style={{
+            background: "linear-gradient(90deg, var(--primary), var(--accent))",
+          }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {currentLang === "en" ? "Book a Demo" : "احجز عرضًا"}
+        </MotionLink>
+
+        {/* Contact Us */}
+        <MotionLink
+          href="/talk-to-us"
+          className="inline-flex items-center justify-center px-10 py-4 rounded-lg font-semibold border"
+          style={{
+            borderColor: "color-mix(in srgb, var(--border) 70%, transparent)",
+            background: "color-mix(in srgb, var(--card) 18%, transparent)",
+            color: "var(--page-fg)",
+          }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {currentLang === "en" ? "Contact Us" : "تواصل معنا"}
+        </MotionLink>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* Orbit animations */}
       <style jsx global>{`

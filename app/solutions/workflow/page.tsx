@@ -1,18 +1,13 @@
 "use client"
-
 import { useEffect, useState } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
 import {
   Workflow,
   Settings,
   Zap,
   Brain,
-  Link,
+  LinkIcon,
   Bell,
   BarChart3,
   Cloud,
@@ -73,7 +68,7 @@ export default function WorkflowAutomationPage() {
             "Use intelligent decision-making, predictive actions, and automated responses powered by AI agents and analytics models.",
         },
         {
-          icon: Link,
+          icon: LinkIcon,
           title: "Integration with ERP, CRM & Applications",
           description:
             "Connect workflows to your core systems to automate finance, HR, inventory, operations, customer service, and more.",
@@ -126,7 +121,7 @@ export default function WorkflowAutomationPage() {
           description: "قرارات ذكية وإجراءات تنبؤية وردود تلقائية تعتمد على نماذج AI متقدمة.",
         },
         {
-          icon: Link,
+          icon: LinkIcon,
           title: "تكامل كامل مع ERP وCRM",
           description: "ربط سير العمل بالأنظمة الأساسية مثل المالية والموارد البشرية والمخزون والعمليات وخدمة العملاء.",
         },
@@ -174,16 +169,18 @@ export default function WorkflowAutomationPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
 
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
 
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 rounded-full blur-3xl animate-pulse opacity-20"
-             style={{ background: "radial-gradient(circle, var(--glow-1), transparent 70%)" }} />
-        <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl animate-pulse delay-1000 opacity-20"
-             style={{ background: "radial-gradient(circle, var(--glow-2), transparent 70%)" }} />
+        <div
+          className="absolute top-20 left-10 w-96 h-96 rounded-full blur-3xl animate-pulse opacity-20"
+          style={{ background: "radial-gradient(circle, var(--glow-1), transparent 70%)" }}
+        />
+        <div
+          className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl animate-pulse delay-1000 opacity-20"
+          style={{ background: "radial-gradient(circle, var(--glow-2), transparent 70%)" }}
+        />
         <div
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse delay-500 opacity-10"
           style={{ background: "radial-gradient(circle, var(--primary), transparent 70%)" }}
@@ -194,11 +191,12 @@ export default function WorkflowAutomationPage() {
       <div className="relative pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full mb-6 animate-bounce border"
-                 style={{
-                   background: "color-mix(in srgb, var(--primary) 20%, transparent)",
-                   borderColor: "color-mix(in srgb, var(--primary) 35%, transparent)",
-                 }}
+            <div
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-full mb-6 animate-bounce border"
+              style={{
+                background: "color-mix(in srgb, var(--primary) 20%, transparent)",
+                borderColor: "color-mix(in srgb, var(--primary) 35%, transparent)",
+              }}
             >
               <Zap className="w-5 h-5 text-yellow-400" />
               <span className="font-medium" style={{ color: "var(--page-fg)" }}>
@@ -210,7 +208,10 @@ export default function WorkflowAutomationPage() {
               {t.title}
             </h1>
 
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto" style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}>
+            <p
+              className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto"
+              style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}
+            >
               {t.subtitle}
             </p>
 
@@ -231,13 +232,18 @@ export default function WorkflowAutomationPage() {
                   <div key={index} className="flex-1 relative">
                     {/* Connecting Line */}
                     {index < t.workflowSteps.length - 1 && (
-                      <div className="absolute top-12 left-1/2 w-full h-1" style={{ background: "color-mix(in srgb, var(--primary) 35%, transparent)" }}>
+                      <div
+                        className="absolute top-12 left-1/2 w-full h-1"
+                        style={{ background: "color-mix(in srgb, var(--primary) 35%, transparent)" }}
+                      >
                         <div
                           className="h-full transition-all duration-1000"
                           style={{
                             background: `linear-gradient(to right, color-mix(in srgb, var(--accent) 65%, transparent), color-mix(in srgb, var(--primary) 65%, transparent))`,
                             width: isPassed ? "100%" : isActive ? "50%" : "0%",
-                            boxShadow: isActive ? "0 0 20px color-mix(in srgb, var(--primary) 70%, transparent)" : "none",
+                            boxShadow: isActive
+                              ? "0 0 20px color-mix(in srgb, var(--primary) 70%, transparent)"
+                              : "none",
                           }}
                         />
                       </div>
@@ -314,7 +320,8 @@ export default function WorkflowAutomationPage() {
                   <div
                     className="absolute top-0 right-0 w-20 h-20 rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{
-                      background: "linear-gradient(135deg, color-mix(in srgb, var(--primary) 25%, transparent), transparent)",
+                      background:
+                        "linear-gradient(135deg, color-mix(in srgb, var(--primary) 25%, transparent), transparent)",
                     }}
                   />
 
@@ -350,7 +357,10 @@ export default function WorkflowAutomationPage() {
 
                   {/* Hover Arrow */}
                   <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                    <ArrowRight className="w-6 h-6" style={{ color: "color-mix(in srgb, var(--primary) 75%, white 25%)" }} />
+                    <ArrowRight
+                      className="w-6 h-6"
+                      style={{ color: "color-mix(in srgb, var(--primary) 75%, white 25%)" }}
+                    />
                   </div>
                 </div>
               )
@@ -385,33 +395,36 @@ export default function WorkflowAutomationPage() {
             <h2 className="text-4xl font-bold mb-6 relative z-10" style={{ color: "var(--page-fg)" }}>
               {currentLang === "en" ? "Ready to Automate Your Workflows?" : "هل أنت مستعد لأتمتة سير عملك؟"}
             </h2>
-            <p className="text-xl mb-8 relative z-10" style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}>
+            <p
+              className="text-xl mb-8 relative z-10"
+              style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}
+            >
               {currentLang === "en"
                 ? "Transform your business processes with intelligent automation solutions"
                 : "حوّل عمليات عملك بحلول الأتمتة الذكية"}
             </p>
 
-            <button className="group relative px-8 py-4 text-white font-bold rounded-full hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl inline-flex items-center gap-2"
-              style={{
-                background: "linear-gradient(90deg, var(--primary), var(--accent))",
-              }}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                {currentLang === "en" ? "Get Started Today" : "ابدأ اليوم"}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </span>
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
-                style={{ background: "linear-gradient(90deg, var(--accent), var(--primary))" }}
-              />
-            </button>
+            <Link href="/talk-to-us">
+              <button
+                className="group relative px-8 py-4 text-white font-bold rounded-full hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl inline-flex items-center gap-2"
+                style={{
+                  background: "linear-gradient(90deg, var(--primary), var(--accent))",
+                }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  {currentLang === "en" ? "Get Started Today" : "ابدأ اليوم"}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </span>
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                  style={{ background: "linear-gradient(90deg, var(--accent), var(--primary))" }}
+                />
+              </button>
+            </Link>
           </div>
         </div>
       </div>
 
-      <SharedFooter  />
-      <ChatWidget  />
-      <ScrollToTop />
 
       <style jsx global>{`
         @keyframes fadeInUp {

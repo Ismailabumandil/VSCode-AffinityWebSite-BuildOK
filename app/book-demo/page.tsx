@@ -2,16 +2,8 @@
 
 import type React from "react"
 import { useState, useEffect, useMemo } from "react"
-import Navbar from "@/components/navbar"
-import SharedFooter from "@/components/shared-footer"
-import BackgroundTLogos from "@/components/background-t-logos"
-import ChatWidget from "@/components/chat-widget"
-import ReadingProgress from "@/components/reading-progress"
 import ScrollReveal from "@/components/scroll-reveal"
-import QuickNav from "@/components/quick-nav"
 import KeyboardShortcuts from "@/components/keyboard-shortcuts"
-import PageTransition from "@/components/page-transition"
-import ReadingBookmark from "@/components/reading-bookmark"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function BookDemoPage() {
@@ -38,6 +30,8 @@ export default function BookDemoPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [appointment, setAppointment] = useState<any>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
 
   // Auto-detect timezone
   useEffect(() => {
@@ -99,21 +93,73 @@ export default function BookDemoPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  // ✅ NEW: send appointment email to your internal inbox via /api/talk-to-us/email
+  const sendBookDemoEmail = async (appointmentData: any) => {
+    try {
+      const serviceLabel = serviceTypes.find((s) => s.value === appointmentData.serviceType)?.label ?? appointmentData.serviceType
+      const teamLabel = teamMembers.find((m) => m.value === appointmentData.teamMember)?.name ?? appointmentData.teamMember
 
-    if (validateForm()) {
-      const appointmentData = {
-        ...formData,
-        id: `DEMO-${Date.now()}`,
-        createdAt: new Date().toISOString(),
+      const payload = {
+        lang: language === "en" ? "en" : "ar",
+        category: "BookDemo",
+        intent: "book_demo_form",
+        score: 90,
+        name: appointmentData.name,
+        company: appointmentData.company,
+        email: appointmentData.email,
+        phone: appointmentData.phone,
+        pageUrl: typeof window !== "undefined" ? window.location.href : "/book-demo",
+        conversationSummary:
+          language === "en"
+            ? "New Book Demo submission from website form."
+            : "طلب جديد لحجز عرض توضيحي من فورم الموقع.",
+        answers: {
+          serviceType: serviceLabel,
+          preferredDate: appointmentData.preferredDate,
+          preferredTime: appointmentData.preferredTime,
+          teamMember: teamLabel,
+          timezone: appointmentData.timezone,
+        },
+        notes:
+          language === "en"
+            ? `Message:\n${appointmentData.message || "-"}\n\nMeta:\nID=${appointmentData.id}\nCreatedAt=${appointmentData.createdAt}`
+            : `الرسالة:\n${appointmentData.message || "-"}\n\nبيانات إضافية:\nID=${appointmentData.id}\nCreatedAt=${appointmentData.createdAt}`,
       }
 
-      setAppointment(appointmentData)
-      localStorage.setItem("appointment", JSON.stringify(appointmentData))
-      setIsSubmitted(true)
+      await fetch("/api/talk-to-us/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch(() => {})
+    } catch (e) {
+      console.error("BOOK_DEMO_EMAIL_ERROR:", e)
+      // لا نوقف تجربة المستخدم ولا نغير UI حسب طلبك
     }
   }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+
+  if (validateForm()) {
+    setIsSubmitting(true) // 🔥 START LOADING
+
+    const appointmentData = {
+      ...formData,
+      id: `DEMO-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    }
+
+    await sendBookDemoEmail(appointmentData)
+
+    setAppointment(appointmentData)
+    localStorage.setItem("appointment", JSON.stringify(appointmentData))
+    setIsSubmitted(true)
+
+    setIsSubmitting(false) // 🔥 END LOADING
+  }
+}
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -175,11 +221,7 @@ export default function BookDemoPage() {
         color: "var(--page-fg)",
       }}
     >
-      <PageTransition />
-      <ReadingProgress />
-      <BackgroundTLogos />
 
-      <Navbar/>
 
       <main className="pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-6">
@@ -418,15 +460,27 @@ export default function BookDemoPage() {
                     </p>
 
                     <button
-                      type="submit"
-                      className="w-full py-4 px-8 rounded-xl font-bold text-lg transition-all hover:scale-105 hover:shadow-2xl"
-                      style={{
-                        background: "linear-gradient(135deg, var(--primary), var(--secondary))",
-                        color: "#fff",
-                      }}
-                    >
-                      {language === "en" ? "Schedule Demo" : "جدولة العرض التوضيحي"}
-                    </button>
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full py-4 px-8 rounded-xl font-bold text-lg transition-all hover:scale-105 hover:shadow-2xl disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-3"
+  style={{
+    background: "linear-gradient(135deg, var(--primary), var(--secondary))",
+    color: "#fff",
+  }}
+>
+  {isSubmitting && (
+    <span className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+  )}
+
+  {isSubmitting
+    ? language === "en"
+      ? "Sending..."
+      : "جاري الإرسال..."
+    : language === "en"
+    ? "Schedule Demo"
+    : "جدولة العرض التوضيحي"}
+</button>
+
                   </div>
                 </div>
               </form>
@@ -542,11 +596,8 @@ export default function BookDemoPage() {
         </div>
       </main>
 
-      <SharedFooter  />
-      <ChatWidget  />
-      <QuickNav  />
+      
       <KeyboardShortcuts  />
-      <ReadingBookmark pageId="book-demo" currentLang={language} currentTheme={themeColors as any} />
     </div>
   )
 }

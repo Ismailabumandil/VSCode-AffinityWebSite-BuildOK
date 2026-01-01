@@ -1,16 +1,9 @@
 "use client"
 
 import { useEffect, useMemo } from "react"
-import BackgroundTLogos from "@/components/background-t-logos"
-import Navbar from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ScrollToTop from "@/components/scroll-to-top"
-import SharedFooter from "@/components/shared-footer"
-import ChatWidget from "@/components/chat-widget"
 import Image from "next/image"
 import ScrollReveal from "@/components/scroll-reveal"
 import { useTheme } from "@/contexts/theme-context"
-
 export default function ManufacturingPage() {
   // ✅ Global theme + language
   const { theme, language, getCurrentThemeColors } = useTheme()
@@ -35,12 +28,8 @@ export default function ManufacturingPage() {
         color: "var(--page-fg)",
       }}
     >
-      <BackgroundTLogos />
 
-      {/* ✅ Navbar uses global theme/lang */}
-      <Navbar />
 
-      <Breadcrumb currentLang={language} />
 
       {/* Hero Section */}
       <ScrollReveal direction="fade">
@@ -233,9 +222,6 @@ export default function ManufacturingPage() {
         </section>
       </ScrollReveal>
 
-      <ChatWidget />
-      <ScrollToTop />
-      <SharedFooter />
     </div>
   )
 }

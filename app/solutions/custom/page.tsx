@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import {
   Wrench,
   Code2,
@@ -23,6 +18,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 export default function CustomSolutionsPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
@@ -183,9 +179,7 @@ export default function CustomSolutionsPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
 
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
 
       {/* Hero Section with Modular Building Animation */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -225,7 +219,7 @@ export default function CustomSolutionsPage() {
               scale: [1, 1.06, 1],
               opacity: [0.12, 0.22, 0.12],
             }}
-            transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY }}
+            transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
           />
         </div>
 
@@ -244,24 +238,29 @@ export default function CustomSolutionsPage() {
                 {t.subtitle}
               </h2>
 
-              <p className="text-lg leading-relaxed mb-8" style={{ color: "color-mix(in srgb, var(--page-fg) 70%, var(--muted-foreground) 30%)" }}>
+              <p
+                className="text-lg leading-relaxed mb-8"
+                style={{ color: "color-mix(in srgb, var(--page-fg) 70%, var(--muted-foreground) 30%)" }}
+              >
                 {t.description}
               </p>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 rounded-lg font-semibold flex items-center gap-2 group border"
-                style={{
-                  background: "linear-gradient(135deg, var(--primary), var(--accent))",
-                  color: "white",
-                  borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
-                  boxShadow: "0 0 30px color-mix(in srgb, var(--neon-sky) 18%, transparent)",
-                }}
-              >
-                {t.cta}
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
+              <Link href="/talk-to-us">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 rounded-lg font-semibold flex items-center gap-2 group border"
+                  style={{
+                    background: "linear-gradient(135deg, var(--primary), var(--accent))",
+                    color: "white",
+                    borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+                    boxShadow: "0 0 30px color-mix(in srgb, var(--neon-sky) 18%, transparent)",
+                  }}
+                >
+                  {t.cta}
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              </Link>
             </motion.div>
 
             {/* Right - Modular Building Animation */}
@@ -308,6 +307,8 @@ export default function CustomSolutionsPage() {
                     animate={{
                       scale: activeModule === index ? 1.2 : 1,
                       opacity: activeModule === index ? 1 : 0.72,
+                      x: Math.cos(((angle + ((Date.now() / 50) % 360)) * Math.PI) / 180) * radius,
+                      y: Math.sin(((angle + ((Date.now() / 50) % 360)) * Math.PI) / 180) * radius,
                     }}
                     transition={{ duration: 0.5 }}
                   >
@@ -335,32 +336,6 @@ export default function CustomSolutionsPage() {
                   </motion.div>
                 )
               })}
-
-              {/* Connecting Lines */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                {modules.map((_, index) => {
-                  const angle = (index * 360) / modules.length
-                  const radius = 180
-                  const x = Math.cos((angle * Math.PI) / 180) * radius + 250
-                  const y = Math.sin((angle * Math.PI) / 180) * radius + 250
-
-                  return (
-                    <motion.line
-                      key={index}
-                      x1="250"
-                      y1="250"
-                      x2={x}
-                      y2={y}
-                      stroke={activeModule === index ? "rgba(255,255,255,0.9)" : "color-mix(in srgb, var(--neon-sky) 55%, var(--primary) 45%)"}
-                      strokeWidth={activeModule === index ? 2 : 1}
-                      opacity={activeModule === index ? 0.8 : 0.28}
-                      animate={{ strokeDashoffset: [0, 20] }}
-                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                      strokeDasharray="5,5"
-                    />
-                  )
-                })}
-              </svg>
             </motion.div>
           </div>
         </div>
@@ -454,11 +429,17 @@ export default function CustomSolutionsPage() {
               borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
             }}
           >
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "26px 26px" }} />
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)",
+                backgroundSize: "26px 26px",
+              }}
+            />
 
             <Zap className="w-16 h-16 mx-auto mb-6" style={{ color: "var(--neon-sky)" }} />
             <h2 className="text-3xl font-bold mb-4" style={{ color: "var(--page-fg)" }}>
-              {currentLang === "en" ? "Ready to Build Your Custom Solution?" : "جاهز لبناء حلك المخصص؟"}
+              {currentLang === "en" ? "Ready to Build Your Custom Solution?" : "جاهز لبناء نظامك المخصص؟"}
             </h2>
             <p className="text-lg mb-8" style={{ color: "var(--muted-foreground)" }}>
               {currentLang === "en"
@@ -466,27 +447,26 @@ export default function CustomSolutionsPage() {
                 : "دعنا نناقش متطلباتك الفريدة ونصمم حلاً مخصصاً يدفع أعمالك إلى الأمام."}
             </p>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-10 py-4 rounded-lg font-semibold text-lg border"
-              style={{
-                background: "linear-gradient(135deg, var(--primary), var(--accent))",
-                color: "white",
-                borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
-                boxShadow: "0 0 35px color-mix(in srgb, var(--neon-sky) 18%, transparent)",
-              }}
-            >
-              {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
-            </motion.button>
+            <Link href="/book-demo" className="inline-block">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-10 py-4 rounded-lg font-semibold text-lg border"
+                style={{
+                  background: "linear-gradient(135deg, var(--primary), var(--accent))",
+                  color: "white",
+                  borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+                  boxShadow: "0 0 35px color-mix(in srgb, var(--neon-sky) 18%, transparent)",
+                }}
+              >
+                {currentLang === "en" ? "Get Started" : "ابدأ الآن"}
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </section>
 
-      <SharedFooter/>
 
-      <ChatWidget  />
-      <ScrollToTop />
     </div>
   )
 }

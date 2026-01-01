@@ -1,4 +1,11 @@
 import { ReactNode } from "react"
+import Navbar from "@/components/navbar"
+import { SharedFooterComponent as SharedFooter } from "@/components/shared-footer"
+import ScrollToTop from "@/components/scroll-to-top"
+import { ScrollProgress } from "@/components/scroll-progress"
+import ChatWidget from "@/components/chat-widget"
+import ReadingProgress from "@/components/reading-progress"
+
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import CookieConsent from "@/components/cookie-consent"
@@ -53,8 +60,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="font-sans antialiased">
         <Providers>
           <LoadingBar />
+          <ReadingProgress />
+          
+          <Navbar />
+          
           {children}
           <ScrollToTopOnRoute />
+          <ScrollProgress />
+          <ScrollToTop />
+          <SharedFooter />
+          <ChatWidget />  
           <QuickNav />
           <Analytics />
           <CookieConsent />

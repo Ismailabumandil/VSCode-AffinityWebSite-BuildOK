@@ -1,13 +1,7 @@
 "use client"
-
 import { useEffect, useMemo, useState } from "react"
-import { Navbar } from "@/components/navbar"
 import { ScreenCarousel } from "@/components/screen-carousel"
-
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
 import { Signal, Wifi, TowerControl, Smartphone, Radio, Antenna, Network, Zap } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 
@@ -153,9 +147,6 @@ export default function SignalBoostersPage() {
         color: tokens.fg as any,
       }}
     >
-      {/* إذا Navbar عندك يحتاج currentTheme خلّيناه لكن بألوان عالمية */}
-      <Navbar />
-      <Breadcrumb currentLang={language} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -211,34 +202,29 @@ export default function SignalBoostersPage() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <button
-                  className="px-8 py-4 rounded-lg font-semibold hover:scale-105 transition-all duration-300 shadow-lg border"
-                  style={{
-                    background: `linear-gradient(90deg, ${tokens.accent} 0%, ${tokens.accent2} 100%)`,
-                    color: "white",
-                    borderColor: `color-mix(in srgb, ${tokens.accent} 35%, transparent)`,
-                    boxShadow: `0 18px 55px color-mix(in srgb, ${tokens.accent} ${theme === "light" ? "20%" : "35%"}, transparent)`,
-                  }}
-                >
+               <Link
+                href="/talk-to-us"
+                className="px-8 py-4 rounded-lg font-semibold transition-all hover:scale-105 border inline-block"
+                style={{
+                  background: "color-mix(in srgb, var(--card-bg) 55%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--border) 60%, transparent)",
+                  color: "var(--page-fg)",
+                }}
+              >
                   {language === "en" ? "Get Started" : "ابدأ الآن"}
-                </button>
+                </Link>
 
-                <button
-                  className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 border backdrop-blur-sm"
-                  style={{
-                    backgroundColor: `color-mix(in srgb, ${tokens.card} 20%, transparent)`,
-                    borderColor: `color-mix(in srgb, ${tokens.fg} 18%, transparent)`,
-                    color: tokens.fg as any,
-                  }}
-                  onMouseEnter={(e) => {
-                    ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = `color-mix(in srgb, ${tokens.card} 30%, transparent)`
-                  }}
-                  onMouseLeave={(e) => {
-                    ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = `color-mix(in srgb, ${tokens.card} 20%, transparent)`
-                  }}
-                >
+                <Link
+                href="/book-demo"
+                className="px-8 py-4 rounded-lg font-semibold transition-all hover:scale-105 border inline-block"
+                style={{
+                  background: "color-mix(in srgb, var(--card-bg) 55%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--border) 60%, transparent)",
+                  color: "var(--page-fg)",
+                }}
+              >
                   {language === "en" ? "Request Site Survey" : "طلب مسح الموقع"}
-                </button>
+                </Link> 
               </div>
             </div>
 
@@ -729,7 +715,8 @@ export default function SignalBoostersPage() {
                 ? "Partner with us for professional signal enhancement solutions"
                 : "شاركنا لتعزيز قوة الإشارة في منشأتك"}
             </p>
-            <button
+            <Link
+              href="/book-demo"
               className="px-10 py-4 rounded-lg font-bold text-lg hover:scale-105 transition-all duration-300 shadow-lg border"
               style={{
                 background: `linear-gradient(90deg, ${tokens.accent} 0%, ${tokens.accent2} 100%)`,
@@ -739,14 +726,11 @@ export default function SignalBoostersPage() {
               }}
             >
               {language === "en" ? "Schedule Site Survey" : "احجز مسح الموقع"}
-            </button>
+            </Link>
           </div>
         </div>
       </section>
 
-      <SharedFooter />
-      <ChatWidget  />
-      <ScrollToTop />
     </div>
   )
 }

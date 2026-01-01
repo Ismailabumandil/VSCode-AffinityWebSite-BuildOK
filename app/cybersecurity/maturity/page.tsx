@@ -1,11 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
 import {
   Shield,
   TrendingUp,
@@ -24,12 +20,18 @@ import {
   CheckCircle2,
   Award,
 } from "lucide-react"
-import { SharedFooter } from "@/components/shared-footer"
+import Link from "next/link"
+import { motion } from "framer-motion"
+
+const MotionLink = motion(Link)
 
 export default function MaturityAssessmentPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
   const [activeLevel, setActiveLevel] = useState(0)
   const [activeDomain, setActiveDomain] = useState(0)
+
+  // ✅ ثابت لتوحيد مخرجات SSR/Client
+  const round = (n: number, digits = 3) => n.toFixed(digits) // نرجع STRING ثابتة
 
   // Global theme (CSS Variables from global.css) — no hardcoded colors
   const currentTheme = {
@@ -169,8 +171,7 @@ export default function MaturityAssessmentPage() {
       icon: RefreshCw,
       title: "Continuous Maturity Improvement Program",
       titleAr: "برنامج التحسين المستمر",
-      description:
-        "Quarterly assessments, KPI tracking, control performance monitoring, and cyclical enhancement model",
+      description: "Quarterly assessments, KPI tracking, control performance monitoring, and cyclical enhancement model",
       descriptionAr: "تقييمات ربع سنوية، قياس مؤشرات الأداء، متابعة الضوابط، التطوير المستمر",
     },
     {
@@ -199,6 +200,25 @@ export default function MaturityAssessmentPage() {
     { name: "ENISA", nameAr: "ENISA", icon: Shield },
   ]
 
+  // ✅ Precompute orbit points with stable decimals (SSR === Client)
+  const orbitPoints = useMemo(() => {
+    const radius = 185
+    const cx = 230
+    const cy = 230
+
+    return maturityLevels.map((_, index) => {
+      const angle = index * 60 * (Math.PI / 180)
+      const x = round(Math.cos(angle) * radius)
+      const y = round(Math.sin(angle) * radius)
+
+      const x2 = round(cx + Math.cos(angle) * radius)
+      const y2 = round(cy + Math.sin(angle) * radius)
+
+      return { x, y, x2, y2, cx, cy }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maturityLevels.length]) // طول المصفوفة ثابت
+
   return (
     <div
       className="min-h-screen"
@@ -213,11 +233,6 @@ export default function MaturityAssessmentPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar/>
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-      <ChatWidget />
-      <ScrollToTop />
-
       {/* Animated Background (global vars only) */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
@@ -243,8 +258,14 @@ export default function MaturityAssessmentPage() {
                   borderColor: "color-mix(in srgb, var(--border) 60%, transparent)",
                 }}
               >
-                <TrendingUp className="w-5 h-5" style={{ color: "color-mix(in srgb, var(--primary) 70%, white 30%)" }} />
-                <span style={{ color: "color-mix(in srgb, var(--page-fg) 80%, var(--muted-foreground) 20%)" }} className="text-sm">
+                <TrendingUp
+                  className="w-5 h-5"
+                  style={{ color: "color-mix(in srgb, var(--primary) 70%, white 30%)" }}
+                />
+                <span
+                  style={{ color: "color-mix(in srgb, var(--page-fg) 80%, var(--muted-foreground) 20%)" }}
+                  className="text-sm"
+                >
                   {currentLang === "en" ? "Measure & Elevate Your Security Posture" : "قياس ورفع مستوى الأمن السيبراني"}
                 </span>
               </div>
@@ -307,7 +328,7 @@ export default function MaturityAssessmentPage() {
               </div>
             </div>
 
-            {/* Right: ✅ Orbit Animation (no hardcoded colors) */}
+            {/* Right: ✅ Orbit Animation */}
             <div className="relative h-[520px] flex items-center justify-center">
               <div className="relative w-[460px] h-[460px]">
                 {/* Center */}
@@ -334,16 +355,16 @@ export default function MaturityAssessmentPage() {
                 />
                 <div
                   className="absolute inset-0 rounded-full blur-2xl opacity-20"
-                  style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--primary) 35%, transparent), color-mix(in srgb, var(--accent) 35%, transparent))" }}
+                  style={{
+                    background:
+                      "linear-gradient(90deg, color-mix(in srgb, var(--primary) 35%, transparent), color-mix(in srgb, var(--accent) 35%, transparent))",
+                  }}
                 />
 
                 {/* Rotator */}
                 <div className="absolute inset-0 orbit-rotator">
                   {maturityLevels.map((level, index) => {
-                    const angle = index * 60 * (Math.PI / 180)
-                    const radius = 185
-                    const x = Math.cos(angle) * radius
-                    const y = Math.sin(angle) * radius
+                    const p = orbitPoints[index]
                     const IconComponent = level.icon
                     const isActive = activeLevel === index
 
@@ -354,7 +375,7 @@ export default function MaturityAssessmentPage() {
                         style={{
                           left: "50%",
                           top: "50%",
-                          transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                          transform: `translate(calc(-50% + ${p.x}px), calc(-50% + ${p.y}px))`,
                         }}
                       >
                         <div className="orbit-counter">
@@ -377,7 +398,10 @@ export default function MaturityAssessmentPage() {
                               <div className="text-2xl font-bold" style={{ color: level.color }}>
                                 L{level.level}
                               </div>
-                              <div className="text-xs whitespace-nowrap" style={{ color: "color-mix(in srgb, var(--page-fg) 82%, var(--muted-foreground) 18%)" }}>
+                              <div
+                                className="text-xs whitespace-nowrap"
+                                style={{ color: "color-mix(in srgb, var(--page-fg) 82%, var(--muted-foreground) 18%)" }}
+                              >
                                 {currentLang === "en" ? level.name : level.nameAr}
                               </div>
                             </div>
@@ -402,21 +426,16 @@ export default function MaturityAssessmentPage() {
                 {/* Lines */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ filter: "blur(0.5px)" }}>
                   {maturityLevels.map((level, index) => {
-                    const angle = index * 60 * (Math.PI / 180)
-                    const radius = 185
-                    const cx = 230
-                    const cy = 230
-                    const x2 = cx + Math.cos(angle) * radius
-                    const y2 = cy + Math.sin(angle) * radius
+                    const p = orbitPoints[index]
                     const isActive = activeLevel === index
 
                     return (
                       <line
                         key={index}
-                        x1={cx}
-                        y1={cy}
-                        x2={x2}
-                        y2={y2}
+                        x1={p.cx}
+                        y1={p.cy}
+                        x2={p.x2}
+                        y2={p.y2}
                         stroke={isActive ? level.color : "color-mix(in srgb, var(--border) 55%, transparent)"}
                         strokeWidth={isActive ? 2.2 : 1}
                         opacity={isActive ? 0.85 : 0.28}
@@ -468,14 +487,18 @@ export default function MaturityAssessmentPage() {
                 >
                   <div
                     className="absolute top-0 right-0 w-16 h-16 rounded-tr-2xl"
-                    style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), transparent)" }}
+                    style={{
+                      background:
+                        "linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), transparent)",
+                    }}
                   />
 
                   <div className="relative">
                     <div
                       className="w-16 h-16 rounded-xl flex items-center justify-center mb-4"
                       style={{
-                        background: "linear-gradient(135deg, color-mix(in srgb, var(--primary) 55%, transparent), color-mix(in srgb, var(--accent) 45%, transparent))",
+                        background:
+                          "linear-gradient(135deg, color-mix(in srgb, var(--primary) 55%, transparent), color-mix(in srgb, var(--accent) 45%, transparent))",
                         transform: isActive ? "scale(1.04)" : "scale(1)",
                         animation: isActive ? "softBounce 1.2s ease-in-out infinite" : "none",
                       }}
@@ -490,7 +513,10 @@ export default function MaturityAssessmentPage() {
                       {currentLang === "en" ? domain.description : domain.descriptionAr}
                     </p>
 
-                    <div className="mt-4 h-2 rounded-full overflow-hidden" style={{ background: "color-mix(in srgb, var(--border) 35%, transparent)" }}>
+                    <div
+                      className="mt-4 h-2 rounded-full overflow-hidden"
+                      style={{ background: "color-mix(in srgb, var(--border) 35%, transparent)" }}
+                    >
                       <div
                         className="h-full rounded-full transition-all duration-1000"
                         style={{
@@ -532,14 +558,18 @@ export default function MaturityAssessmentPage() {
                 >
                   <div
                     className="absolute top-0 right-0 w-16 h-16 rounded-tr-2xl opacity-80"
-                    style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--primary) 20%, transparent), transparent)" }}
+                    style={{
+                      background:
+                        "linear-gradient(135deg, color-mix(in srgb, var(--primary) 20%, transparent), transparent)",
+                    }}
                   />
 
                   <div className="relative">
                     <div
                       className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
                       style={{
-                        background: "linear-gradient(135deg, color-mix(in srgb, var(--primary) 22%, transparent), color-mix(in srgb, var(--accent) 18%, transparent))",
+                        background:
+                          "linear-gradient(135deg, color-mix(in srgb, var(--primary) 22%, transparent), color-mix(in srgb, var(--accent) 18%, transparent))",
                       }}
                     >
                       <IconComponent className="w-7 h-7" style={{ color: "color-mix(in srgb, var(--primary) 70%, white 30%)" }} />
@@ -622,7 +652,8 @@ export default function MaturityAssessmentPage() {
               backdropFilter: "blur(10px)",
             }}
           >
-            <div className="absolute inset-0 opacity-10">
+            {/* ✅ مهم: لا تلتقط الضغط */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
               <div
                 className="absolute top-0 left-0 w-full h-full"
                 style={{
@@ -637,56 +668,108 @@ export default function MaturityAssessmentPage() {
               <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: "var(--page-fg)" }}>
                 {currentLang === "en" ? "Ready to Measure Your Maturity?" : "هل أنت مستعد لقياس نضج الأمن السيبراني؟"}
               </h2>
-              <p className="text-xl mb-8" style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}>
+
+              <p
+                className="text-xl mb-8"
+                style={{ color: "color-mix(in srgb, var(--page-fg) 75%, var(--muted-foreground) 25%)" }}
+              >
                 {currentLang === "en"
                   ? "Get a comprehensive maturity assessment and strategic roadmap for cybersecurity excellence"
                   : "احصل على تقييم شامل للنضج وخارطة طريق استراتيجية للتميز في الأمن السيبراني"}
               </p>
 
-              <button
-                className="px-8 py-4 text-white font-semibold rounded-xl hover:scale-105 transition-all inline-flex items-center gap-2"
-                style={{ background: "linear-gradient(90deg, var(--primary), var(--accent))" }}
-              >
-                {currentLang === "en" ? "Schedule Assessment" : "جدولة التقييم"}
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              
+
+              {/* ✅ Book Demo + Contact Us */}
+              <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+                <MotionLink
+                  href="/book-demo"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-xl font-semibold text-white shadow-lg"
+                  style={{ background: "linear-gradient(90deg, var(--primary), var(--accent))" }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {currentLang === "en" ? "Book Demo" : "احجز ديمو"}
+                </MotionLink>
+
+                <MotionLink
+                  href="/talk-to-us"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-xl font-semibold border"
+                  style={{
+                    borderColor: "color-mix(in srgb, var(--border) 70%, transparent)",
+                    background: "color-mix(in srgb, var(--card-bg) 18%, transparent)",
+                    color: "var(--page-fg)",
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {currentLang === "en" ? "Contact Us" : "تواصل معنا"}
+                </MotionLink>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <SharedFooter />
-
       <style jsx global>{`
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         @keyframes orbitClockwise {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
         }
 
         @keyframes counterRotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(-360deg); }
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(-360deg);
+          }
         }
 
         @keyframes softPulse {
-          0% { opacity: 0.35; }
-          50% { opacity: 0.85; }
-          100% { opacity: 0.35; }
+          0% {
+            opacity: 0.35;
+          }
+          50% {
+            opacity: 0.85;
+          }
+          100% {
+            opacity: 0.35;
+          }
         }
 
         @keyframes softBounce {
-          0%, 100% { transform: translateY(0) scale(1.04); }
-          50% { transform: translateY(-4px) scale(1.04); }
+          0%,
+          100% {
+            transform: translateY(0) scale(1.04);
+          }
+          50% {
+            transform: translateY(-4px) scale(1.04);
+          }
         }
 
         @keyframes movePattern {
-          0% { transform: translate(0, 0); }
-          100% { transform: translate(30px, 30px); }
+          0% {
+            transform: translate(0, 0);
+          }
+          100% {
+            transform: translate(30px, 30px);
+          }
         }
 
         .orbit-rotator {

@@ -15,8 +15,6 @@ import {
   CloudCog,
   Network,
 } from "lucide-react"
-import { Navbar } from "@/components/navbar"
-import { SharedFooter } from "@/components/shared-footer"
 import { useTheme } from "@/contexts/theme-context"
 
 export default function CloudServicesPage() {
@@ -146,7 +144,6 @@ export default function CloudServicesPage() {
 
   return (
     <div className="min-h-screen bg-[var(--page-bg)] text-[var(--page-fg)]">
-      <Navbar />
 
       {/* Hero Section with Animated Cloud */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
@@ -337,7 +334,6 @@ export default function CloudServicesPage() {
         </div>
       </section>
 
-      <SharedFooter />
 
       <style jsx>{`
         @keyframes fadeInUp {

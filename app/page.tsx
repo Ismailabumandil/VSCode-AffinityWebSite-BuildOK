@@ -2,16 +2,11 @@
 // my vibe Code in memory of Ismail Abumandil 25/12/2015 tieme : 11:07 pm
 import React, { useEffect, useMemo, useState, useRef } from "react"
 import Image from "next/image"
-
-import Navbar from "@/components/navbar"
-import { SharedFooterComponent as SharedFooter } from "@/components/shared-footer"
-import ScrollToTop from "@/components/scroll-to-top"
 import { AnimatedCounter } from "@/components/animated-counter"
-import { ScrollProgress } from "@/components/scroll-progress"
 import { MagneticButton } from "@/components/magnetic-button"
 import { TextReveal } from "@/components/text-reveal"
 import { ParticleNetwork } from "@/components/particle-network"
-import ChatWidget from "@/components/chat-widget"
+import OccasionModal from "@/components/occasion-modal"
 import {
   ShieldCheck,
   Shield,
@@ -80,6 +75,9 @@ export default function Home() {
 
   const [animationPhase, setAnimationPhase] = useState(0)
   const [activeStep, setActiveStep] = useState(0)
+    // Added state for OccasionModal
+  const [isModalOpen, setIsModalOpen] = useState(true)
+
 
   // ✅ Blue Neon theme tokens (driven by your global.css CSS variables)
   // Keep the same "currentTheme" shape used throughout the page to avoid changing structure/animation.
@@ -425,6 +423,12 @@ export default function Home() {
         },
 
         ctas: { primary: "Start Your Journey", secondary: "Explore Solutions", contact: "Contact Us" },
+        // Ismail : Added content for OccasionModal, It could be any occasion like New Year, Eid, etc.
+          newYearGreeting: {
+          title: "Happy New Year!",
+          message: "Wishing you a prosperous and innovative year ahead from Affinity Technology.",
+          cta: "Explore Solutions",
+        },
       },
 
       ar: {
@@ -647,6 +651,12 @@ export default function Home() {
 
         ctas: { primary: "ابدأ رحلتك", secondary: "استعرض الحلول", contact: "تواصل معنا" },
       },
+      // Added Arabic content for OccasionModal
+        newYearGreeting: {
+          title: "سنة جديدة سعيدة!",
+          message: "نتمنى لك عامًا مليئًا بالازدهار والابتكار من Affinity Technology.",
+          cta: "استعرض الحلول",
+        },
     }),
     [],
   )
@@ -776,29 +786,46 @@ export default function Home() {
 
   return (
     <main
-      className="min-h-screen"
+      className="min-h-screen relative overflow-hidden"
       dir={language === "ar" ? "rtl" : "ltr"}
-      style={{
-        background: `
-          radial-gradient(1100px 700px at 18% 10%, ${currentTheme.glow} 0%, transparent 58%),
-          radial-gradient(900px 650px at 88% 18%, ${currentTheme.glow2} 0%, transparent 60%),
-          linear-gradient(135deg, ${currentTheme.bgStart} 0%, ${currentTheme.bgMid} 55%, ${currentTheme.bgEnd} 100%)
-        `,
-        color: currentTheme.text,
-        ["--bgStart" as any]: currentTheme.bgStart,
-        ["--bgMid" as any]: (currentTheme as any).bgMid ?? currentTheme.bgStart,
-        ["--bgEnd" as any]: currentTheme.bgEnd,
-        ["--text" as any]: currentTheme.text,
-        ["--accent" as any]: currentTheme.accent,
-        ["--accent2" as any]: currentTheme.accent2,
-        ["--muted" as any]: currentTheme.muted,
-        ["--glass" as any]: currentTheme.glass,
-        ["--glass2" as any]: currentTheme.glass2,
-        ["--border" as any]: currentTheme.border,
-        backgroundColor: currentTheme.bg,
-      }}
+      style={
+        {
+          background: `linear-gradient(135deg, var(--background) 0%, color-mix(in srgb, var(--card) 95%, var(--primary)) 50%, var(--background) 100%)`,
+          "--primary": "#00bfff",
+          "--primary-foreground": "#ffffff",
+          "--secondary": "#1a1a2e",
+          "--accent": "#7c3aed",
+          "--muted": "#64748b",
+          "--card": "#0f172a",
+          "--border": "#334155",
+          "--glow": "rgba(0, 191, 255, 0.15)",
+          "--neon-sky": "#00bfff",
+          "--neon-purple": "#7c3aed",
+        } as React.CSSProperties
+      }
+
     >
-      <ScrollProgress color={currentTheme.accent} />
+      <OccasionModal
+        occasionType="new-year"
+        title={{
+          en: "Happy New Year",
+          ar: "سنة جديدة سعيدة",
+        }}
+        subtitle={{
+          en: "Welcome to 2026",
+          ar: "مرحباً بعام 2026",
+        }}
+        message={{
+          en: "Wishing all our valued partners and clients a year filled with success, innovation, and prosperity. Thank you for being part of our journey. Here's to achieving new milestones together!",
+          ar: "نتمنى لجميع شركائنا وعملائنا الكرام عاماً مليئاً بالنجاح والابتكار والازدهار. شكراً لكونكم جزءاً من رحلتنا. نتطلع لتحقيق إنجازات جديدة معاً!",
+        }}
+        year="2026"
+        companyName="affinity Technology"
+        logoSrc="/images/affinity-icon-white.svg"
+        enabled={true}
+        storageKey="affinity-new-year-2026"
+      />
+
 
       {/* Ambient layer */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -816,7 +843,6 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
-        <Navbar />
         {/* <LoadingBar /> REMOVED: Removed LoadingBar component */}
 
         <main>
@@ -1710,11 +1736,8 @@ export default function Home() {
           </section>
         </main>
 
-        <SharedFooter />
       </div>
 
-      <ChatWidget />
-      <ScrollToTop />
 
      
     </main>

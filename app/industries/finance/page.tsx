@@ -1,12 +1,6 @@
 "use client"
 
 import { useEffect, useMemo } from "react"
-import BackgroundTLogos from "@/components/background-t-logos"
-import Navbar from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ScrollToTop from "@/components/scroll-to-top"
-import SharedFooter from "@/components/shared-footer"
-import ChatWidget from "@/components/chat-widget"
 import Image from "next/image"
 import ScrollReveal from "@/components/scroll-reveal"
 import { useTheme } from "@/contexts/theme-context"
@@ -35,12 +29,8 @@ export default function FinancePage() {
         color: "var(--page-fg)",
       }}
     >
-      <BackgroundTLogos />
 
-      {/* ✅ Navbar uses global theme/lang */}
-      <Navbar />
 
-      <Breadcrumb currentLang={language} />
 
       <ScrollReveal direction="fade">
         <section className="relative pt-32 pb-20 px-4">
@@ -133,9 +123,6 @@ export default function FinancePage() {
         </div>
       </section>
 
-      <ChatWidget />
-      <ScrollToTop />
-      <SharedFooter/>
     </div>
   )
 }

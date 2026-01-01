@@ -1,12 +1,6 @@
 "use client"
 
 import { useEffect, useMemo } from "react"
-import BackgroundTLogos from "@/components/background-t-logos"
-import Navbar from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import ScrollToTop from "@/components/scroll-to-top"
-import SharedFooter from "@/components/shared-footer"
-import ChatWidget from "@/components/chat-widget"
 import Image from "next/image"
 import ScrollReveal from "@/components/scroll-reveal"
 import { useTheme } from "@/contexts/theme-context"
@@ -36,12 +30,8 @@ export default function HospitalityPage() {
         color: "var(--page-fg)",
       }}
     >
-      <BackgroundTLogos />
 
-      {/* ✅ Navbar uses global theme/lang */}
-      <Navbar/>
 
-      <Breadcrumb currentLang={language} />
 
       <ScrollReveal direction="fade">
         <section className="relative pt-32 pb-20 px-4">
@@ -133,10 +123,31 @@ export default function HospitalityPage() {
           </div>
         </div>
       </section>
-
-      <ChatWidget/>
-      <ScrollToTop />
-      <SharedFooter />
+{/* CTA Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <ScrollReveal direction="up">
+            <h2 className="text-5xl md:text-6xl font-black mb-8" style={{ color: currentTheme.accent }}>
+              {language === "en" ? "Ready to Transform Your Hospitality Business?" : "جاهز لتحويل عملك في الضيافة؟"}
+            </h2>
+            <p className="text-2xl opacity-90 mb-12">
+              {language === "en"
+                ? "Let's discuss how our technology solutions can elevate your member experience."
+                : "دعنا نناقش كيف يمكن لحلولنا التقنية أن ترفع تجربة عملائك."}
+            </p>
+            <a
+              href="/book-demo"
+              className="inline-block px-12 py-6 rounded-full text-xl font-black transition-all duration-300 hover:scale-110 pulse-glow"
+              style={{
+                backgroundColor: "var(--accent)",
+                color: "var(--page-bg)",
+              }}
+            >
+              {language === "en" ? "Schedule a Demo" : "احجز عرضًا توضيحيًا"}
+            </a>
+          </ScrollReveal>
+        </div>
+      </section>
     </div>
   )
 }
