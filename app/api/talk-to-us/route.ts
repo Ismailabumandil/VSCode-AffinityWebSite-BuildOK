@@ -1,274 +1,371 @@
-import { NextResponse } from "next/server"
 import nodemailer from "nodemailer"
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
-type Payload = {
-  name: string
-  email: string
+type Source = "chat" | "careers"
+
+type LeadPayload = {
+  source?: Source // ✅ يحدد مصدر الإرسال (chat / careers)
+
+  lang?: "ar" | "en"
+  category?: string
+  score?: number
+  intent?: string
+
+  name?: string
+  company?: string
+  email?: string
   phone?: string
-  subject: string
-  message: string
-  page?: string
-  lang?: string
+
+  answers?: Record<string, string>
+  conversationSummary?: string
+  pageUrl?: string
+  notes?: string
 }
 
-const isEmail = (x: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x)
+function requireEnv(name: string) {
+  const v = process.env[name]
+  if (!v) throw new Error(`Missing env: ${name}`)
+  return v
+}
 
-// Rate limit بسيط بالذاكرة — ممتاز للمشاريع الصغيرة
-const RATE = new Map<string, { count: number; ts: number }>()
-function rateLimit(key: string, limit = 8, windowMs = 60_000) {
-  const now = Date.now()
-  const hit = RATE.get(key)
-  if (!hit) {
-    RATE.set(key, { count: 1, ts: now })
-    return { ok: true }
+const safe = (v?: string) => (v && String(v).trim() ? String(v).trim() : "-")
+
+/* ===============================
+   Careers Templates (Internal CV + Applicant Receipt)
+=============================== */
+function buildCareersInternalCvHtml(payload: LeadPayload) {
+  const A = payload.answers ?? {}
+  const get = (k: string) => safe(A[k])
+
+  const fullName = safe(payload.name)
+
+  const linkedin = get("LinkedIn")
+  const github = get("GitHub")
+  const portfolio = get("Portfolio URL")
+
+  const link = (label: string, value: string) => {
+    if (value === "-") return `<span><b>${label}:</b> -</span>`
+    const href = value.startsWith("http") ? value : `https://${value}`
+    return `<span><b>${label}:</b> <a style="color:#8dd0ff" href="${href}">${value}</a></span>`
   }
-  if (now - hit.ts > windowMs) {
-    RATE.set(key, { count: 1, ts: now })
-    return { ok: true }
+
+  return `
+  <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.65;color:#111;">
+    <div style="max-width:860px;margin:0 auto;padding:18px;">
+      
+      <div style="border-radius:14px;padding:18px;background:#0b1220;color:#fff;">
+        <div style="font-size:22px;font-weight:800;">${fullName}</div>
+
+        <div style="opacity:.92;margin-top:6px;font-size:13px;">
+          <b>Email:</b> ${safe(payload.email)} &nbsp; | &nbsp;
+          <b>Phone:</b> ${safe(payload.phone)}
+        </div>
+
+        <div style="opacity:.85;margin-top:6px;font-size:13px;">
+          <b>Location:</b> ${get("Current Location")} &nbsp; | &nbsp;
+          <b>Nationality:</b> ${get("Nationality")} &nbsp; | &nbsp;
+          <b>DOB:</b> ${get("Date of Birth")}
+        </div>
+
+        <div style="opacity:.9;margin-top:10px;font-size:13px;">
+          ${link("LinkedIn", linkedin)} &nbsp; | &nbsp;
+          ${link("GitHub", github)} &nbsp; | &nbsp;
+          ${link("Portfolio", portfolio)}
+        </div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:270px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
+          <div style="font-weight:800;font-size:14px;margin-bottom:8px;">Target Role</div>
+          <div style="font-size:13px;">
+            <div><b>Department:</b> ${get("Desired Department")}</div>
+            <div><b>Position:</b> ${get("Desired Position")}</div>
+            <div><b>Work Type:</b> ${get("Work Type")}</div>
+            <div><b>Expected Salary:</b> ${get("Expected Salary")}</div>
+            <div><b>Availability:</b> ${get("Availability Date")}</div>
+            <div><b>Notice Period:</b> ${get("Notice Period")}</div>
+          </div>
+        </div>
+
+        <div style="flex:1;min-width:270px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
+          <div style="font-weight:800;font-size:14px;margin-bottom:8px;">Quick Summary</div>
+          <div style="font-size:13px;">
+            <div><b>Years of Experience:</b> ${get("Years of Experience")}</div>
+            <div><b>Current Position:</b> ${get("Current Position")}</div>
+            <div><b>Current Company:</b> ${get("Current Company")}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
+        <div style="font-weight:800;font-size:14px;margin-bottom:8px;">Education</div>
+        <div style="font-size:13px;">
+          <div><b>Degree:</b> ${get("Highest Degree")}</div>
+          <div><b>Field:</b> ${get("Field of Study")}</div>
+          <div><b>University:</b> ${get("University")}</div>
+          <div><b>Graduation Year:</b> ${get("Graduation Year")}</div>
+          <div style="margin-top:8px;"><b>Certifications:</b>
+            <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
+              "Additional Certifications"
+            )}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
+        <div style="font-weight:800;font-size:14px;margin-bottom:8px;">Work Experience</div>
+        <div style="font-size:13px;">
+          <div><b>Years:</b> ${get("Years of Experience")}</div>
+          <div><b>Role:</b> ${get("Current Position")}</div>
+          <div><b>Company:</b> ${get("Current Company")}</div>
+
+          <div style="margin-top:8px;"><b>Experience Summary:</b>
+            <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
+              "Previous Experience Summary"
+            )}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
+        <div style="font-weight:800;font-size:14px;margin-bottom:8px;">Skills</div>
+        <div style="font-size:13px;">
+          <div><b>Technical Skills:</b> ${get("Technical Skills")}</div>
+          <div><b>Programming Languages:</b> ${get("Programming Languages")}</div>
+          <div><b>Frameworks:</b> ${get("Frameworks")}</div>
+          <div><b>Tools:</b> ${get("Tools")}</div>
+
+          <div style="margin-top:8px;"><b>Soft Skills:</b>
+            <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
+              "Soft Skills"
+            )}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
+        <div style="font-weight:800;font-size:14px;margin-bottom:8px;">Motivation & Achievements</div>
+        <div style="font-size:13px;">
+          <div><b>Why Join Us:</b>
+            <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
+              "Why Join Us"
+            )}</div>
+          </div>
+
+          <div style="margin-top:10px;"><b>Key Achievements:</b>
+            <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
+              "Key Achievements"
+            )}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
+        <div style="font-weight:800;font-size:14px;margin-bottom:8px;">References</div>
+        <div style="font-size:13px;white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;">${get(
+          "References"
+        )}</div>
+      </div>
+
+      <div style="margin-top:14px;font-size:12px;color:#666;">
+        <div><b>Source:</b> careers</div>
+        <div><b>Page URL:</b> ${safe(payload.pageUrl)}</div>
+      </div>
+    </div>
+  </div>`
+}
+
+function buildCareersApplicantHtml(payload: LeadPayload, lang: "ar" | "en") {
+  const fullName = safe(payload.name)
+  const pos = safe(payload.answers?.["Desired Position"])
+  const dept = safe(payload.answers?.["Desired Department"])
+
+  if (lang === "ar") {
+    return `
+      <div style="font-family:Arial;line-height:1.8">
+        <h2>تم استلام طلبك بنجاح ✅</h2>
+        <p>أستاذ/أستاذة ${fullName}،</p>
+        <p>
+          شكرًا لتقديمك على وظائف <b>Affinity Technology</b>.
+          تم استلام طلبك وسيقوم فريقنا بمراجعته.
+        </p>
+        <p><b>المنصب:</b> ${pos}<br/><b>القسم:</b> ${dept}</p>
+        <p style="font-size:12px;color:#777">إذا احتجنا معلومات إضافية سنقوم بالتواصل معك عبر هذا البريد.</p>
+        <br/>
+        <p>مع التحية،<br/><b>Affinity Technology Team</b></p>
+        <p style="font-size:12px;color:#777">رسالة تأكيد تلقائية.</p>
+      </div>
+    `
   }
-  if (hit.count >= limit) return { ok: false }
-  hit.count++
-  RATE.set(key, hit)
-  return { ok: true }
+
+  return `
+    <div style="font-family:Arial;line-height:1.8">
+      <h2>Application received ✅</h2>
+      <p>${payload.name ? `Hi ${fullName},` : "Hello,"}</p>
+      <p>
+        Thank you for applying to <b>Affinity Technology</b>.
+        We have received your application and our team will review it.
+      </p>
+      <p><b>Position:</b> ${pos}<br/><b>Department:</b> ${dept}</p>
+      <p style="font-size:12px;color:#777">If we need additional details, we’ll reach out via this email.</p>
+      <br/>
+      <p>Best regards,<br/><b>Affinity Technology Team</b></p>
+      <p style="font-size:12px;color:#777">This is an automated confirmation email.</p>
+    </div>
+  `
 }
 
-function escapeHtml(s: string) {
-  return s
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;")
-}
-
+/* ===============================
+   Route Handler
+=============================== */
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown"
+    const payload = (await req.json()) as LeadPayload
 
-    const rl = rateLimit(ip)
-    if (!rl.ok) {
-      return NextResponse.json({ ok: false, error: "Too many requests. Try again shortly." }, { status: 429 })
-    }
+    const user = requireEnv("SMTP_USER")
+    const pass = requireEnv("SMTP_PASS")
+    const from = requireEnv("MAIL_FROM")
+    const to = requireEnv("MAIL_TO")
 
-    console.log("[v0] Talk-to-us API called from IP:", ip)
-
-    let body: Partial<Payload> & { honey?: string }
-    try {
-      body = await req.json()
-    } catch (parseError) {
-      console.error("[v0] Failed to parse request body:", parseError)
-      return NextResponse.json({ ok: false, error: "Invalid request body" }, { status: 400 })
-    }
-
-    console.log("[v0] Request body received:", { name: body.name, email: body.email, subject: body.subject })
-
-    // ✅ نستخدم honey للتعامل مع bots
-
-    // Honeypot
-    if (body.honey && String(body.honey).trim().length > 0) {
-      return NextResponse.json({ ok: true })
-    }
-
-    const name = String(body.name ?? "").trim()
-    const email = String(body.email ?? "").trim()
-    const phone = String(body.phone ?? "").trim()
-    const subject = String(body.subject ?? "").trim()
-    const message = String(body.message ?? "").trim()
-    const page = String(body.page ?? "/talk-to-us").trim()
-    const lang = String(body.lang ?? "en").trim()
-
-    if (!name || name.length < 2) {
-      return NextResponse.json({ ok: false, error: "Name is required." }, { status: 400 })
-    }
-    if (!email || !isEmail(email)) {
-      return NextResponse.json({ ok: false, error: "Valid email is required." }, { status: 400 })
-    }
-    if (!subject || subject.length < 3) {
-      return NextResponse.json({ ok: false, error: "Subject is required." }, { status: 400 })
-    }
-    if (!message || message.length < 10) {
-      return NextResponse.json({ ok: false, error: "Message is required (min 10 chars)." }, { status: 400 })
-    }
-
-    // ✅ ENV
-    const SMTP_HOST = process.env.SMTP_HOST
-    const SMTP_PORT = Number(process.env.SMTP_PORT || "587")
-    const SMTP_USER = process.env.SMTP_USER
-    const SMTP_PASS = process.env.SMTP_PASS
-    const MAIL_TO = process.env.MAIL_TO
-    const MAIL_FROM = process.env.MAIL_FROM || SMTP_USER
-
-    if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !MAIL_TO || !MAIL_FROM) {
-      return NextResponse.json({ ok: false, error: "Email server is not configured." }, { status: 500 })
-    }
-
-    console.log("[v0] Attempting to send email with SMTP config:", {
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      user: SMTP_USER,
-      mailTo: MAIL_TO,
-      mailFrom: MAIL_FROM,
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user, pass },
     })
 
-    let transporter
-    try {
-      transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: SMTP_PORT,
-        secure: SMTP_PORT === 465,
-        auth: { user: SMTP_USER, pass: SMTP_PASS },
+    const lang: "ar" | "en" = payload.lang === "en" ? "en" : "ar"
+    const source: Source = payload.source === "careers" ? "careers" : "chat"
+
+    /* ===============================
+       CAREERS FLOW
+    =============================== */
+    if (source === "careers") {
+      const desiredPos = safe(payload.answers?.["Desired Position"])
+      const internalSubject =
+        lang === "ar"
+          ? `📄 طلب توظيف — ${safe(payload.name)} (${desiredPos !== "-" ? desiredPos : "Careers"})`
+          : `📄 Career Application — ${safe(payload.name)} (${desiredPos !== "-" ? desiredPos : "Careers"})`
+
+      const internalHtml = buildCareersInternalCvHtml(payload)
+
+      await transporter.sendMail({
+        from: `"Affinity Careers" <${from}>`,
+        to,
+        subject: internalSubject,
+        html: internalHtml,
+        replyTo: payload.email || undefined,
       })
 
-      await transporter.verify()
-      console.log("[v0] SMTP connection verified successfully")
-    } catch (transportError) {
-      console.error("[v0] SMTP connection failed:", transportError)
-      return NextResponse.json(
-        { ok: false, error: "Email server connection failed. Please try again later." },
-        { status: 500 },
-      )
+      // Applicant receipt
+      if (payload.email) {
+        const applicantSubject =
+          lang === "ar"
+            ? "تم استلام طلب التوظيف — Affinity Technology"
+            : "Application Received — Affinity Technology"
+
+        const applicantHtml = buildCareersApplicantHtml(payload, lang)
+
+        await transporter.sendMail({
+          from: `"Affinity Technology" <${from}>`,
+          to: payload.email,
+          subject: applicantSubject,
+          html: applicantHtml,
+        })
+      }
+
+      return Response.json({ ok: true })
     }
 
-    const now = new Date()
-    const subjectLine = `📩 New Talk-To-Us: ${subject} — ${name}`
+    /* ===============================
+       CHAT FLOW (existing behavior)
+    =============================== */
+    const internalSubject =
+      lang === "ar"
+        ? `📩 New Inquiry — ${payload.category ?? "General"}`
+        : `📩 New Inquiry — ${payload.category ?? "General"}`
 
-    // ✅ Email to company
-    const htmlToCompany = `
-      <div style="font-family:Arial,Helvetica,sans-serif;background:#0b1220;color:#fff;padding:20px">
-        <div style="max-width:760px;margin:0 auto;border:1px solid rgba(56,189,248,.25);border-radius:16px;overflow:hidden">
-          <div style="padding:18px 20px;background:linear-gradient(90deg, rgba(56,189,248,.22), rgba(167,139,250,.18))">
-            <div style="font-size:18px;font-weight:700">Affinity Technology — Talk To Us</div>
-            <div style="opacity:.85;margin-top:6px">Message received from website form</div>
-          </div>
-
-          <div style="padding:18px 20px;background:#061018">
-            <table style="width:100%;border-collapse:collapse">
-              <tr>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);opacity:.85;width:160px">Name</td>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700">${escapeHtml(name)}</td>
-              </tr>
-              <tr>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);opacity:.85">Email</td>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08)">
-                  <a style="color:#38bdf8" href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);opacity:.85">Phone</td>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08)">${escapeHtml(phone || "-")}</td>
-              </tr>
-              <tr>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);opacity:.85">Subject</td>
-                <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700">${escapeHtml(subject)}</td>
-              </tr>
-              <tr>
-                <td style="padding:10px;opacity:.85;vertical-align:top">Message</td>
-                <td style="padding:10px;white-space:pre-wrap;line-height:1.6">${escapeHtml(message)}</td>
-              </tr>
-            </table>
-
-            <div style="margin-top:16px;padding:12px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.04)">
-              <div style="opacity:.85;font-size:12px">Meta</div>
-              <div style="margin-top:6px;font-size:12px;opacity:.9">
-                Time: ${escapeHtml(now.toISOString())}<br/>
-                Lang: ${escapeHtml(lang)}<br/>
-                Page: ${escapeHtml(page)}<br/>
-                IP: ${escapeHtml(ip)}
-              </div>
-            </div>
-          </div>
-        </div>
+    const internalHtml = `
+      <div style="font-family:Arial;line-height:1.6">
+        <h2>New Website Submission (Chat)</h2>
+        <p><b>Category:</b> ${safe(payload.category)} | <b>Score:</b> ${payload.score ?? 0} | <b>Intent:</b> ${safe(
+      payload.intent
+    )}</p>
+        <p><b>Page URL:</b> ${safe(payload.pageUrl)}</p>
+        <hr/>
+        <p><b>Name:</b> ${safe(payload.name)}</p>
+        <p><b>Company:</b> ${safe(payload.company)}</p>
+        <p><b>Email:</b> ${safe(payload.email)}</p>
+        <p><b>Phone:</b> ${safe(payload.phone)}</p>
+        <hr/>
+        <p><b>Answers:</b></p>
+        <pre style="background:#f6f6f6;padding:12px;border-radius:8px;white-space:pre-wrap">${JSON.stringify(
+          payload.answers ?? {},
+          null,
+          2
+        )}</pre>
+        <p><b>Summary:</b></p>
+        <pre style="background:#f6f6f6;padding:12px;border-radius:8px;white-space:pre-wrap">${safe(
+          payload.conversationSummary
+        )}</pre>
+        <p><b>Transcript / Notes:</b></p>
+        <pre style="background:#f6f6f6;padding:12px;border-radius:8px;white-space:pre-wrap">${safe(payload.notes)}</pre>
+        <div style="margin-top:10px;font-size:12px;color:#666;"><b>Source:</b> chat</div>
       </div>
     `
 
-    try {
-      await transporter.sendMail({
-        from: `Affinity Website <${MAIL_FROM}>`,
-        to: MAIL_TO,
-        replyTo: email, // ✅ الرد يروح للعميل
-        subject: subjectLine,
-        html: htmlToCompany,
-        text:
-          `New message from Talk To Us\n\n` +
-          `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nSubject: ${subject}\n\n` +
-          `Message:\n${message}\n\n` +
-          `Time: ${now.toISOString()}\nPage: ${page}\nLang: ${lang}\nIP: ${ip}`,
-      })
-      console.log("[v0] Company email sent successfully")
-    } catch (emailError) {
-      console.error("[v0] Failed to send company email:", emailError)
-      return NextResponse.json(
-        { ok: false, error: "Failed to send email to company. Please try again." },
-        { status: 500 },
-      )
-    }
+    await transporter.sendMail({
+      from: `"Affinity AI Agent" <${from}>`,
+      to,
+      subject: internalSubject,
+      html: internalHtml,
+      replyTo: payload.email || undefined,
+    })
 
-    // ✅ Auto-Reply to client
-    const isAr = lang === "ar"
-    const clientSubject = isAr
-      ? "✅ تم استلام رسالتك — Affinity Technology"
-      : "✅ We received your message — Affinity Technology"
+    // Client thank-you (chat)
+    if (payload.email) {
+      const clientSubject =
+        lang === "ar"
+          ? "شكرًا لتواصلك مع Affinity Technology"
+          : "Thank you for contacting Affinity Technology"
 
-    const clientHtml = `
-      <div style="font-family:Arial,Helvetica,sans-serif;background:#0b1220;color:#fff;padding:20px">
-        <div style="max-width:760px;margin:0 auto;border:1px solid rgba(56,189,248,.25);border-radius:16px;overflow:hidden">
-          <div style="padding:18px 20px;background:linear-gradient(90deg, rgba(56,189,248,.22), rgba(167,139,250,.18))">
-            <div style="font-size:18px;font-weight:700">Affinity Technology</div>
-            <div style="opacity:.85;margin-top:6px">${isAr ? "شكرًا لتواصلك معنا" : "Thank you for contacting us"}</div>
-          </div>
-
-          <div style="padding:18px 20px;background:#061018">
-            <p style="margin:0 0 12px;line-height:1.7;opacity:.92">
-              ${
-                isAr
-                  ? `مرحبًا ${escapeHtml(name)}،<br/>وصلتنا رسالتك بنجاح. فريقنا بيرد عليك قريبًا بإذن الله.`
-                  : `Hi ${escapeHtml(name)},<br/>We’ve received your message successfully. Our team will get back to you shortly.`
-              }
-            </p>
-
-            <div style="margin-top:14px;padding:12px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.04)">
-              <div style="opacity:.85;font-size:12px">${isAr ? "ملخص الرسالة" : "Message summary"}</div>
-              <div style="margin-top:8px;font-size:13px;line-height:1.6;white-space:pre-wrap">
-                <b>${isAr ? "الموضوع" : "Subject"}:</b> ${escapeHtml(subject)}<br/>
-                <b>${isAr ? "الرسالة" : "Message"}:</b><br/>
-                ${escapeHtml(message)}
-              </div>
+      const clientHtml =
+        lang === "ar"
+          ? `
+            <div style="font-family:Arial;line-height:1.8">
+              <h2>شكرًا لتواصلك معنا 👋</h2>
+              <p>أستاذ/أستاذة ${payload.name ?? ""}،</p>
+              <p>تم استلام طلبك بنجاح، وسيقوم أحد أعضاء فريقنا بالتواصل معك قريبًا.</p>
+              <p>إذا كان لديك تفاصيل إضافية، يمكنك الرد مباشرة على هذا الإيميل.</p>
+              <br/>
+              <p>مع خالص التحية،</p>
+              <p><b>Affinity Technology Team</b></p>
+              <p style="font-size:12px;color:#777">رسالة تأكيد تلقائية.</p>
             </div>
+          `
+          : `
+            <div style="font-family:Arial;line-height:1.8">
+              <h2>Thank you for reaching out 👋</h2>
+              <p>${payload.name ? `Hi ${payload.name},` : "Hello,"}</p>
+              <p>We’ve received your request, and one of our team members will get back to you shortly.</p>
+              <p>If you’d like to add more details, feel free to reply to this email.</p>
+              <br/>
+              <p>Best regards,</p>
+              <p><b>Affinity Technology Team</b></p>
+              <p style="font-size:12px;color:#777">This is an automated confirmation email.</p>
+            </div>
+          `
 
-            <p style="margin:14px 0 0;opacity:.75;font-size:12px">
-              ${isAr ? "هذه رسالة تلقائية. لا تحتاج للرد عليها." : "This is an automated email; you don’t need to reply."}
-            </p>
-          </div>
-        </div>
-      </div>
-    `
-
-    try {
       await transporter.sendMail({
-        from: `Affinity Website <${MAIL_FROM}>`,
-        to: email,
+        from: `"Affinity Technology" <${from}>`,
+        to: payload.email,
         subject: clientSubject,
         html: clientHtml,
-        text: isAr
-          ? `مرحبًا ${name}\n\nتم استلام رسالتك بنجاح. سنرد عليك قريبًا.\n\nالموضوع: ${subject}\n\n${message}`
-          : `Hi ${name}\n\nWe received your message successfully. We'll get back to you shortly.\n\nSubject: ${subject}\n\n${message}`,
       })
-      console.log("[v0] Client auto-reply sent successfully")
-    } catch (replyError) {
-      console.error("[v0] Failed to send client auto-reply:", replyError)
-      console.log("[v0] Company email was sent successfully, but auto-reply failed")
     }
 
-    return NextResponse.json({ ok: true })
-  } catch (error) {
-    console.error("[v0] Error details:", {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined,
-    })
-    return NextResponse.json(
-      { ok: false, error: "An unexpected error occurred. Please try again later." },
-      { status: 500 },
-    )
+    return Response.json({ ok: true })
+  } catch (e: any) {
+    console.error("EMAIL_ERROR:", e)
+    return Response.json({ ok: false, error: e?.message ?? "Email failed" }, { status: 500 })
   }
 }

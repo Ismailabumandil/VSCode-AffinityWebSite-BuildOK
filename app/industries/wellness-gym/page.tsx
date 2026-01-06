@@ -4,6 +4,8 @@ import { useEffect, useMemo } from "react"
 import Image from "next/image"
 import ScrollReveal from "@/components/scroll-reveal"
 import { useTheme } from "@/contexts/theme-context"
+import Link from "next/link"
+import { motion } from "framer-motion"
 
 export default function WellnessGymPage() {
   const { theme, language, getCurrentThemeColors } = useTheme()
@@ -435,32 +437,49 @@ export default function WellnessGymPage() {
           </div>
         </section>
       </ScrollReveal>
-
-      {/* CTA Section */}
-      <section className="py-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <ScrollReveal direction="up">
-            <h2 className="text-5xl md:text-6xl font-black mb-8" style={{ color: currentTheme.accent }}>
+{/* CTA */}
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative p-12 rounded-2xl overflow-hidden"
+            style={{
+              backgroundImage:
+                "linear-gradient(135deg, rgba(56,189,248,0.20), rgba(34,211,238,0.10), rgba(2,6,23,0.55))",
+              border: "1px solid rgba(56,189,248,0.20)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+              
+            <div className="relative text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {language === "en" ? "Ready to Transform Your Fitness Center?" : "جاهز لتحويل مركز اللياقة الخاص بك؟"}
-            </h2>
-            <p className="text-2xl opacity-90 mb-12">
-              {language === "en"
+              </h2>
+              <p className="text-white/80 mb-8 max-w-2xl mx-auto">
+                {language === "en"
                 ? "Let's discuss how our technology solutions can elevate your members experience."
                 : "دعنا نناقش كيف يمكن لحلولنا التقنية أن ترفع تجربة عملائك."}
-            </p>
-            <a
-              href="/book-demo"
-              className="inline-block px-12 py-6 rounded-full text-xl font-black transition-all duration-300 hover:scale-110 pulse-glow"
-              style={{
-                backgroundColor: "var(--accent)",
-                color: "var(--page-bg)",
-              }}
-            >
-              {language === "en" ? "Schedule a Demo" : "احجز عرضًا توضيحيًا"}
-            </a>
-          </ScrollReveal>
+              </p>
+              <Link href="/book-demo">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 rounded-lg font-semibold hover:shadow-xl transition-all"
+                  style={{
+                    background: "#ffffff",
+                    color: "#0ea5e9",
+                  }}
+                >
+                  {language === "en" ? "Schedule a Consultation" : "احجز استشارة"}
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
+      
 
     </div>
   )
