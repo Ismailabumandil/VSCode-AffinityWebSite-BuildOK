@@ -20,46 +20,57 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
     setIsSubmitting(true)
     setStatus("")
 
-    console.log("Affinity Technology Contact form submitting with data:", formData)
-
     try {
+      // ✅ يطابق LeadPayload الموجود في الروات الشغال عندك
+      const payload = {
+        lang: language,
+        category: "Talk To Us",
+        intent: "General Inquiry",
+        score: 0,
+
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: "-",
+
+        // ✅ هذا اللي كان ناقص ويسبب “بودي فاضي”
+        answers: {
+          Subject: formData.subject,
+          Message: formData.message,
+        },
+        conversationSummary: formData.subject,
+        notes: formData.message,
+
+        // ✅ الروات عندك يستخدم pageUrl (مو page)
+        pageUrl: typeof window !== "undefined" ? window.location.href : "-",
+      }
+
+      // ✅ رجعناه للمسار الشغال عندك (عشان ما يطلع 404)
       const response = await fetch("/api/talk-to-us", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          lang: language,
-          page: window.location.pathname,
-        }),
+        body: JSON.stringify(payload),
       })
 
-      console.log("Affinity Technology API response status:", response.status)
-      console.log("Affinity Technology API response headers:", Object.fromEntries(response.headers.entries()))
+      const contentType = response.headers.get("content-type") || ""
+      let data: any = null
 
-      let data
-      const contentType = response.headers.get("content-type")
-      if (contentType && contentType.includes("application/json")) {
+      if (contentType.includes("application/json")) {
         data = await response.json()
-        console.log("[v0] API response data:", data)
       } else {
         const text = await response.text()
-        console.error("Affinity Technology API returned non-JSON response:", text)
-        data = { ok: false, error: text }
+        data = { ok: false, error: `Non-JSON response. HTTP ${response.status}` }
+        console.log("Non-JSON response (first 200 chars):", text.slice(0, 200))
       }
 
-      if (response.ok && data.ok) {
+      if (response.ok && data?.ok) {
         setStatus(language === "ar" ? "✅ تم إرسال رسالتك بنجاح!" : "✅ Message sent successfully!")
         setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
       } else {
-        const errorMessage = data.error || "Unknown error occurred"
-        console.error("[v0] API error:", errorMessage)
-        setStatus(
-          language === "ar" ? `❌ فشل إرسال الرسالة: ${errorMessage}` : `❌ Failed to send message: ${errorMessage}`,
-        )
+        const errorMessage = data?.error || "Unknown error occurred"
+        setStatus(language === "ar" ? `❌ فشل إرسال الرسالة: ${errorMessage}` : `❌ Failed to send message: ${errorMessage}`)
       }
-    } catch (error) {
-      console.error("[v0] Form submission error:", error)
-      console.error("[v0] Error stack:", error instanceof Error ? error.stack : "No stack trace")
+    } catch {
       setStatus(
         language === "ar"
           ? "❌ حدث خطأ في الاتصال. تأكد من اتصالك بالإنترنت وحاول مرة أخرى."
@@ -79,7 +90,6 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Full Name */}
         <div>
           <label htmlFor="contact-name" className="block text-sm font-medium mb-2 text-foreground">
             {language === "ar" ? "الاسم الكامل" : "Full Name"} *
@@ -96,7 +106,6 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
           />
         </div>
 
-        {/* Email */}
         <div>
           <label htmlFor="contact-email" className="block text-sm font-medium mb-2 text-foreground">
             {language === "ar" ? "البريد الإلكتروني" : "Email Address"} *
@@ -113,7 +122,6 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
           />
         </div>
 
-        {/* Phone */}
         <div>
           <label htmlFor="contact-phone" className="block text-sm font-medium mb-2 text-foreground">
             {language === "ar" ? "رقم الهاتف" : "Phone Number"}
@@ -129,7 +137,6 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
           />
         </div>
 
-        {/* Subject */}
         <div>
           <label htmlFor="contact-subject" className="block text-sm font-medium mb-2 text-foreground">
             {language === "ar" ? "الموضوع" : "Subject"} *
@@ -146,7 +153,6 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
           />
         </div>
 
-        {/* Message */}
         <div>
           <label htmlFor="contact-message" className="block text-sm font-medium mb-2 text-foreground">
             {language === "ar" ? "الرسالة" : "Message"} *
@@ -163,7 +169,6 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
           />
         </div>
 
-        {/* Status Message */}
         {status && (
           <div
             className={`p-4 rounded-lg ${
@@ -176,19 +181,12 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
           </div>
         )}
 
-        {/* Submit Button */}
         <Button
           type="submit"
           disabled={isSubmitting}
           className="w-full py-3 px-6 bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
         >
-          {isSubmitting
-            ? language === "ar"
-              ? "جاري الإرسال..."
-              : "Sending..."
-            : language === "ar"
-              ? "إرسال الرسالة"
-              : "Send Message"}
+          {isSubmitting ? (language === "ar" ? "جاري الإرسال..." : "Sending...") : language === "ar" ? "إرسال الرسالة" : "Send Message"}
         </Button>
       </form>
     </Card>

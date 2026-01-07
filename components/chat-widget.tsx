@@ -16,9 +16,9 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-/** ✅ إرسال إيميل عند الإغلاق (مقاوم للإغلاق) — مسارك: /api/talk-to-us/email */
+/** ✅ إرسال إيميل عند الإغلاق — الآن على /api/talk-to-us */
 function sendEmailOnClose(payload: any) {
-  const url = "/api/talk-to-us/email"
+  const url = "/api/talk-to-us" // ✅ موحّد
   const body = JSON.stringify(payload)
 
   if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
@@ -48,20 +48,24 @@ export function ChatWidget() {
   const [isBotTyping, setIsBotTyping] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const endRef = useRef<HTMLDivElement | null>(null)
-  const hasUserMessageRef = useRef(false)           // هل المستخدم كتب شيء؟
-  const lastSentSignatureRef = useRef<string>("")   // توقيع آخر ترانسكربت أرسلناه
-  const sessionIdRef = useRef<string>("")           // جلسة واحدة للشات
-const [showWelcome, setShowWelcome] = useState(false)
-const hasAcceptedRef = useRef(false)
 
-useEffect(() => {
-  if (typeof window === "undefined") return
-  const accepted = localStorage.getItem("affinity_chat_welcome_accepted") === "1"
-  hasAcceptedRef.current = accepted
-}, [])
+  const hasUserMessageRef = useRef(false)
+  const lastSentSignatureRef = useRef<string>("")
+  const sessionIdRef = useRef<string>("")
 
+  // ✅ مهم: turn counter عشان السيرفر يعرف first turn
+  const turnRef = useRef<number>(0)
 
-  // Greeting once
+  const [showWelcome, setShowWelcome] = useState(false)
+  const hasAcceptedRef = useRef(false)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const accepted = localStorage.getItem("affinity_chat_welcome_accepted") === "1"
+    hasAcceptedRef.current = accepted
+  }, [])
+
+  // Greeting once (UI-only)
   useEffect(() => {
     setChatMessages((prev) => {
       if (prev.length > 0) return prev
@@ -90,10 +94,28 @@ useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
   }, [chatMessages, showChat, isBotTyping, isSending])
 
+  // session id + last sent signature
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const existing = localStorage.getItem("affinity_chat_session_id")
+    const sid = existing || `sid_${Date.now()}_${Math.random().toString(16).slice(2)}`
+    localStorage.setItem("affinity_chat_session_id", sid)
+    sessionIdRef.current = sid
+
+    lastSentSignatureRef.current = localStorage.getItem(`affinity_chat_last_sent_${sid}`) || ""
+  }, [])
+
   const callAgent = async (message: string) => {
     setIsSending(true)
     try {
-      const payload = { message, lang }
+      const payload = {
+        message,
+        lang,
+        // ✅ أهم تعديل
+        turn: turnRef.current,
+        sessionId: sessionIdRef.current,
+      }
 
       const res = await fetch("/api/talk-to-us/chat", {
         method: "POST",
@@ -116,18 +138,6 @@ useEffect(() => {
       setIsSending(false)
     }
   }
-useEffect(() => {
-  if (typeof window === "undefined") return
-
-  // session id ثابت لكل session (غيره لو تبغاه لكل refresh)
-  const existing = localStorage.getItem("affinity_chat_session_id")
-  const sid = existing || `sid_${Date.now()}_${Math.random().toString(16).slice(2)}`
-  localStorage.setItem("affinity_chat_session_id", sid)
-  sessionIdRef.current = sid
-
-  // آخر شيء أرسلناه (عشان ما نكرر)
-  lastSentSignatureRef.current = localStorage.getItem(`affinity_chat_last_sent_${sid}`) || ""
-}, [])
 
   const handleChatSend = async () => {
     const text = chatInput.trim()
@@ -136,9 +146,13 @@ useEffect(() => {
     setChatMessages((prev) => [...prev, { role: "user", text }])
     hasUserMessageRef.current = true
 
+    // ✅ زِد turn بعد إرسال المستخدم
+    // (أول رسالة مستخدم = turn 0)
+    const currentTurn = turnRef.current
+    turnRef.current = currentTurn + 1
+
     setChatInput("")
 
-    // Bubble typing (fake small delay)
     setIsBotTyping(true)
     await sleep(200)
     setIsBotTyping(false)
@@ -174,53 +188,47 @@ useEffect(() => {
     }
   }
 
- const handleClose = () => {
-  // ✅ 1) لو المستخدم ما كتب ولا شيء: لا ترسل
-  if (!hasUserMessageRef.current) {
+  const handleClose = () => {
+    // ✅ لو المستخدم ما كتب شيء: لا ترسل
+    if (!hasUserMessageRef.current) {
+      setShowChat(false)
+      return
+    }
+
+    const transcript = buildTranscript(chatMessages).trim()
+    if (!transcript) {
+      setShowChat(false)
+      return
+    }
+
+    const signature = `${transcript.length}:${transcript.slice(-120)}`
+    const sid = sessionIdRef.current || "default"
+
+    if (signature === lastSentSignatureRef.current) {
+      setShowChat(false)
+      return
+    }
+
+    lastSentSignatureRef.current = signature
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`affinity_chat_last_sent_${sid}`, signature)
+    }
+
+    // ✅ إرسال الإيميل موحّد
+    sendEmailOnClose({
+      lang,
+      category: "Chat",
+      score: 10,
+      intent: "chat_closed_auto_email",
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      conversationSummary: lang === "en" ? "Chat closed by user (auto email)." : "المستخدم أغلق الشات (إيميل تلقائي).",
+      notes: transcript,
+      answers: {},
+      sessionId: sid,
+    })
+
     setShowChat(false)
-    return
   }
-
-  const transcript = buildTranscript(chatMessages).trim()
-
-  // أمان: لو ما فيه نص فعلي
-  if (!transcript) {
-    setShowChat(false)
-    return
-  }
-
-  // ✅ 2) توقيع بسيط يمنع تكرار نفس الإرسال
-  // (طول + آخر 120 حرف كافي جداً كسجنتشر سريع بدون مكتبات)
-  const signature = `${transcript.length}:${transcript.slice(-120)}`
-  const sid = sessionIdRef.current || "default"
-
-  // لو نفس التوقيع أرسلناه قبل: لا ترسل مرة ثانية
-  if (signature === lastSentSignatureRef.current) {
-    setShowChat(false)
-    return
-  }
-
-  // خزنه محليًا حتى لو المستخدم فتح/قفل
-  lastSentSignatureRef.current = signature
-  if (typeof window !== "undefined") {
-    localStorage.setItem(`affinity_chat_last_sent_${sid}`, signature)
-  }
-
-  // ✅ إرسال الإيميل الآن (مرة واحدة لكل تغيير)
-  sendEmailOnClose({
-    lang,
-    category: "Unknown",
-    score: 10,
-    intent: "chat_closed_auto_email",
-    pageUrl: typeof window !== "undefined" ? window.location.href : "",
-    conversationSummary: lang === "en" ? "Chat closed by user (auto email)." : "المستخدم أغلق الشات (إيميل تلقائي).",
-    notes: transcript,
-    answers: {},
-    sessionId: sid,
-  })
-
-  setShowChat(false)
-}
 
   return (
     <div
@@ -228,32 +236,34 @@ useEffect(() => {
       style={{ [isAr ? "left" : "right"]: "1rem" }}
       dir={isAr ? "rtl" : "ltr"}
     >
-      <FloatingCircle ariaLabel={lang === "en" ? "Open chat" : "فتح الشات"} 
-onClick={() => {
-  // لو وافق سابقًا افتح الشات مباشرة
-  if (hasAcceptedRef.current || (typeof window !== "undefined" && localStorage.getItem("affinity_chat_welcome_accepted") === "1")) {
-    setShowChat((s) => !s)
-    return
-  }
-
-  // أول مرة: اعرض المودال بدل فتح الشات
-  setShowWelcome(true)
-}}
-        >
+      <FloatingCircle
+        ariaLabel={lang === "en" ? "Open chat" : "فتح الشات"}
+        onClick={() => {
+          if (
+            hasAcceptedRef.current ||
+            (typeof window !== "undefined" && localStorage.getItem("affinity_chat_welcome_accepted") === "1")
+          ) {
+            setShowChat((s) => !s)
+            return
+          }
+          setShowWelcome(true)
+        }}
+      >
         <MessageCircle size={22} />
       </FloatingCircle>
-<ChatWelcomeModal
-  isOpen={showWelcome}
-  onDecline={() => setShowWelcome(false)}
-  onAccept={() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("affinity_chat_welcome_accepted", "1")
-    }
-    hasAcceptedRef.current = true
-    setShowWelcome(false)
-    setShowChat(true) // افتح الشات بعد الموافقة
-  }}
-/>
+
+      <ChatWelcomeModal
+        isOpen={showWelcome}
+        onDecline={() => setShowWelcome(false)}
+        onAccept={() => {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("affinity_chat_welcome_accepted", "1")
+          }
+          hasAcceptedRef.current = true
+          setShowWelcome(false)
+          setShowChat(true)
+        }}
+      />
 
       {showChat && (
         <div

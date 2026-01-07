@@ -5,6 +5,8 @@ import ScrollToTop from "@/components/scroll-to-top"
 import { ScrollProgress } from "@/components/scroll-progress"
 import ChatWidget from "@/components/chat-widget"
 import ReadingProgress from "@/components/reading-progress"
+import { RecaptchaLoader } from "@/components/recaptcha-loader"
+
 
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
@@ -73,6 +75,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <QuickNav />
           <Analytics />
           <CookieConsent />
+          <RecaptchaLoader />
+
         </Providers>
       </body>
     </html>

@@ -225,13 +225,13 @@ export default function CareersPage() {
         },
       }
 
-      const res = await fetch("/api/talk-to-us/chat/email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
+const res = await fetch("/api/talk-to-us/email", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+})
 
-      const contentType = res.headers.get("content-type") || ""
+const contentType = res.headers.get("content-type") || ""
 const raw = await res.text()
 
 let data: any = null
@@ -239,22 +239,27 @@ if (contentType.includes("application/json")) {
   try {
     data = JSON.parse(raw)
   } catch {
-    // JSON header but body not JSON
     throw new Error(`Invalid JSON response. Status=${res.status}. Body=${raw.slice(0, 200)}`)
   }
 } else {
-  // HTML/redirect/auth page
   throw new Error(
-    `Non-JSON response (likely 404/redirect/auth). Status=${res.status}. Content-Type=${contentType}. Body=${raw.slice(
-      0,
-      200
-    )}`
+    `Non-JSON response (likely 404/redirect/auth). Status=${res.status}. Content-Type=${contentType}. Body=${raw.slice(0, 200)}`
   )
 }
 
-if (!res.ok || !data?.ok) throw new Error(data?.error || "Email send failed")
+// ✅ مرونة: يقبل ok=true أو أي رسالة نجاح
+const ok =
+  res.ok &&
+  (data?.ok === true ||
+    data?.success === true ||
+    data?.sent === true ||
+    typeof data?.reply === "string" ||
+    typeof data?.message === "string")
+
+if (!ok) throw new Error(data?.error || data?.details || "Email send failed")
 
 setSubmitSuccess(true)
+
     } catch (e) {
       console.error("CAREERS_SUBMIT_ERROR:", e)
       alert(currentLang === "en" ? "Failed to submit. Please try again." : "فشل الإرسال. حاول مرة أخرى.")

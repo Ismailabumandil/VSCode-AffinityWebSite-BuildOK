@@ -32,7 +32,6 @@ export default function BookDemoPage() {
   const [appointment, setAppointment] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-
   // Auto-detect timezone
   useEffect(() => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -93,40 +92,49 @@ export default function BookDemoPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  // ✅ NEW: send appointment email to your internal inbox via /api/talk-to-us/email
+  // ✅ send appointment email via the SAME working route: /api/talk-to-us
   const sendBookDemoEmail = async (appointmentData: any) => {
     try {
-      const serviceLabel = serviceTypes.find((s) => s.value === appointmentData.serviceType)?.label ?? appointmentData.serviceType
-      const teamLabel = teamMembers.find((m) => m.value === appointmentData.teamMember)?.name ?? appointmentData.teamMember
+      const serviceLabel =
+        serviceTypes.find((s) => s.value === appointmentData.serviceType)?.label ?? appointmentData.serviceType
+
+      const teamLabel =
+        teamMembers.find((m) => m.value === appointmentData.teamMember)?.name ?? appointmentData.teamMember
 
       const payload = {
         lang: language === "en" ? "en" : "ar",
-        category: "BookDemo",
-        intent: "book_demo_form",
+
+        category: "Book Demo",
+        intent: "Request Demo",
         score: 90,
+
         name: appointmentData.name,
-        company: appointmentData.company,
+        company: appointmentData.company || "-",
         email: appointmentData.email,
-        phone: appointmentData.phone,
+        phone: appointmentData.phone || "-",
+
         pageUrl: typeof window !== "undefined" ? window.location.href : "/book-demo",
+
         conversationSummary:
           language === "en"
             ? "New Book Demo submission from website form."
             : "طلب جديد لحجز عرض توضيحي من فورم الموقع.",
+
         answers: {
-          serviceType: serviceLabel,
-          preferredDate: appointmentData.preferredDate,
-          preferredTime: appointmentData.preferredTime,
-          teamMember: teamLabel,
-          timezone: appointmentData.timezone,
+          "Service Type": serviceLabel,
+          "Preferred Date": appointmentData.preferredDate,
+          "Preferred Time": appointmentData.preferredTime,
+          "Selected Expert": teamLabel,
+          Timezone: appointmentData.timezone,
         },
+
         notes:
           language === "en"
             ? `Message:\n${appointmentData.message || "-"}\n\nMeta:\nID=${appointmentData.id}\nCreatedAt=${appointmentData.createdAt}`
             : `الرسالة:\n${appointmentData.message || "-"}\n\nبيانات إضافية:\nID=${appointmentData.id}\nCreatedAt=${appointmentData.createdAt}`,
       }
 
-      await fetch("/api/talk-to-us/email", {
+      await fetch("/api/talk-to-us", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -134,32 +142,30 @@ export default function BookDemoPage() {
       }).catch(() => {})
     } catch (e) {
       console.error("BOOK_DEMO_EMAIL_ERROR:", e)
-      // لا نوقف تجربة المستخدم ولا نغير UI حسب طلبك
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
+    e.preventDefault()
 
-  if (validateForm()) {
-    setIsSubmitting(true) // 🔥 START LOADING
+    if (validateForm()) {
+      setIsSubmitting(true)
 
-    const appointmentData = {
-      ...formData,
-      id: `DEMO-${Date.now()}`,
-      createdAt: new Date().toISOString(),
+      const appointmentData = {
+        ...formData,
+        id: `DEMO-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      }
+
+      await sendBookDemoEmail(appointmentData)
+
+      setAppointment(appointmentData)
+      localStorage.setItem("appointment", JSON.stringify(appointmentData))
+      setIsSubmitted(true)
+
+      setIsSubmitting(false)
     }
-
-    await sendBookDemoEmail(appointmentData)
-
-    setAppointment(appointmentData)
-    localStorage.setItem("appointment", JSON.stringify(appointmentData))
-    setIsSubmitted(true)
-
-    setIsSubmitting(false) // 🔥 END LOADING
   }
-}
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -221,8 +227,6 @@ export default function BookDemoPage() {
         color: "var(--page-fg)",
       }}
     >
-
-
       <main className="pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-6">
           <ScrollReveal>
@@ -460,27 +464,26 @@ export default function BookDemoPage() {
                     </p>
 
                     <button
-  type="submit"
-  disabled={isSubmitting}
-  className="w-full py-4 px-8 rounded-xl font-bold text-lg transition-all hover:scale-105 hover:shadow-2xl disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-3"
-  style={{
-    background: "linear-gradient(135deg, var(--primary), var(--secondary))",
-    color: "#fff",
-  }}
->
-  {isSubmitting && (
-    <span className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
-  )}
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-4 px-8 rounded-xl font-bold text-lg transition-all hover:scale-105 hover:shadow-2xl disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-3"
+                      style={{
+                        background: "linear-gradient(135deg, var(--primary), var(--secondary))",
+                        color: "#fff",
+                      }}
+                    >
+                      {isSubmitting && (
+                        <span className="w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                      )}
 
-  {isSubmitting
-    ? language === "en"
-      ? "Sending..."
-      : "جاري الإرسال..."
-    : language === "en"
-    ? "Schedule Demo"
-    : "جدولة العرض التوضيحي"}
-</button>
-
+                      {isSubmitting
+                        ? language === "en"
+                          ? "Sending..."
+                          : "جاري الإرسال..."
+                        : language === "en"
+                          ? "Schedule Demo"
+                          : "جدولة العرض التوضيحي"}
+                    </button>
                   </div>
                 </div>
               </form>
@@ -596,8 +599,7 @@ export default function BookDemoPage() {
         </div>
       </main>
 
-      
-      <KeyboardShortcuts  />
+      <KeyboardShortcuts />
     </div>
   )
 }
