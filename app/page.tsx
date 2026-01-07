@@ -2,6 +2,8 @@
 // my vibe Code in memory of Ismail Abumandil 25/12/2015 tieme : 11:07 pm
 import React, { useEffect, useMemo, useState, useRef } from "react"
 import Image from "next/image"
+
+import Navbar from "@/components/navbar"
 import { AnimatedCounter } from "@/components/animated-counter"
 import { MagneticButton } from "@/components/magnetic-button"
 import { TextReveal } from "@/components/text-reveal"
@@ -75,9 +77,8 @@ export default function Home() {
 
   const [animationPhase, setAnimationPhase] = useState(0)
   const [activeStep, setActiveStep] = useState(0)
-    // Added state for OccasionModal
+  // Added state for OccasionModal
   const [isModalOpen, setIsModalOpen] = useState(true)
-
 
   // ✅ Blue Neon theme tokens (driven by your global.css CSS variables)
   // Keep the same "currentTheme" shape used throughout the page to avoid changing structure/animation.
@@ -423,8 +424,8 @@ export default function Home() {
         },
 
         ctas: { primary: "Start Your Journey", secondary: "Explore Solutions", contact: "Contact Us" },
-        // Ismail : Added content for OccasionModal, It could be any occasion like New Year, Eid, etc.
-          newYearGreeting: {
+        // Added content for OccasionModal
+        newYearGreeting: {
           title: "Happy New Year!",
           message: "Wishing you a prosperous and innovative year ahead from Affinity Technology.",
           cta: "Explore Solutions",
@@ -434,17 +435,17 @@ export default function Home() {
       ar: {
         hero: {
           title: "Affinity Technology",
-          tagline: "Beyond Technology , Into Intelligence.",
-          subtitle: "تمكين مستقبل منشأتك",
+          tagline: "Beyond Technology. Into Intelligence.",
+          subtitle: "تمكين مستقبل مؤسستك",
           description:
-            "حلول الشركات ، ريادة في الأمن السيبراني، وأطر تحول رقمي—مصممة لتحديث العمليات وتعزيز الثقة وتسريع النمو.",
+            "حلول مؤسسية، ريادة في الأمن السيبراني، وأطر تحول رقمي—مصممة لتحديث العمليات وتعزيز الثقة وتسريع النمو.",
           ctaPrimary: "ابدأ رحلتك",
           ctaSecondary: "استعرض الحلول",
           highlights: [
             { icon: BadgeCheck, title: "معايير عالمية", desc: "NIST • ISO 27001 • CIS • ITIL • COBIT" },
             { icon: ShieldCheck, title: "الأمان أولاً", desc: "حوكمة • مخاطر • امتثال • اختبارات اختراق" },
             { icon: Network, title: "منظومة متكاملة", desc: "واجهات ربط آمنة • قابلية توسع" },
-            { icon: Sparkles, title: "تحول مدعوم بالذكاءالصناعي", desc: "أتمتة • تحليلات • وكلاء ذكيين" },
+            { icon: Sparkles, title: "تحول مدعوم بالذكاء", desc: "أتمتة • تحليلات • وكلاء ذكيين" },
           ],
           trust: ["القطاع الحكومي", "القطاع المالي", "الضيافة", "المؤسسات", "F&B", "الاتصالات"],
         },
@@ -513,8 +514,8 @@ export default function Home() {
 
         solutions: {
           kicker: "الحلول",
-          title: "حوّل منشأتك بأنظمة ذكية",
-          subtitle: "منصات جاهزة للمنشآت ومصممة للبيئات الكبيرة ومتعددة الأقسام.",
+          title: "حوّل مؤسستك بأنظمة مؤسسية ذكية",
+          subtitle: "منصات جاهزة للمؤسسات ومصممة للبيئات الكبيرة ومتعددة الأقسام.",
           items: [
             {
               icon: Boxes,
@@ -541,11 +542,11 @@ export default function Home() {
 
         digital: {
           kicker: "التحول الرقمي",
-          title: "تمكين مستقبل منشأتك بذكاء وكفاءة",
+          title: "تمكين مستقبل مؤسستك بذكاء وكفاءة",
           subtitle: "توافق استراتيجي • حوكمة مؤسسية • خارطة طريق قابلة للتوسع • تحديث مدعوم بالذكاء الاصطناعي.",
           cards: [
             {
-              title: "التحول الرقمي والتقنية",
+              title: "التحول المؤسسي",
               bullets: ["الاستراتيجية الرقمية والتحليل", "تنفيذ التقنيات الحديثة", "حوكمة تقنية المعلومات والسياسات"],
             },
             {
@@ -650,13 +651,13 @@ export default function Home() {
         },
 
         ctas: { primary: "ابدأ رحلتك", secondary: "استعرض الحلول", contact: "تواصل معنا" },
-      },
-      // Added Arabic content for OccasionModal
+        // Added Arabic content for OccasionModal
         newYearGreeting: {
           title: "سنة جديدة سعيدة!",
           message: "نتمنى لك عامًا مليئًا بالازدهار والابتكار من Affinity Technology.",
           cta: "استعرض الحلول",
         },
+      },
     }),
     [],
   )
@@ -803,7 +804,6 @@ export default function Home() {
           "--neon-purple": "#7c3aed",
         } as React.CSSProperties
       }
-
     >
       <OccasionModal
         occasionType="new-year"
@@ -812,18 +812,18 @@ export default function Home() {
           ar: "سنة جديدة سعيدة",
         }}
         subtitle={{
-          en: "Welcome to 2026",
-          ar: "مرحباً بعام 2026",
+          en: "Welcome to 2025",
+          ar: "مرحباً بعام 2025",
         }}
         message={{
           en: "Wishing all our valued partners and clients a year filled with success, innovation, and prosperity. Thank you for being part of our journey. Here's to achieving new milestones together!",
           ar: "نتمنى لجميع شركائنا وعملائنا الكرام عاماً مليئاً بالنجاح والابتكار والازدهار. شكراً لكونكم جزءاً من رحلتنا. نتطلع لتحقيق إنجازات جديدة معاً!",
         }}
-        year="2026"
-        companyName="affinity Technology"
+        year="2025"
+        companyName="Affinity Technology"
         logoSrc="/images/affinity-icon-white.svg"
         enabled={true}
-        storageKey="affinity-new-year-2026"
+        storageKey="affinity-new-year-2025"
       />
 
 
@@ -843,7 +843,10 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
+        <Navbar />
         {/* <LoadingBar /> REMOVED: Removed LoadingBar component */}
+
+        {/* Removed OccasionModal as it's now handled by the new component above */}
 
         <main>
           {/* HERO */}
@@ -1306,8 +1309,8 @@ export default function Home() {
               <div className="relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-4 mb-14">
                 {/* Add connection line animations and highlight active/past steps */}
                 {[
-                  { icon: Database, label: language === "en" ? "Data Input & processing" : "إدخال البيانات ومعالجتها" },
-                  { icon: Settings, label: language === "en" ? "Deep Processing" : "المعالجة الدقيقة" },
+                  { icon: Database, label: language === "en" ? "Data Input" : "إدخال البيانات" },
+                  { icon: Settings, label: language === "en" ? "Processing" : "المعالجة" },
                   { icon: CheckCircle2, label: language === "en" ? "Validation" : "التحقق" },
                   { icon: Mail, label: language === "en" ? "Notification" : "الإشعارات" },
                   { icon: BarChart3, label: language === "en" ? "Reporting" : "التقارير" },
@@ -1558,35 +1561,20 @@ export default function Home() {
                     <div
                       className="mt-6 relative overflow-hidden rounded-2xl border"
                       style={{
-                        height: 110,
+                        height: 180,
                         borderColor: "var(--border)" as any,
                         backgroundColor: theme === "light" ? rgba("#ffffff", 0.35) : rgba("#000000", 0.18),
                       }}
                     >
-                      {" "}
-                      {/* Use theme */}
-                      <img
-                          src={`/ceholder-svg-key-87m5t-height-220-width-600-text-.jpg?key=87m5t&height=220&width=600&text=${encodeURIComponent(ind.title)}`}
-                          alt={ind.title}
-                          style={{
-                            position: "absolute",
-                            inset: 0,
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-
-                      <div
-                        className="absolute inset-0"
+                      <Image
+                        src={`/industry-${idx + 1}.jpg`}
+                        alt={ind.title}
+                        fill
+                        className="object-cover"
                         style={{
-                          background:
-                            theme === "light"
-                              ? `linear-gradient(90deg, ${rgba(palette.bgTints[4], 0.8)} 0%, transparent 100%)`
-                              : `linear-gradient(90deg, ${rgba(palette.shades[8], 0.65)} 0%, transparent 100%)`,
+                          filter: theme === "light" ? "brightness(1.05)" : "brightness(0.85)",
                         }}
-                      />{" "}
-                      {/* Use theme */}
+                      />
                     </div>
                   </GlassCard>
                 ))}
@@ -1738,8 +1726,6 @@ export default function Home() {
 
       </div>
 
-
-     
     </main>
   )
 }
