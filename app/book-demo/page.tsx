@@ -45,28 +45,36 @@ export default function BookDemoPage() {
     { value: "digital-transformation", label: language === "en" ? "Digital Transformation" : "التحول الرقمي" },
     { value: "data-analytics", label: language === "en" ? "Data Analytics" : "تحليلات البيانات" },
     { value: "custom-software", label: language === "en" ? "Custom Software Development" : "تطوير البرمجيات المخصصة" },
+    { value: "low-current", label: language === "en" ? "Low Current projects" : "مشاريع التيار المنخفض" },
+    { value: "Hardware and Contracts", label: language === "en" ? "Hardware and Contracts" : "الأجهزة والعقود" },
+    { value: "Tenders and Govt Projects", label: language === "en" ? "Tenders and Govt" : "المناقصات والمشاريع الحكومية" },
+    { value: "Digital Marketing", label: language === "en" ? "Digital Marketing" : "التسويق الرقمي" },
+
+    { value: "other", label: language === "en" ? "Other" : "أخرى" },
+
+
   ]
 
   const teamMembers = [
     {
-      value: "ahmed",
-      name: language === "en" ? "Ahmed Al-Rashid" : "أحمد الراشد",
+      value: "software",
+      name: language === "en" ? "Software Projects " : "مشاريع البرمجيات",
       role: language === "en" ? "Chief Solutions Architect" : "كبير مهندسي الحلول",
     },
     {
-      value: "fatima",
-      name: language === "en" ? "Fatima Al-Zahrani" : "فاطمة الزهراني",
+      value: "ai",
+      name: language === "en" ? "AI. Projects" : "مشاريع الذكاء الاصطناعي",
       role: language === "en" ? "AI Specialist" : "أخصائية الذكاء الاصطناعي",
     },
     {
-      value: "omar",
-      name: language === "en" ? "Omar Al-Mutairi" : "عمر المطيري",
-      role: language === "en" ? "Cloud Expert" : "خبير السحابة",
+      value: "dt",
+      name: language === "en" ? "Digital Transformation Projecta" : "مشاريع التحول الرقمي",
+      role: language === "en" ? "Cloud & Digital Transformation Experts " : "خبير السحابة والتحول الرقمي",
     },
     {
-      value: "sara",
-      name: language === "en" ? "Sara Al-Qahtani" : "سارة القحطاني",
-      role: language === "en" ? "Cybersecurity Lead" : "قائدة الأمن السيبراني",
+      value: "cs",
+      name: language === "en" ? "Cybersecurity Projects" : "مشاريع الأمن السيبراني",
+      role: language === "en" ? "Cybersecurity Expert" : "خبير الأمن السيبراني",
     },
   ]
 
