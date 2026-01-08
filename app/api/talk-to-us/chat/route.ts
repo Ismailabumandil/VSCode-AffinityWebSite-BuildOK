@@ -6,7 +6,7 @@ export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
 const FETCH_TIMEOUT_MS = 4500
-const MAX_PAGES = 8
+const MAX_PAGES = 77
 const MAX_SNIPPETS = 6
 const MAX_CONTEXT_CHARS = 7000
 const CACHE_TTL_MS = 20 * 60 * 1000
