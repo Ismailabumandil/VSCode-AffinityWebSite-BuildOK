@@ -101,7 +101,7 @@ export default function Home() {
     }),
     [],
   )
-
+  
   // ✅ Blue-Neon HEX palette (needed for rgba(...) helper which expects hex strings)
   const palette = useMemo(
     () => ({
@@ -814,8 +814,8 @@ export default function Home() {
           ar: "سنة جديدة سعيدة",
         }}
         subtitle={{
-          en: "Welcome to 2025",
-          ar: "مرحباً بعام 2025",
+          en: "Welcome to 2026",
+          ar: "مرحباً بعام 2026",
         }}
         message={{
           en: "Wishing all our valued partners and clients a year filled with success, innovation, and prosperity. Thank you for being part of our journey. Here's to achieving new milestones together!",
@@ -952,32 +952,23 @@ export default function Home() {
                 </p>
 
                 {/* CTA Buttons */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2, duration: 0.6 }}
-                  className="flex flex-wrap gap-6 items-center justify-center mt-10"
-                >
-                  <Link href="/start-journey">
-                    <MagneticButton strength={0.3}>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="group relative px-10 py-5 rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300"
-                        style={{
-                          background: `linear-gradient(135deg, ${currentTheme.accent}, ${currentTheme.accent2})`,
-                          color: "#fff",
-                          boxShadow: `0 10px 40px ${rgba(palette.tints[0], 0.35)}`,
-                        }}
-                      >
-                        <span className="relative z-10 flex items-center gap-3">
-                          {t.hero.ctaPrimary}
-                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </span>
-                      </motion.button>
-                    </MagneticButton>
-                  </Link>
-                </motion.div>
+
+<div className="flex flex-wrap gap-6 items-center justify-center mt-10">
+  <Link
+    href="/start-journey"
+    className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105"
+    style={{
+      background: `linear-gradient(135deg, ${currentTheme.accent}, ${currentTheme.accent2})`,
+      color: "#fff",
+      boxShadow: `0 10px 40px ${rgba(palette.tints[0], 0.35)}`,
+    }}
+  >
+    {t.hero.ctaPrimary}
+    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+  </Link>
+</div>
+
+
 
                 {/* trust row */}
                 <div className="space-y-3 pt-4">

@@ -32,6 +32,14 @@ const SharedFooterComponent = () => {
     { en: "CCTV & Surveillance", ar: "كاميرات المراقبة", url: "/low-current/cctv" },
     { en: "Industries", ar: "الصناعات", url: "/industries" },
   ]
+const [isSubscribing, setIsSubscribing] = useState(false)
+const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null)
+
+useEffect(() => {
+  if (!toast) return
+  const id = setTimeout(() => setToast(null), 2000) // ✅ يختفي بعد 2 ثانية
+  return () => clearTimeout(id)
+}, [toast])
 
   useEffect(() => {
     if (searchQuery.trim().length > 1) {
@@ -72,14 +80,32 @@ const SharedFooterComponent = () => {
     }
   }
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (email.trim()) {
-      // Here you would typically send to your newsletter API
-      alert(currentLang === "en" ? "Thank you for subscribing!" : "شكراً لاشتراكك!")
-      setEmail("")
-    }
+const handleNewsletterSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  const em = email.trim()
+  if (!em) return
+
+  try {
+    const res = await fetch("/api/talk-to-us/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: em,
+        lang: currentLang,
+        pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      }),
+    })
+
+    const data = await res.json().catch(() => ({} as any))
+    if (!res.ok || !data?.ok) throw new Error(data?.error || "subscribe_failed")
+
+    alert(currentLang === "en" ? "✅ Thank you for subscribing!" : "✅ شكراً لاشتراكك!")
+    setEmail("")
+  } catch (err) {
+    console.error("NEWSLETTER_SUBMIT_ERROR:", err)
+    alert(currentLang === "en" ? "Failed. Please try again." : "فشل الاشتراك. حاول مرة أخرى.")
   }
+}
 
   return (
     <footer
