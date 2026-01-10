@@ -76,7 +76,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Analytics />
           <CookieConsent />
           <RecaptchaLoader />
-
         </Providers>
       </body>
     </html>

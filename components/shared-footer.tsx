@@ -733,6 +733,20 @@ const handleNewsletterSubmit = async (e: React.FormEvent) => {
                 }}
               />
             </Link>
+            <Link
+              href="/service-request"
+              className="group relative text-sm font-medium transition-all duration-300"
+              style={{ color: "#0EA5E9" }}
+            >
+              <span className="relative z-10">{currentLang === "en" ? "Service Request" : "طلب خدمة"}</span>
+              <span
+                className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
+                style={{
+                  background: "linear-gradient(90deg, #0EA5E9 0%, #22D3EE 100%)",
+                  boxShadow: "0 0 8px rgba(14, 165, 233, 0.6)",
+                }}
+              />
+            </Link>
           </div>
         </div>
 

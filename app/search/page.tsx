@@ -1,11 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Navbar from "@/components/navbar"
-import SharedFooter from "@/components/shared-footer"
-import BackgroundTLogos from "@/components/background-t-logos"
-import ChatWidget from "@/components/chat-widget"
 import Link from "next/link"
+import { useTheme } from "@/contexts/theme-context"
 
 interface Product {
   id: string
@@ -33,22 +30,23 @@ function isProduct(item: SearchResult): item is Product {
   return item.type === "product"
 }
 
-function isPage(item: SearchResult): item is Page {
-  return item.type === "page"
-}
-
 export default function SearchPage() {
   const [query, setQuery] = useState("")
-
-  const [currentTheme, setCurrentTheme] = useState({
-    bg: "#25064c",
-    text: "#ffffff",
-    accent: "#836d98",
-  })
-  const [currentLang, setCurrentLang] = useState("en")
-  const [theme, setTheme] = useState("brand")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [recentSearches, setRecentSearches] = useState<string[]>([])
+
+  // ✅ خذ اللغة والثيم من الكونتكست
+  const { language, theme } = useTheme()
+
+  // ✅ map ثيم الكونتكست إلى ألوان الصفحة
+  const themes = {
+    brand: { bg: "#25064c", text: "#ffffff", accent: "#836d98" },
+    light: { bg: "#ffffff", text: "#25064c", accent: "#543871" },
+    dark: { bg: "#08010d", text: "#ffffff", accent: "#836d98" },
+  } as const
+
+  const currentTheme = themes[(theme as keyof typeof themes) ?? "brand"]
+  const currentLang = language ?? "en"
 
   // 🔹 جلب query من URL بدون useSearchParams
   useEffect(() => {
@@ -57,27 +55,15 @@ export default function SearchPage() {
     setQuery(q)
   }, [])
 
-  useEffect(() => {
-    const themes = {
-      brand: { bg: "#25064c", text: "#ffffff", accent: "#836d98" },
-      light: { bg: "#ffffff", text: "#25064c", accent: "#543871" },
-      dark: { bg: "#08010d", text: "#ffffff", accent: "#836d98" },
-    }
-    setCurrentTheme(themes[theme as keyof typeof themes])
-  }, [theme])
-
+  // ✅ dir/lang من الكونتكست (مو من localStorage)
   useEffect(() => {
     document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr"
     document.documentElement.lang = currentLang
   }, [currentLang])
 
+  // ✅ recent searches تظل من localStorage (عادي)
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "brand"
-    const savedLang = localStorage.getItem("language") || "en"
     const searches = JSON.parse(localStorage.getItem("recentSearches") || "[]")
-
-    setTheme(savedTheme)
-    setCurrentLang(savedLang)
     setRecentSearches(searches)
 
     if (query && !searches.includes(query)) {
@@ -203,9 +189,6 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: currentTheme.bg, color: currentTheme.text }}>
-      <BackgroundTLogos />
-      <Navbar />
-
       <main className="relative z-10 pt-32 pb-20 px-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-black mb-4" style={{ color: currentTheme.accent }}>
@@ -251,16 +234,11 @@ export default function SearchPage() {
                 </Link>
               ))
             ) : (
-              <p className="opacity-70">
-                {currentLang === "en" ? "No results found" : "لم يتم العثور على نتائج"}
-              </p>
+              <p className="opacity-70">{currentLang === "en" ? "No results found" : "لم يتم العثور على نتائج"}</p>
             )}
           </div>
         </div>
       </main>
-
-      <SharedFooter />
-      <ChatWidget />
     </div>
   )
 }
