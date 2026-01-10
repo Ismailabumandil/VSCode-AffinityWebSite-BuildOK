@@ -7,7 +7,7 @@ import { useState, useEffect } from "react"
 import { Facebook, Linkedin, Search, Mail, Github, Instagram } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 
-const SharedFooterComponent = () => {
+  const SharedFooterComponent = () => {
   const { theme: currentThemeMode, language } = useTheme()
   const currentLang = language
 
@@ -32,14 +32,8 @@ const SharedFooterComponent = () => {
     { en: "CCTV & Surveillance", ar: "كاميرات المراقبة", url: "/low-current/cctv" },
     { en: "Industries", ar: "الصناعات", url: "/industries" },
   ]
-const [isSubscribing, setIsSubscribing] = useState(false)
+const [isSending, setIsSending] = useState(false)
 const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null)
-
-useEffect(() => {
-  if (!toast) return
-  const id = setTimeout(() => setToast(null), 2000) // ✅ يختفي بعد 2 ثانية
-  return () => clearTimeout(id)
-}, [toast])
 
   useEffect(() => {
     if (searchQuery.trim().length > 1) {
@@ -86,6 +80,7 @@ const handleNewsletterSubmit = async (e: React.FormEvent) => {
   if (!em) return
 
   try {
+    setIsSending(true)
     const res = await fetch("/api/talk-to-us/newsletter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -97,13 +92,30 @@ const handleNewsletterSubmit = async (e: React.FormEvent) => {
     })
 
     const data = await res.json().catch(() => ({} as any))
-    if (!res.ok || !data?.ok) throw new Error(data?.error || "subscribe_failed")
-
-    alert(currentLang === "en" ? "✅ Thank you for subscribing!" : "✅ شكراً لاشتراكك!")
-    setEmail("")
+    const err = (data?.error || "").toString().toLowerCase()
+    if (res.ok && !err.includes("error") && !err.includes("failed")) {
+      setToast({
+        msg: currentLang === "en" ? "✅ Thank you for subscribing!" : "✅ شكراً لاشتراكك!",
+        type: "success"
+      })
+      setTimeout(() => setToast(null), 2500)
+      setEmail("")
+    } else {
+      setToast({
+        msg: currentLang === "en" ? "Failed to send message ❌ " : "فشل إرسال الرسالة ❌",
+        type: "error",
+      })
+      setTimeout(() => setToast(null), 3000)
+    }
   } catch (err) {
     console.error("NEWSLETTER_SUBMIT_ERROR:", err)
-    alert(currentLang === "en" ? "Failed. Please try again." : "فشل الاشتراك. حاول مرة أخرى.")
+    setToast({
+        msg: currentLang === "en" ? "Failed to send message ❌ " : "فشل إرسال الرسالة ❌",
+      type: "error",
+    })
+    setTimeout(() => setToast(null), 3000)
+  } finally {
+    setIsSending(false)
   }
 }
 
@@ -184,19 +196,32 @@ const handleNewsletterSubmit = async (e: React.FormEvent) => {
                   }}
                 />
                 <button
-                  type="submit"
-                  className="px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
-                  style={{
-                    backgroundColor: currentThemeMode === "dark" ? "#ffffff" : "#0EA5E9",
-                    color: currentThemeMode === "dark" ? "#000000" : "#ffffff",
-                    boxShadow:
-                      currentThemeMode === "dark"
-                        ? "0 0 20px rgba(255, 255, 255, 0.3)"
-                        : "0 0 20px rgba(14, 165, 233, 0.4)",
-                  }}
-                >
-                  {currentLang === "en" ? "Subscribe" : "اشترك"}
-                </button>
+              type="submit"
+              disabled={isSending}
+              className="px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+              style={{
+                backgroundColor: currentThemeMode === "dark" ? "#ffffff" : "#0EA5E9",
+                color: currentThemeMode === "dark" ? "#000000" : "#ffffff",
+                boxShadow:
+                  currentThemeMode === "dark"
+                    ? "0 0 20px rgba(255, 255, 255, 0.3)"
+                    : "0 0 20px rgba(14, 165, 233, 0.4)",
+              }}
+            >
+              {isSending && (
+                <span
+                  className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                  aria-hidden
+                />
+              )}
+
+              {isSending
+                ? currentThemeMode === "dark"
+                  ? "Sending..."
+                  : "Sending..."
+                : "Send"}
+            </button>
+
               </form>
             </div>
 
@@ -792,11 +817,34 @@ const handleNewsletterSubmit = async (e: React.FormEvent) => {
                 color: "color-mix(in oklab, var(--foreground) 90%, transparent)",
               }}
             >
-              © 2025 affinity Technology. {currentLang === "en" ? "All rights reserved" : "جميع الحقوق محفوظة"}
+              © 2026 affinity Technology. {currentLang === "en" ? "All rights reserved" : "جميع الحقوق محفوظة"}
             </p>
           </div>
         </div>
       </div>
+      {toast && (
+  <div className="animate-toast fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+    <div
+      className={`px-8 py-5 rounded-2xl text-base md:text-lg font-semibold shadow-2xl transition-all animate-fade-in
+        ${
+          toast.type === "success"
+            ? "bg-green-500 text-white"
+            : "bg-red-500 text-white"
+        }
+      `}
+      style={{
+        boxShadow:
+          toast.type === "success"
+            ? "0 0 55px rgba(34,197,94,0.55)"
+            : "0 0 55px rgba(239,68,68,0.55)",
+      }}
+    >
+      {toast.msg}
+    </div>
+  </div>
+)}
+
+
     </footer>
   )
 }
