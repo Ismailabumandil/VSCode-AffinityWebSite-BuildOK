@@ -31,7 +31,6 @@ import {
   ChevronDown,
   Search,
 } from "lucide-react"
-import { SharedFooterComponent } from "@/components/shared-footer"
 
 // Service categories based on company structure
 const serviceCategories = {
@@ -281,6 +280,21 @@ export default function ServiceRequestPage() {
     agreeTerms: false,
     agreeMarketing: false,
   })
+useEffect(() => {
+  if (!formData.country) {
+    const sa = countries.find((c) => c.code === "SA")
+    if (sa) {
+      setFormData((prev) => ({
+        ...prev,
+        country: currentLang === "ar" ? sa.nameAr : sa.name,
+        countryCode: "SA",
+        phoneCode: sa.dialCode,
+      }))
+      setSelectedPhoneCode(sa)
+    }
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [currentLang])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1558,7 +1572,6 @@ const botCheck = await validateSubmission("service_request_submit")
         </form>
       </section>
 
-      <SharedFooterComponent />
     </div>
   )
 }

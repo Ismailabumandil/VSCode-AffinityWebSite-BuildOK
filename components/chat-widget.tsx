@@ -1,5 +1,6 @@
 "use client"
 import ChatWelcomeModal from "@/components/chat-welcome-modal"
+import { useBotProtection } from "@/hooks/use-bot-protection"
 
 import { useEffect, useRef, useState } from "react"
 import { MessageCircle, Send, X, Loader2, Mic } from "lucide-react"
@@ -58,6 +59,11 @@ export function ChatWidget() {
 
   const [showWelcome, setShowWelcome] = useState(false)
   const hasAcceptedRef = useRef(false)
+  const { honeypotField, validateSubmission } = useBotProtection({
+    enableRecaptcha: true,
+    enableRateLimit: true,
+    enableHoneypot: true,
+  })
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -106,15 +112,34 @@ export function ChatWidget() {
     lastSentSignatureRef.current = localStorage.getItem(`affinity_chat_last_sent_${sid}`) || ""
   }, [])
 
-  const callAgent = async (message: string) => {
+    const callAgent = async (message: string) => {
     setIsSending(true)
     try {
+      // ✅ bot protection (reCAPTCHA + rate limit + honeypot)
+      const bot = await validateSubmission("chat_message")
+
+      if (!bot.isValid) {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            role: "bot",
+            text: lang === "en"
+              ? `Security check failed: ${bot.error || "Try again."}`
+              : `فشل التحقق الأمني: ${bot.error || "جرّب مرة ثانية."}`,
+          },
+        ])
+        return
+      }
+
       const payload = {
         message,
         lang,
-        // ✅ أهم تعديل
         turn: turnRef.current,
         sessionId: sessionIdRef.current,
+
+        // ✅ مهم جدا
+        recaptchaToken: bot.token,
+        recaptchaAction: bot.action,
       }
 
       const res = await fetch("/api/talk-to-us/chat", {
@@ -124,6 +149,7 @@ export function ChatWidget() {
       })
 
       const data = await res.json().catch(() => ({} as any))
+
       const reply =
         (typeof data?.reply === "string" && data.reply.trim()) ||
         (lang === "en" ? "No reply received. Try again." : "ما وصلني رد من السيرفر. جرّب مرة ثانية.")
@@ -138,6 +164,7 @@ export function ChatWidget() {
       setIsSending(false)
     }
   }
+
 
   const handleChatSend = async () => {
     const text = chatInput.trim()
@@ -201,6 +228,15 @@ export function ChatWidget() {
       return
     }
 
+    const safeTranscript =
+      transcript.length > 8000 ? transcript.slice(0, 8000) + "\n...[trimmed]" : transcript
+
+    if (!safeTranscript.trim()) {
+      setShowChat(false)
+      return
+    }
+
+
     const signature = `${transcript.length}:${transcript.slice(-120)}`
     const sid = sessionIdRef.current || "default"
 
@@ -222,7 +258,7 @@ export function ChatWidget() {
       intent: "chat_closed_auto_email",
       pageUrl: typeof window !== "undefined" ? window.location.href : "",
       conversationSummary: lang === "en" ? "Chat closed by user (auto email)." : "المستخدم أغلق الشات (إيميل تلقائي).",
-      notes: transcript,
+      notes: safeTranscript,
       answers: {},
       sessionId: sid,
     })
@@ -267,6 +303,7 @@ export function ChatWidget() {
 
       {showChat && (
         <div
+
           className="w-96 max-w-[calc(100vw-2rem)] h-[500px] rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-in slide-in-from-bottom-4"
           style={{
             backgroundColor: colors.bg,
@@ -299,6 +336,8 @@ export function ChatWidget() {
                   )}
                 </div>
               </div>
+              {honeypotField}
+
             </div>
 
             <button

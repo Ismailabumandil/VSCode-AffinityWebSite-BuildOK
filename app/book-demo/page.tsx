@@ -5,6 +5,8 @@ import { useState, useEffect, useMemo } from "react"
 import ScrollReveal from "@/components/scroll-reveal"
 import KeyboardShortcuts from "@/components/keyboard-shortcuts"
 import { useTheme } from "@/contexts/theme-context"
+import { getRecaptchaToken } from "@/lib/recaptcha-client"
+
 
 export default function BookDemoPage() {
   // ✅ Global theme + language (Brand system)
@@ -31,6 +33,7 @@ export default function BookDemoPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [appointment, setAppointment] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null)
 
   // Auto-detect timezone
   useEffect(() => {
@@ -141,11 +144,19 @@ export default function BookDemoPage() {
             ? `Message:\n${appointmentData.message || "-"}\n\nMeta:\nID=${appointmentData.id}\nCreatedAt=${appointmentData.createdAt}`
             : `الرسالة:\n${appointmentData.message || "-"}\n\nبيانات إضافية:\nID=${appointmentData.id}\nCreatedAt=${appointmentData.createdAt}`,
       }
-
+      const rc = await getRecaptchaToken("book_demo_submit")
+      if (!rc.ok) {
+        setErrors({ submit: rc.error || "Security check failed" })
+        return
+      }
       await fetch("/api/talk-to-us", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          recaptchaToken: rc.token,
+          recaptchaAction: "book_demo_submit",
+        }),
         keepalive: true,
       }).catch(() => {})
     } catch (e) {
@@ -155,7 +166,14 @@ export default function BookDemoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+const rc = await getRecaptchaToken("book_demo_submit")
+  if (!rc.ok) {
+      setToast({
+        msg: language === "en" ? "Security check failed ❌" : "فشل التحقق الأمني ❌ ",
+        type: "error"
+      })
+  return
+}
     if (validateForm()) {
       setIsSubmitting(true)
 
@@ -606,7 +624,27 @@ export default function BookDemoPage() {
           )}
         </div>
       </main>
-
+{toast && (
+  <div className="animate-toast fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+    <div
+      className={`px-8 py-5 rounded-2xl text-base md:text-lg font-semibold shadow-2xl transition-all animate-fade-in
+        ${
+          toast.type === "success"
+            ? "bg-green-500 text-white"
+            : "bg-red-500 text-white"
+        }
+      `}
+      style={{
+        boxShadow:
+          toast.type === "success"
+            ? "0 0 55px rgba(34,197,94,0.55)"
+            : "0 0 55px rgba(239,68,68,0.55)",
+      }}
+    >
+      {toast.msg}
+    </div>
+  </div>
+)}
       <KeyboardShortcuts />
     </div>
   )

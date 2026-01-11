@@ -373,6 +373,52 @@ html[data-theme="light"] {
   z-index: 99999;
   box-shadow: 0 0 10px #0ea5e9, 0 0 20px #22d3ee;
 }
+/* =========================================================
+   Custom Scrollbar Styling
+========================================================= */
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  border-radius: 10px;
+  border: 2px solid var(--page-bg);
+  transition: all 0.3s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--secondary), var(--accent));
+  box-shadow: 0 0 10px var(--primary), 0 0 20px var(--secondary);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: var(--accent);
+}
+
+/* Custom scrollbar for dark modals and overlays */
+.dark-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.8), rgba(34, 211, 238, 0.8));
+  border: 2px solid rgba(5, 10, 26, 0.5);
+}
+
+.dark-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.9), rgba(56, 189, 248, 0.9));
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.6);
+}
 
 /* =========================================================
    RTL / LTR & Arabic Support

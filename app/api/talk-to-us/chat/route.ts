@@ -1,18 +1,47 @@
 import OpenAI from "openai"
 import { promises as fs } from "fs"
 import path from "path"
+import crypto from "crypto"
+
+import { spamBurstCheck } from "@/lib/spam-burst"
+import { verifyRecaptcha } from "@/lib/recaptcha-verify"
+import { checkRateLimit } from "@/lib/rate-limiter"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
+/** =========================
+ *  Performance / Context
+ *  ========================= */
 const FETCH_TIMEOUT_MS = 4500
-const MAX_PAGES = 77
+const MAX_PAGES = 50
 const MAX_SNIPPETS = 6
 const MAX_CONTEXT_CHARS = 7000
 const CACHE_TTL_MS = 20 * 60 * 1000
 
 let cachedSiteText = ""
 let cachedSiteAt = 0
+
+/** =========================
+ *  Security / Anti-Abuse
+ *  ========================= */
+const MAX_MESSAGE_CHARS = 1500
+const MAX_SESSION_ID_CHARS = 80
+const MAX_URLS_IN_MESSAGE = 3
+
+// Burst (fast spam)
+const BURST_WINDOW_MS = 10_000
+const BURST_MAX = 8
+const MINUTE_WINDOW_MS = 60_000
+const MINUTE_MAX = 18
+const BAN_MS = 120_000 // 2 min
+
+// Hour limiter (global)
+const HOUR_WINDOW_MS = 60 * 60_000
+const HOUR_MAX = 120
+
+// Duplicate replay
+const DUP_WINDOW_MS = 15_000
 
 function normalizeBaseUrl(u: string) {
   return u.replace(/\/+$/, "")
@@ -48,7 +77,43 @@ function takeFirstChars(s: string, maxChars: number) {
   return s.length <= maxChars ? s : s.slice(0, maxChars) + "\n...[trimmed]"
 }
 
-/** ✅ مهم: يدعم site-urls.txt حتى لو كان “منسق” بعناوين وخطوط */
+function sha256(s: string) {
+  return crypto.createHash("sha256").update(s).digest("hex")
+}
+
+function getClientIp(req: Request) {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip")?.trim() ||
+    "unknown"
+  )
+}
+
+function isOriginAllowed(req: Request) {
+  const origin = req.headers.get("origin") || ""
+  if (!origin) return true // dev/curl allowance
+
+  const allow = (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  const siteBase = process.env.SITE_BASE_URL ? normalizeBaseUrl(process.env.SITE_BASE_URL) : ""
+  const allowList = [...allow, ...(siteBase ? [siteBase] : [])].filter(Boolean)
+
+  if (allowList.length === 0) {
+    return origin.includes("localhost") || origin.includes("127.0.0.1")
+  }
+
+  return allowList.some((a) => normalizeBaseUrl(a) === normalizeBaseUrl(origin))
+}
+
+function countUrls(text: string) {
+  const m = text.match(/https?:\/\/\S+/gi)
+  return m?.length ?? 0
+}
+
+/** ✅ مهم: يدعم site-urls.txt حتى لو كان “منسق” */
 async function readSiteUrls(): Promise<string[]> {
   const file = path.join(process.cwd(), "knowledge", "site-urls.txt")
   try {
@@ -57,11 +122,8 @@ async function readSiteUrls(): Promise<string[]> {
       .split(/\r?\n/)
       .map((l) => l.trim())
       .filter(Boolean)
-      // تجاهل التعليقات
       .filter((l) => !l.startsWith("#"))
-      // تجاهل خطوط وفواصل وعناوين (====, ----, MAIN PAGES …)
       .filter((l) => (l.startsWith("/") || /^https?:\/\//i.test(l)))
-      // تجاهل أي شيء مو رابط
 
     return lines.slice(0, MAX_PAGES)
   } catch {
@@ -107,13 +169,11 @@ async function fetchSiteSnapshot(): Promise<string> {
   return merged
 }
 
-/** ✅ يقرأ ملفات knowledge + يدعم site-pages.en/ar.md لو موجودة */
 async function readKnowledgeByLang(lang: "ar" | "en"): Promise<string> {
   const dir = path.join(process.cwd(), "knowledge")
   try {
     const files = await fs.readdir(dir)
 
-    // ✅ أولوية أعلى لملف تلخيص صفحات الموقع (اختياري لكنه قوي جدًا)
     const wanted = [
       `site-pages.${lang}.md`,
       `affinity-knowledge.${lang}.md`,
@@ -145,11 +205,10 @@ async function readKnowledgeByLang(lang: "ar" | "en"): Promise<string> {
 
 function pickRelevantSnippets(bigText: string, query: string, maxSnippets = MAX_SNIPPETS) {
   if (!bigText) return []
-
   const parts = bigText.split("\n\n---\n\n").filter(Boolean)
-  const q = query.toLowerCase()
 
-  const words = q
+  const words = query
+    .toLowerCase()
     .split(/\s+/)
     .map((w) => w.replace(/[^\p{L}\p{N}_-]+/gu, ""))
     .filter((w) => w.length >= 3)
@@ -164,37 +223,155 @@ function pickRelevantSnippets(bigText: string, query: string, maxSnippets = MAX_
     .sort((a, b) => b.score - a.score)
 
   const hits = scored.filter((x) => x.score > 0).slice(0, maxSnippets).map((x) => x.p)
-
-  // ✅ لا نرجّع "ما لقيت" — نعطي أول أجزاء كحد أدنى
   if (hits.length === 0) return parts.slice(0, Math.min(3, parts.length))
-
   return hits
 }
 
+/** =========================
+ *  Duplicate replay store (in-memory)
+ *  ========================= */
+type ReplayState = { lastHash?: string; lastAt?: number }
+const replay = new Map<string, ReplayState>()
+
 export async function POST(req: Request) {
   try {
+    // 0) Origin allowlist
+    if (!isOriginAllowed(req)) {
+      return Response.json({ reply: "Forbidden." }, { status: 403, headers: { "Cache-Control": "no-store" } })
+    }
+
+    // 1) Parse body
+    const body = await req.json().catch(() => ({} as any))
+    const lang = detectLang(body?.lang, req.headers.get("accept-language"))
+
     const apiKey = process.env.OPENAI_API_KEY
     if (!apiKey) {
       return Response.json(
-        { reply: 'OPENAI_API_KEY غير موجود محليًا. تأكد أنه داخل ".env.local" في جذر المشروع ثم أعد تشغيل npm run dev.' },
-        { status: 500 },
+        { reply: lang === "ar" ? 'OPENAI_API_KEY غير موجود. ضعه في ".env.local".' : 'OPENAI_API_KEY is missing in .env.local.' },
+        { status: 500, headers: { "Cache-Control": "no-store" } },
       )
     }
 
-    const body = await req.json().catch(() => ({} as any))
     const userMessage = String(body?.message ?? "").trim()
-    const lang = detectLang(body?.lang, req.headers.get("accept-language"))
-
-    // ✅ turn جاي من الودجت — هذا اللي يمنع التحية كل مرة
     const turn = Number(body?.turn ?? 0)
-    const isFirstTurn = turn === 0
+    const sessionId = String(body?.sessionId ?? "").trim().slice(0, MAX_SESSION_ID_CHARS)
+    const recaptchaToken = String(body?.recaptchaToken ?? "").trim()
+    const recaptchaAction = String(body?.recaptchaAction ?? "").trim() || "chat_message"
 
+    // 2) Hard validation
     if (!userMessage) {
       return Response.json({ reply: lang === "ar" ? "اكتب رسالتك أولاً." : "Please type your message first." }, { status: 400 })
     }
+    if (userMessage.length > MAX_MESSAGE_CHARS) {
+      return Response.json(
+        { reply: lang === "ar" ? `الرسالة طويلة جدًا. الحد ${MAX_MESSAGE_CHARS} حرف.` : `Message too long. Max ${MAX_MESSAGE_CHARS} chars.` },
+        { status: 413, headers: { "Cache-Control": "no-store" } },
+      )
+    }
+    if (countUrls(userMessage) > MAX_URLS_IN_MESSAGE) {
+      return Response.json(
+        { reply: lang === "ar" ? "الرجاء تقليل الروابط في الرسالة." : "Please reduce the number of links in your message." },
+        { status: 400, headers: { "Cache-Control": "no-store" } },
+      )
+    }
 
+    const ip = getClientIp(req)
+
+    // 3) Burst spam detection (fast)
+    {
+      const key = `chat:${ip}:${sessionId || "no-sid"}`
+      const burst = spamBurstCheck({
+        key,
+        message: userMessage,
+        burstWindowMs: BURST_WINDOW_MS,
+        burstMax: BURST_MAX,
+        minuteWindowMs: MINUTE_WINDOW_MS,
+        minuteMax: MINUTE_MAX,
+        banMs: BAN_MS,
+      })
+
+      if (!burst.ok) {
+        const retry = burst.retryAfterSec ?? 10
+        return Response.json(
+          {
+            reply:
+              lang === "ar"
+                ? `⛔ تم إيقاف الإرسال مؤقتًا بسبب كثرة الرسائل. حاول بعد ${retry} ثواني.`
+                : `⛔ You’re sending too fast. Try again in ${retry}s.`,
+            error: burst.reason,
+            retryAfterSec: retry,
+          },
+          {
+            status: burst.status,
+            headers: { "Cache-Control": "no-store", ...(retry ? { "Retry-After": String(retry) } : {}) },
+          },
+        )
+      }
+    }
+
+    // 4) Duplicate replay protection (per session)
+    if (sessionId) {
+      const key = `replay:${sessionId}`
+      const st = replay.get(key) || {}
+      const t = Date.now()
+      const hash = sha256(userMessage.toLowerCase())
+
+      if (st.lastHash === hash && st.lastAt && t - st.lastAt < DUP_WINDOW_MS) {
+        return Response.json(
+          {
+            reply:
+              lang === "ar"
+                ? "نفس الرسالة تكررت بسرعة. حاول تغييرها أو انتظر قليلًا."
+                : "Duplicate message detected. Please wait a moment.",
+          },
+          { status: 400, headers: { "Cache-Control": "no-store" } },
+        )
+      }
+
+      replay.set(key, { lastHash: hash, lastAt: t })
+    }
+
+    // 5) Hourly rate limit (shared limiter)
+    {
+      const rateKey = `chat:${ip}:${sessionId || "no-sid"}`
+      const rl = await checkRateLimit(rateKey, { maxRequests: HOUR_MAX, windowMs: HOUR_WINDOW_MS })
+      if (!rl.allowed) {
+        return Response.json(
+          { reply: lang === "ar" ? "عدد محاولات كبير. حاول لاحقًا." : "Too many attempts. Please try again later." },
+          {
+            status: 429,
+            headers: {
+              "Cache-Control": "no-store",
+              "X-RateLimit-Remaining": String(rl.remaining),
+              "X-RateLimit-Reset": String(rl.resetAt),
+            },
+          },
+        )
+      }
+    }
+
+    // 6) reCAPTCHA v3 verification (server-side)
+    if (process.env.RECAPTCHA_SECRET_KEY) {
+      if (!recaptchaToken) {
+        return Response.json(
+          { reply: lang === "ar" ? "فشل التحقق الأمني. أعد المحاولة." : "Security verification failed. Please retry." },
+          { status: 400, headers: { "Cache-Control": "no-store" } },
+        )
+      }
+
+      const r = await verifyRecaptcha(recaptchaToken, { expectedAction: recaptchaAction, minScore: 0.5 })
+      const score = r.score ?? 0.0
+
+      if (!r.isValid || score < 0.5) {
+        return Response.json(
+          { reply: lang === "ar" ? "فشل التحقق الأمني. حاول مرة أخرى." : "Security verification failed. Please try again." },
+          { status: 400, headers: { "Cache-Control": "no-store" } },
+        )
+      }
+    }
+
+    // 7) Heavy work only after protection passes
     const [siteText, knowledgeText] = await Promise.all([fetchSiteSnapshot(), readKnowledgeByLang(lang)])
-
     const siteSnips = pickRelevantSnippets(siteText, userMessage)
     const kbSnips = pickRelevantSnippets(knowledgeText, userMessage)
 
@@ -204,123 +381,50 @@ export async function POST(req: Request) {
       "=== KNOWLEDGE BASE ===",
       kbSnips.join("\n\n"),
     ].join("\n\n")
-
     context = takeFirstChars(context, MAX_CONTEXT_CHARS)
 
     const openai = new OpenAI({ apiKey })
 
-    // ✅ System Prompt (FINAL) — Human-like, smart sales, clean closing, bilingual
-const system_ar = `
+    const system_ar = `
 أنت "مساعد Affinity Technology" الرسمي (دعم + مبيعات) على الموقع.
 مصادرك فقط: CONTEXT (نصوص صفحات الموقع من site-urls.txt + ملفات knowledge).
-ممنوع اختلاق أي تفاصيل غير موجودة في CONTEXT (أسعار ثابتة، وعود، عملاء، قدرات غير مذكورة).
+ممنوع اختلاق أي تفاصيل غير موجودة في CONTEXT.
 
 قاعدة حاسمة للتحية:
 - رحّب فقط في أول تفاعل (first turn).
-- إذا لم يكن أول تفاعل: لا تبدأ بأي ترحيب ولا تعريف ولا "كيف أساعدك" — ادخل مباشرة في الإجابة.
+- إذا لم يكن أول تفاعل: لا تبدأ بتحية/تعريف — ادخل مباشرة في الإجابة.
 
-هوية وأسلوب المساعد:
-- تكلّم كـ "استشاري تقني Senior" هادئ وواثق، وليس كنص تسويقي أو شات بوت.
-- ركّز على الوضوح والفائدة العملية، بدون إطالة أو حشو.
-- استخدم (1–2) إيموجي كحد أقصى عند الملاءمة (بدون مبالغة).
-
-هدفك:
-- إجابة دقيقة وسريعة من CONTEXT.
-- خطوة واحدة للأمام (CTA واحدة فقط).
-- أسلوب بشري محترف: مختصر، هادئ، مفيد.
-
-طبقة AI Readiness (Behavior / Intent / Triggers):
-- افهم نية المستخدم أولاً (استكشاف / تقييم / ثقة / تجاري / تحويل / دعم / إغلاق).
-- طبّق السلوكيات الذكية التالية:
-  1) لا استجواب: سؤال توضيحي واحد فقط عند الحاجة.
-  2) لا أسئلة مبيعات إلا عند إشارة واضحة (سعر/عرض سعر/ديمو/تنفيذ/اجتماع/مدة/ميزانية/تواصل).
-  3) عند تفعيل "نية تجارية": اسأل سؤالين فقط كحد أقصى (مثل: الهدف + المدة/القناة).
-  4) عند كلمات الثقة (الفريق/المدير/المؤسس/الخبرة/المعايير): قدّم إجابة منظمة تُظهر هيكلة واضحة وأدوار محددة.
-
-جمع بيانات العميل (Lead Capture) — مرة واحدة فقط:
-- إذا المستخدم طلب تواصل/عرض سعر/حجز ديمو/تنفيذ/اجتماع أو ظهرت نية شراء قوية:
-  اطلب مرة واحدة فقط البيانات التالية (اختيارية قدر الإمكان):
-  (الاسم + الشركة + البريد + الجوال).
-  وقدّم خيارين:
-  أ) "املأها هنا: /talk-to-us"
-  ب) "اكتبها هنا في الشات وسألخّص طلبك وأرسله للفريق."
-- لا تكرر طلب البيانات إذا تجاهله المستخدم؛ كمّل المساعدة بشكل طبيعي.
-
-قاعدة الإجابة القياسية (Canonical Answers):
-- إذا كان السؤال عام/متكرر: استخدم إجابة قياسية مختصرة (تعريف الشركة/هل تقدمون AI/من يعمل على المشروع/هل لديكم أسعار ثابتة/المدة…)
-- لا تعد وعود رقمية (مدة ثابتة/سعر ثابت) إلا إذا كانت موجودة حرفياً في CONTEXT.
+الأسلوب:
+- استشاري Senior هادئ وواضح.
+- بدون حشو، 1–2 إيموجي كحد أقصى عند الحاجة.
+- فقرة أو فقرتين، ونقاط (2–5) عند الحاجة.
+- CTA واحدة فقط في النهاية.
 
 قاعدة عدم الهلوسة:
-- إذا المعلومة غير موجودة في CONTEXT: قل "غير مذكور في مصادرنا الحالية"
-  ثم قدّم إرشادًا عامًا آمنًا + سؤال توضيحي واحد (عند الحاجة فقط).
-
-قاعدة الشكر والإغلاق:
-- إذا المستخدم قال شكرًا/تمام/ممتاز فقط: رد ردًّا لطيفًا قصيرًا وأنهِ بدون أسئلة جديدة وبدون CTA.
-
-أسلوب الرد:
-- فقرة أو فقرتين كحد أقصى.
-- استخدم نقاط عند الحاجة (2–5 نقاط).
-- CTA واحدة فقط في النهاية (أو لا CTA إذا كان المستخدم يغلق الحوار).
-- اكتب بالعربية إذا المستخدم كتب بالعربية.
+- إذا المعلومة غير موجودة: قل "غير مذكور في مصادرنا الحالية" + إرشاد عام آمن.
 
 مخرجاتك: النص النهائي للرد فقط.
 `.trim()
 
-const system_en = `
+    const system_en = `
 You are the official "Affinity Technology Website Assistant" (support + sales).
-Use ONLY the provided CONTEXT (site pages from site-urls.txt + knowledge files).
-Never invent details (fixed pricing, guarantees, client names, unstated capabilities).
+Use ONLY the provided CONTEXT. Never invent details.
 
-Critical greeting rule:
-- Greet ONLY on the first turn.
-- If this is not the first turn: do NOT greet/introduce/ask “How can I help?” — answer directly.
-
-Assistant identity & tone:
-- Speak like a calm, senior technology consultant (not a chatbot, not a hype-sales script).
-- Be practical, clear, and concise.
-- Use at most 1–2 emojis when appropriate (no overuse).
-
-Your goal:
-- Provide accurate, fast answers grounded in CONTEXT.
-- Move the user ONE step forward with ONE CTA only.
-- Sound natural, calm, and professional.
-
-AI Readiness Layer (Behavior / Intent / Triggers):
-- Identify intent first (discovery / evaluation / trust / commercial / conversion / support / closure).
-- Apply these behaviors:
-  1) No interrogation: ask at most ONE clarifying question when needed.
-  2) No sales questions unless user clearly signals (pricing / quote / demo / implementation / meeting / timeline / budget / contact).
-  3) If commercial intent is triggered: ask only TWO questions max (e.g., goal + timeline/channel).
-  4) If trust intent is triggered (team / founder / CTO / standards): respond with structured role-based delivery and governance.
-
-Lead capture (ask ONCE only):
-- If the user requests contact/quote/demo/implementation/meeting or shows strong buying intent:
-  Ask ONCE for (name + company + email + phone) — keep it optional where possible.
-  Offer two options:
-  A) "Submit here: /talk-to-us"
-  B) "Share it here and I’ll summarize your request and send it to the team."
-- Do NOT repeat the request if the user ignores it; continue helping normally.
-
-Canonical answers rule:
-- For common questions, use short canonical-style responses (who we are / AI services / who works on the project / fixed pricing / timelines…).
-- Do NOT provide fixed numbers (price/timeline) unless explicitly stated in CONTEXT.
-
-No hallucination:
-- If info is not stated in CONTEXT: say "Not stated in our current sources",
-  provide safe general guidance, and ask ONE clarifying question only if needed.
-
-Thanks-only closing:
-- If the user only says thanks/ok/great: reply politely and close without CTA and without new questions.
+Greeting rule:
+- Greet ONLY on first turn.
+- Otherwise answer directly.
 
 Style:
-- Max two short paragraphs.
-- Use 2–5 bullets when helpful.
-- ONE CTA only at the end (or no CTA for closure).
-- Reply in English if the user writes in English.
+- Calm senior consultant, practical and concise.
+- Max 1–2 emojis.
+- 1–2 short paragraphs, bullets (2–5) if useful.
+- ONE CTA max.
+
+No hallucination:
+- If not in CONTEXT: say it's not stated, then provide safe guidance.
 
 Output ONLY the final reply text.
 `.trim()
-
 
     const resp = await openai.responses.create({
       model: "gpt-4o-mini",
@@ -328,7 +432,7 @@ Output ONLY the final reply text.
         { role: "system", content: lang === "ar" ? system_ar : system_en },
         {
           role: "user",
-          content: `TURN=${turn} FIRST_TURN=${isFirstTurn}\nLANG=${lang}\n\nCONTEXT:\n${context}\n\nUSER:\n${userMessage}`,
+          content: `TURN=${turn}\nLANG=${lang}\n\nCONTEXT:\n${context}\n\nUSER:\n${userMessage}`,
         },
       ],
       max_output_tokens: 420,
@@ -340,7 +444,6 @@ Output ONLY the final reply text.
       process.env.NODE_ENV === "development"
         ? {
             turn,
-            isFirstTurn,
             siteChars: siteText?.length ?? 0,
             kbChars: knowledgeText?.length ?? 0,
             siteSnips: siteSnips.length,
@@ -354,6 +457,9 @@ Output ONLY the final reply text.
     )
   } catch (err: any) {
     console.error("CHAT_API_ERROR:", err)
-    return Response.json({ reply: "صار خطأ في السيرفر أثناء توليد الرد.", details: err?.message ?? String(err) }, { status: 500 })
+    return Response.json(
+      { reply: "صار خطأ في السيرفر أثناء توليد الرد.", details: err?.message ?? String(err) },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    )
   }
 }

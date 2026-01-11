@@ -2,10 +2,11 @@
 
 import type React from "react"
 import type { ReactElement } from "react"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useCallback } from "react"
 import { Mail, Phone, MapPin, MessageCircle, Clock, Globe, ArrowRight } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 import { ContactForm } from "@/components/contact-form"
+import { getRecaptchaToken } from "@/lib/recaptcha-client"
 
 export default function TalkToUsPage(): ReactElement {
   const { language } = useTheme()
@@ -51,11 +52,28 @@ export default function TalkToUsPage(): ReactElement {
   )[language === "ar" ? "ar" : "en"]
 
   const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-    <div className={`rounded-2xl p-8 border border-border backdrop-blur-sm bg-card/70 shadow-2xl ${className}`}>{children}</div>
+    <div className={`rounded-2xl p-8 border border-border backdrop-blur-sm bg-card/70 shadow-2xl ${className}`}>
+      {children}
+    </div>
   )
 
+  // ✅ reCAPTCHA provider for ContactForm
+  const onBeforeSubmit = useCallback(async () => {
+    const rc = await getRecaptchaToken("talk_to_us_submit")
+    if (!rc.ok) return { ok: false as const, error: rc.error || "Security check failed" }
+
+    return {
+      ok: true as const,
+      recaptchaToken: rc.token,
+      recaptchaAction: "talk_to_us_submit",
+    }
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background text-foreground" dir={language === "ar" ? "rtl" : "ltr"}>
+    <div
+      className="min-h-screen bg-gradient-to-br from-background via-background to-background text-foreground"
+      dir={language === "ar" ? "rtl" : "ltr"}
+    >
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -79,7 +97,10 @@ export default function TalkToUsPage(): ReactElement {
                   <div>
                     <h3 className="font-semibold mb-1 text-foreground">{t.emailTitle}</h3>
                     <p className="text-sm mb-2 text-muted-foreground">{t.emailDesc}</p>
-                    <a href="mailto:info@innovationreadiness.com" className="font-semibold inline-flex items-center gap-2 text-accent hover:underline">
+                    <a
+                      href="mailto:info@innovationreadiness.com"
+                      className="font-semibold inline-flex items-center gap-2 text-accent hover:underline"
+                    >
                       info@innovationreadiness.com <ArrowRight className="w-4 h-4" />
                     </a>
                   </div>
@@ -140,7 +161,8 @@ export default function TalkToUsPage(): ReactElement {
               </div>
             </Card>
 
-            <ContactForm language={language} />
+            {/* ✅ Pass recaptcha hook into ContactForm */}
+            <ContactForm language={language} onBeforeSubmit={onBeforeSubmit} />
           </div>
         </div>
       </div>

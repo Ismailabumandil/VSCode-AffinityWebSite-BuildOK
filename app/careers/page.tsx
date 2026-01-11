@@ -22,8 +22,7 @@ import {
   Linkedin,
   Github,
 } from "lucide-react"
-import Navbar from "@/components/navbar"
-import { SharedFooterComponent } from "@/components/shared-footer"
+import { getRecaptchaToken } from "@/lib/recaptcha-client"
 
 export default function CareersPage() {
   const { language: currentLang } = useTheme()
@@ -91,6 +90,7 @@ export default function CareersPage() {
   })
 
   const totalSteps = 6
+const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null)
 
   const departments = [
     { value: "cybersecurity", labelEn: "Cybersecurity", labelAr: "الأمن السيبراني", icon: Shield },
@@ -224,6 +224,15 @@ export default function CareersPage() {
           "Portfolio File": formData.portfolioFile?.name || "",
         },
       }
+const rc = await getRecaptchaToken("careers_submit")
+if (!rc.ok) {
+        setToast({
+        msg: currentLang === "en" ? "Security check failed ❌" : "فشل التحقق الأمني ❌ ",
+        type: "error"
+      })
+
+  return
+}
 
 const res = await fetch("/api/talk-to-us/email", {
   method: "POST",
@@ -308,7 +317,6 @@ setSubmitSuccess(true)
   if (submitSuccess) {
     return (
       <div className="min-h-screen flex flex-col" style={{ background: "var(--background)", color: "var(--foreground)" }}>
-        <Navbar />
         <div className="flex-1 flex items-center justify-center px-4 py-20">
           <div className="max-w-2xl w-full text-center">
             <div className="mb-8 inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/10 animate-success-pulse">
@@ -336,14 +344,12 @@ setSubmitSuccess(true)
             </Link>
           </div>
         </div>
-        <SharedFooterComponent />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--background)", color: "var(--foreground)" }}>
-      <Navbar />
 
       {/* Hero Section */}
       <div className="relative overflow-hidden py-20 px-4">
@@ -1470,8 +1476,27 @@ setSubmitSuccess(true)
           </div>
         </div>
       </div>
-
-      <SharedFooterComponent />
+{toast && (
+  <div className="animate-toast fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+    <div
+      className={`px-8 py-5 rounded-2xl text-base md:text-lg font-semibold shadow-2xl transition-all animate-fade-in
+        ${
+          toast.type === "success"
+            ? "bg-green-500 text-white"
+            : "bg-red-500 text-white"
+        }
+      `}
+      style={{
+        boxShadow:
+          toast.type === "success"
+            ? "0 0 55px rgba(34,197,94,0.55)"
+            : "0 0 55px rgba(239,68,68,0.55)",
+      }}
+    >
+      {toast.msg}
+    </div>
+  </div>
+)}
 
       <style jsx>{`
         @keyframes float {

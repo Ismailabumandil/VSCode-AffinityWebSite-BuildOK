@@ -1,3 +1,4 @@
+import { verifyRecaptcha } from "@/lib/recaptcha-verify"
 import nodemailer from "nodemailer"
 
 export const runtime = "nodejs"
@@ -18,6 +19,8 @@ type LeadPayload = {
   conversationSummary?: string
   pageUrl?: string
   notes?: string
+  recaptchaToken?: string
+  recaptchaAction?: string
 }
 
 function requireEnv(name: string) {
@@ -53,6 +56,16 @@ export async function POST(req: Request) {
     const pass = requireEnv("SMTP_PASS")
     const from = requireEnv("MAIL_FROM")
     const to = requireEnv("MAIL_TO")
+    const token = payload.recaptchaToken || ""
+    const action = payload.recaptchaAction || ""
+    const vr = await verifyRecaptcha(token, { expectedAction: action })
+    if (!vr.isValid) {
+      return Response.json(
+        { ok: false, error: "Security check failed" },
+        { status: 400 }
+      )
+    }
+
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -67,7 +80,7 @@ export async function POST(req: Request) {
     const categoryLower = category.toLowerCase()
     const intentLower = intent.toLowerCase()
 
-    const isBookDemo =
+      const isBookDemo =
       categoryLower.includes("book demo") ||
       categoryLower.includes("bookdemo") ||
       intentLower.includes("demo")

@@ -836,7 +836,7 @@ const handleNewsletterSubmit = async (e: React.FormEvent) => {
           </div>
         </div>
       </div>
-      {toast && (
+  {toast && (
   <div className="animate-toast fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
     <div
       className={`px-8 py-5 rounded-2xl text-base md:text-lg font-semibold shadow-2xl transition-all animate-fade-in

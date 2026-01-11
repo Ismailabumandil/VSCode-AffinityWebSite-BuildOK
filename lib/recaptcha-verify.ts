@@ -43,15 +43,28 @@ export async function verifyRecaptcha(
         error: `reCAPTCHA verification failed: ${(data["error-codes"] || []).join(", ")}`,
       }
     }
+      const allowedHosts = (process.env.RECAPTCHA_ALLOWED_HOSTNAMES || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
 
-    // Validate action (v3 مهم جدًا)
-    if (expectedAction && data.action && data.action !== expectedAction) {
-      return {
-        isValid: false,
-        score: data.score,
-        error: `reCAPTCHA action mismatch: expected "${expectedAction}", got "${data.action}"`,
+      if (allowedHosts.length && data.hostname && !allowedHosts.includes(data.hostname)) {
+        return { isValid: false, score: data.score, error: `Invalid hostname: ${data.hostname}` }
       }
+    // Validate action (v3 important)
+if (expectedAction) {
+  if (!data.action) {
+    return { isValid: false, score: data.score, error: "reCAPTCHA action missing" }
+  }
+  if (data.action !== expectedAction) {
+    return {
+      isValid: false,
+      score: data.score,
+      error: `reCAPTCHA action mismatch: expected "${expectedAction}", got "${data.action}"`,
     }
+  }
+}
+
 
     // Score check (v3)
     if (typeof data.score === "number" && data.score < minScore) {

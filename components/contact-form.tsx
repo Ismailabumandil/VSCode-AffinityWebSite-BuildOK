@@ -3,8 +3,18 @@
 import { useState, type FormEvent } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { getRecaptchaToken } from "@/lib/recaptcha-client"
 
-export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
+type BeforeSubmitResult =
+  | { ok: true; recaptchaToken: string; recaptchaAction: string }
+  | { ok: false; error: string }
+
+type ContactFormProps = {
+  language?: "en" | "ar"
+  onBeforeSubmit?: () => Promise<BeforeSubmitResult>
+}
+
+export function ContactForm({ language = "en", onBeforeSubmit }: ContactFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,7 +31,45 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
     setStatus("")
 
     try {
-      // ✅ يطابق LeadPayload الموجود في الروات الشغال عندك
+      // ✅ 1) token from parent OR fallback here
+      const action = "talk_to_us_submit"
+
+      const rc = onBeforeSubmit
+        ? await onBeforeSubmit()
+        : (() => null)()
+
+      // لو onBeforeSubmit موجود
+      if (rc && !rc.ok) {
+        setStatus(
+          language === "ar"
+            ? `❌ فشل التحقق الأمني (reCAPTCHA): ${rc.error || "حاول مرة أخرى."}`
+            : `❌ Security check failed (reCAPTCHA): ${rc.error || "Please try again."}`,
+        )
+        return
+      }
+
+      // لو onBeforeSubmit غير موجود: خذ التوكن من هنا
+      let recaptchaToken = ""
+      let recaptchaAction = ""
+
+      if (rc && rc.ok) {
+        recaptchaToken = rc.recaptchaToken
+        recaptchaAction = rc.recaptchaAction
+      } else {
+        const localRc = await getRecaptchaToken(action)
+        if (!localRc.ok) {
+          setStatus(
+            language === "ar"
+              ? `❌ فشل التحقق الأمني (reCAPTCHA): ${localRc.error || "حاول مرة أخرى."}`
+              : `❌ Security check failed (reCAPTCHA): ${localRc.error || "Please try again."}`,
+          )
+          return
+        }
+        recaptchaToken = localRc.token
+        recaptchaAction = action
+      }
+
+      // ✅ 2) LeadPayload
       const payload = {
         lang: language,
         category: "Talk To Us",
@@ -33,19 +81,19 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
         phone: formData.phone,
         company: "-",
 
-        // ✅ هذا اللي كان ناقص ويسبب “بودي فاضي”
         answers: {
           Subject: formData.subject,
           Message: formData.message,
         },
         conversationSummary: formData.subject,
         notes: formData.message,
-
-        // ✅ الروات عندك يستخدم pageUrl (مو page)
         pageUrl: typeof window !== "undefined" ? window.location.href : "-",
+
+        // ✅ reCAPTCHA fields
+        recaptchaToken,
+        recaptchaAction,
       }
 
-      // ✅ رجعناه للمسار الشغال عندك (عشان ما يطلع 404)
       const response = await fetch("/api/talk-to-us", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,7 +116,11 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
         setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
       } else {
         const errorMessage = data?.error || "Unknown error occurred"
-        setStatus(language === "ar" ? `❌ فشل إرسال الرسالة: ${errorMessage}` : `❌ Failed to send message: ${errorMessage}`)
+        setStatus(
+          language === "ar"
+            ? `❌ فشل إرسال الرسالة: ${errorMessage}`
+            : `❌ Failed to send message: ${errorMessage}`,
+        )
       }
     } catch {
       setStatus(
@@ -186,7 +238,13 @@ export function ContactForm({ language = "en" }: { language?: "en" | "ar" }) {
           disabled={isSubmitting}
           className="w-full py-3 px-6 bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
         >
-          {isSubmitting ? (language === "ar" ? "جاري الإرسال..." : "Sending...") : language === "ar" ? "إرسال الرسالة" : "Send Message"}
+          {isSubmitting
+            ? language === "ar"
+              ? "جاري الإرسال..."
+              : "Sending..."
+            : language === "ar"
+              ? "إرسال الرسالة"
+              : "Send Message"}
         </Button>
       </form>
     </Card>
