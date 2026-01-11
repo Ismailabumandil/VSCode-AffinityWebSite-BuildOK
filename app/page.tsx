@@ -821,11 +821,11 @@ export default function Home() {
           en: "Wishing all our valued partners and clients a year filled with success, innovation, and prosperity. Thank you for being part of our journey. Here's to achieving new milestones together!",
           ar: "نتمنى لجميع شركائنا وعملائنا الكرام عاماً مليئاً بالنجاح والابتكار والازدهار. شكراً لكونكم جزءاً من رحلتنا. نتطلع لتحقيق إنجازات جديدة معاً!",
         }}
-        year="2025"
+        year="2026"
         companyName="Affinity Technology"
         logoSrc="/images/affinity-icon-white.svg"
         enabled={true}
-        storageKey="affinity-new-year-2025"
+        storageKey="affinity-new-year-2026"
       />
 
 
