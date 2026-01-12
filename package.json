@@ -1,9 +1,10 @@
 {
-  "name": "affinity Technology V2",
-  "version": "0.1.0",
+  "name": "affinity-technology-v3",
+  "version": "0.1.2",
   "private": true,
+  "packageManager": "pnpm@10.0.0",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build ",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start"
