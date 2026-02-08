@@ -61,7 +61,7 @@ export function ChatWidget() {
   const hasAcceptedRef = useRef(false)
   const { honeypotField, validateSubmission } = useBotProtection({
     enableRecaptcha: true,
-    enableRateLimit: true,
+    enableRateLimit:false,
     enableHoneypot: true,
   })
 

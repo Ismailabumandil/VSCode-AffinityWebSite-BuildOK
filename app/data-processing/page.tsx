@@ -234,16 +234,17 @@ export default function DataProcessingPage() {
               <p className="leading-relaxed mb-4">For questions about data processing:</p>
               <div className="bg-[#25064c]/50 p-6 rounded-lg">
                 <p className="mb-2">
-                  <strong>Data Protection Officer:</strong> dpo@innovationreadiness.com
+                  <strong>Team Support Officer:</strong> SupportTeam@weaffinity-tech.com
+
                 </p>
                 <p className="mb-2">
-                  <strong>Privacy Team:</strong> privacy@innovationreadiness.com
+                  <strong>sales Team:</strong> sales@weaffinity-tech.com
                 </p>
                 <p className="mb-2">
-                  <strong>Phone:</strong> +966 XX XXX XXXX
+                  <strong>Phone:</strong> +966 579389025
                 </p>
                 <p>
-                  <strong>Address:</strong> Riyadh, Saudi Arabia
+                  <strong>Address:</strong> Jeddah, Saudi Arabia
                 </p>
               </div>
             </section>

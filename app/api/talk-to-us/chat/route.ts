@@ -202,6 +202,24 @@ async function readKnowledgeByLang(lang: "ar" | "en"): Promise<string> {
     return ""
   }
 }
+function arNormalize(s: string) {
+  return (s || "")
+    .toLowerCase()
+    .replace(/[إأآا]/g, "ا")
+    .replace(/[ىي]/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/ؤ/g, "و")
+    .replace(/ئ/g, "ي")
+    .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
+function arStemLite(w: string) {
+    return w
+    .replace(/^ال/, "")
+    .replace(/(ون|ين|ات|يه|ية)$/g, "")
+}
 
 function pickRelevantSnippets(bigText: string, query: string, maxSnippets = MAX_SNIPPETS) {
   if (!bigText) return []
@@ -362,7 +380,7 @@ export async function POST(req: Request) {
       const r = await verifyRecaptcha(recaptchaToken, { expectedAction: recaptchaAction, minScore: 0.5 })
       const score = r.score ?? 0.0
 
-      if (!r.isValid || score < 0.5) {
+      if (!r.isValid || score < 0.3) {
         return Response.json(
           { reply: lang === "ar" ? "فشل التحقق الأمني. حاول مرة أخرى." : "Security verification failed. Please try again." },
           { status: 400, headers: { "Cache-Control": "no-store" } },

@@ -1,4 +1,5 @@
-import nodemailer from "nodemailer"
+import { ConfidentialClientApplication } from "@azure/msal-node"
+
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
@@ -30,6 +31,76 @@ function requireEnv(name: string) {
 }
 
 const safe = (v?: string) => (v && String(v).trim() ? String(v).trim() : "-")
+
+/** =========================
+ *  Microsoft Graph Mail
+ *  ========================= */
+const tenantId = process.env.AZURE_TENANT_ID
+const clientId = process.env.AZURE_CLIENT_ID
+const clientSecret = process.env.AZURE_CLIENT_SECRET
+
+const msal =
+  tenantId && clientId && clientSecret
+    ? new ConfidentialClientApplication({
+        auth: {
+          clientId,
+          authority: `https://login.microsoftonline.com/${tenantId}`,
+          clientSecret,
+        },
+      })
+    : null
+
+async function getGraphToken() {
+  if (!msal) {
+    throw new Error(
+      "Missing Azure envs: AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET",
+    )
+  }
+  const result = await msal.acquireTokenByClientCredential({
+    scopes: ["https://graph.microsoft.com/.default"],
+  })
+  if (!result?.accessToken) throw new Error("Failed to acquire Graph token")
+  return result.accessToken
+}
+
+async function sendGraphMail(args: {
+  to: string | string[]
+  subject: string
+  html: string
+  replyTo?: string
+}) {
+  const from = requireEnv("MAIL_FROM")
+  const token = await getGraphToken()
+  const toList = Array.isArray(args.to) ? args.to : [args.to]
+
+  const payload = {
+    message: {
+      subject: args.subject,
+      body: { contentType: "HTML", content: args.html },
+      toRecipients: toList.map((email) => ({ emailAddress: { address: email } })),
+      ...(args.replyTo
+        ? { replyTo: [{ emailAddress: { address: args.replyTo } }] }
+        : {}),
+    },
+    saveToSentItems: true,
+  }
+
+  const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(from)}/sendMail`
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const details = await res.text()
+    throw new Error(`Graph sendMail failed (${res.status}): ${details}`)
+  }
+}
 
 /* ===============================
    Careers Templates (Internal CV + Applicant Receipt)
@@ -107,7 +178,7 @@ function buildCareersInternalCvHtml(payload: LeadPayload) {
           <div><b>Graduation Year:</b> ${get("Graduation Year")}</div>
           <div style="margin-top:8px;"><b>Certifications:</b>
             <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
-              "Additional Certifications"
+              "Additional Certifications",
             )}</div>
           </div>
         </div>
@@ -122,7 +193,7 @@ function buildCareersInternalCvHtml(payload: LeadPayload) {
 
           <div style="margin-top:8px;"><b>Experience Summary:</b>
             <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
-              "Previous Experience Summary"
+              "Previous Experience Summary",
             )}</div>
           </div>
         </div>
@@ -138,7 +209,7 @@ function buildCareersInternalCvHtml(payload: LeadPayload) {
 
           <div style="margin-top:8px;"><b>Soft Skills:</b>
             <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
-              "Soft Skills"
+              "Soft Skills",
             )}</div>
           </div>
         </div>
@@ -149,13 +220,13 @@ function buildCareersInternalCvHtml(payload: LeadPayload) {
         <div style="font-size:13px;">
           <div><b>Why Join Us:</b>
             <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
-              "Why Join Us"
+              "Why Join Us",
             )}</div>
           </div>
 
           <div style="margin-top:10px;"><b>Key Achievements:</b>
             <div style="white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;margin-top:6px;">${get(
-              "Key Achievements"
+              "Key Achievements",
             )}</div>
           </div>
         </div>
@@ -164,7 +235,7 @@ function buildCareersInternalCvHtml(payload: LeadPayload) {
       <div style="margin-top:12px;border:1px solid #e6e6e6;border-radius:12px;padding:14px;background:#fff;">
         <div style="font-weight:800;font-size:14px;margin-bottom:8px;">References</div>
         <div style="font-size:13px;white-space:pre-wrap;background:#f7f7f7;border-radius:10px;padding:10px;">${get(
-          "References"
+          "References",
         )}</div>
       </div>
 
@@ -223,15 +294,8 @@ export async function POST(req: Request) {
   try {
     const payload = (await req.json()) as LeadPayload
 
-    const user = requireEnv("SMTP_USER")
-    const pass = requireEnv("SMTP_PASS")
     const from = requireEnv("MAIL_FROM")
     const to = requireEnv("MAIL_TO")
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user, pass },
-    })
 
     const lang: "ar" | "en" = payload.lang === "en" ? "en" : "ar"
     const source: Source = payload.source === "careers" ? "careers" : "chat"
@@ -248,8 +312,7 @@ export async function POST(req: Request) {
 
       const internalHtml = buildCareersInternalCvHtml(payload)
 
-      await transporter.sendMail({
-        from: `"Affinity Careers" <${from}>`,
+      await sendGraphMail({
         to,
         subject: internalSubject,
         html: internalHtml,
@@ -265,8 +328,7 @@ export async function POST(req: Request) {
 
         const applicantHtml = buildCareersApplicantHtml(payload, lang)
 
-        await transporter.sendMail({
-          from: `"Affinity Technology" <${from}>`,
+        await sendGraphMail({
           to: payload.email,
           subject: applicantSubject,
           html: applicantHtml,
@@ -288,8 +350,8 @@ export async function POST(req: Request) {
       <div style="font-family:Arial;line-height:1.6">
         <h2>New Website Submission (Chat)</h2>
         <p><b>Category:</b> ${safe(payload.category)} | <b>Score:</b> ${payload.score ?? 0} | <b>Intent:</b> ${safe(
-      payload.intent
-    )}</p>
+          payload.intent,
+        )}</p>
         <p><b>Page URL:</b> ${safe(payload.pageUrl)}</p>
         <hr/>
         <p><b>Name:</b> ${safe(payload.name)}</p>
@@ -301,20 +363,20 @@ export async function POST(req: Request) {
         <pre style="background:#f6f6f6;padding:12px;border-radius:8px;white-space:pre-wrap">${JSON.stringify(
           payload.answers ?? {},
           null,
-          2
+          2,
         )}</pre>
         <p><b>Summary:</b></p>
         <pre style="background:#f6f6f6;padding:12px;border-radius:8px;white-space:pre-wrap">${safe(
-          payload.conversationSummary
+          payload.conversationSummary,
         )}</pre>
         <p><b>Transcript / Notes:</b></p>
         <pre style="background:#f6f6f6;padding:12px;border-radius:8px;white-space:pre-wrap">${safe(payload.notes)}</pre>
         <div style="margin-top:10px;font-size:12px;color:#666;"><b>Source:</b> chat</div>
+        <div style="margin-top:6px;font-size:12px;color:#666;"><b>From:</b> ${safe(from)}</div>
       </div>
     `
 
-    await transporter.sendMail({
-      from: `"Affinity AI Agent" <${from}>`,
+    await sendGraphMail({
       to,
       subject: internalSubject,
       html: internalHtml,
@@ -355,8 +417,7 @@ export async function POST(req: Request) {
             </div>
           `
 
-      await transporter.sendMail({
-        from: `"Affinity Technology" <${from}>`,
+      await sendGraphMail({
         to: payload.email,
         subject: clientSubject,
         html: clientHtml,

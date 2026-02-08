@@ -160,12 +160,12 @@ export default function solutionmainpage() {
 
   const slides = useMemo(
     () => [
-      { src: "/screens/s1.jpg", alt: "AI 1", title: { en: "Neural Dashboard", ar: "لوحة عصبية" }, desc: { en: "Insights in real-time", ar: "رؤية لحظية" } },
-      { src: "/screens/s2.jpg", alt: "AI 2", title: { en: "Smart Automation", ar: "أتمتة ذكية" }, desc: { en: "Less manual work", ar: "تقليل العمل اليدوي" } },
-      { src: "/screens/s3.jpg", alt: "AI 3", title: { en: "Unified ERP", ar: "ERP موحّد" }, desc: { en: "One platform", ar: "منصة واحدة" } },
-      { src: "/screens/s4.jpg", alt: "AI 4", title: { en: "CRM Intelligence", ar: "ذكاء CRM" }, desc: { en: "Better relationships", ar: "علاقات أقوى" } },
-      { src: "/screens/s5.jpg", alt: "AI 5", title: { en: "Field Ops", ar: "العمليات الميدانية" }, desc: { en: "SLA & dispatch", ar: "SLA وجدولة" } },
-      { src: "/screens/s6.jpg", alt: "AI 6", title: { en: "Custom Systems", ar: "حلول مخصصة" }, desc: { en: "Tailored at scale", ar: "مفصلة وقابلة للتوسع" } },
+      { src: "/Future-of-AI.jpg", alt: "AI 1", title: { en: "Neural Dashboard", ar: "لوحة عصبية" }, desc: { en: "Insights in real-time", ar: "رؤية لحظية" } },
+      { src: "/SmartrAutomation.png", alt: "AI 2", title: { en: "Smart Automation", ar: "أتمتة ذكية" }, desc: { en: "Less manual work", ar: "تقليل العمل اليدوي" } },
+      { src: "/unifiederp.jpg", alt: "AI 3", title: { en: "Unified ERP", ar: "ERP موحّد" }, desc: { en: "One platform", ar: "منصة واحدة" } },
+      { src: "/smartcrm.jpg", alt: "AI 4", title: { en: "CRM Intelligence", ar: "ذكاء CRM" }, desc: { en: "Better relationships", ar: "علاقات أقوى" } },
+      { src: "/D365-field-service.jpg", alt: "AI 5", title: { en: "Field Ops", ar: "العمليات الميدانية" }, desc: { en: "SLA & dispatch", ar: "SLA وجدولة" } },
+      { src: "/CustomeSolutions.jpg", alt: "AI 6", title: { en: "Custom Systems", ar: "حلول مخصصة" }, desc: { en: "Tailored at scale", ar: "مفصلة وقابلة للتوسع" } },
     ],
     [],
   )
@@ -304,33 +304,7 @@ export default function solutionmainpage() {
                   </div>
                 </div>
 
-                {/* Language Switch */}
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-1) 65%, transparent)",
-                    }}
-                    onClick={() => setLanguage("en")}
-                  >
-                    English
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--secondary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-2) 60%, transparent)",
-                    }}
-                    onClick={() => setLanguage("ar")}
-                  >
-                    العربية
-                  </button>
-                </div>
+                \
               </div>
             </div>
 

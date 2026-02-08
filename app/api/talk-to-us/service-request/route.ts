@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
 import { verifyRecaptcha } from "@/lib/recaptcha-verify"
 import { checkRateLimit } from "@/lib/rate-limiter"
+import { ConfidentialClientApplication } from "@azure/msal-node"
+
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
 function escapeHtml(input: unknown) {
   const s = String(input ?? "")
@@ -15,6 +19,83 @@ function escapeHtml(input: unknown) {
 function safeHeaderValue(input: unknown) {
   // Prevent CRLF injection in headers/subject
   return String(input ?? "").replace(/[\r\n]+/g, " ").trim()
+}
+
+function requireEnv(name: string) {
+  const v = process.env[name]
+  if (!v) throw new Error(`Missing env: ${name}`)
+  return v
+}
+
+/** =========================
+ *  Microsoft Graph Mail
+ *  ========================= */
+const tenantId = process.env.AZURE_TENANT_ID
+const clientId = process.env.AZURE_CLIENT_ID
+const clientSecret = process.env.AZURE_CLIENT_SECRET
+
+const msal =
+  tenantId && clientId && clientSecret
+    ? new ConfidentialClientApplication({
+        auth: {
+          clientId,
+          authority: `https://login.microsoftonline.com/${tenantId}`,
+          clientSecret,
+        },
+      })
+    : null
+
+async function getGraphToken() {
+  if (!msal) {
+    throw new Error(
+      "Missing Azure envs: AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET",
+    )
+  }
+  const result = await msal.acquireTokenByClientCredential({
+    scopes: ["https://graph.microsoft.com/.default"],
+  })
+  if (!result?.accessToken) throw new Error("Failed to acquire Graph token")
+  return result.accessToken
+}
+
+async function sendGraphMail(args: {
+  to: string | string[]
+  subject: string
+  html: string
+  replyTo?: string
+}) {
+  const from = requireEnv("MAIL_FROM")
+  const token = await getGraphToken()
+
+  const toList = Array.isArray(args.to) ? args.to : [args.to]
+
+  const payload = {
+    message: {
+      subject: args.subject,
+      body: { contentType: "HTML", content: args.html },
+      toRecipients: toList.map((email) => ({ emailAddress: { address: email } })),
+      ...(args.replyTo
+        ? { replyTo: [{ emailAddress: { address: args.replyTo } }] }
+        : {}),
+    },
+    saveToSentItems: true,
+  }
+
+  const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(from)}/sendMail`
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const details = await res.text()
+    throw new Error(`Graph sendMail failed (${res.status}): ${details}`)
+  }
 }
 
 export async function POST(request: Request) {
@@ -56,7 +137,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // ✅ اجعل reCAPTCHA إجباري (طالما أنت مفعله بالواجهة)
     if (!process.env.RECAPTCHA_SECRET_KEY) {
       return NextResponse.json({ error: "Server security not configured." }, { status: 500 })
     }
@@ -80,7 +160,16 @@ export async function POST(request: Request) {
     }
 
     // Validate required fields
-    const requiredFields = ["firstName", "lastName", "email", "phone", "company", "serviceCategory", "subCategory", "projectDescription"]
+    const requiredFields = [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "company",
+      "serviceCategory",
+      "subCategory",
+      "projectDescription",
+    ]
     for (const field of requiredFields) {
       if (!formData?.[field] || String(formData[field]).trim() === "") {
         return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 })
@@ -155,35 +244,22 @@ export async function POST(request: Request) {
       <p><em>Submitted at: ${new Date().toISOString()}</em></p>
     `
 
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      try {
-        const nodemailer = await import("nodemailer")
+    // ✅ Send via Graph (instead of SMTP/nodemailer)
+    const subject = safeHeaderValue(`New Service Request: ${formData.serviceCategory} - ${formData.company}`)
+    const to = requireEnv("MAIL_TO")
 
-        const transporter = nodemailer.default.createTransport({
-          host: process.env.SMTP_HOST,
-          port: Number.parseInt(process.env.SMTP_PORT || "587"),
-          secure: process.env.SMTP_PORT === "465",
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          },
-        })
-
-        const subject = safeHeaderValue(`New Service Request: ${formData.serviceCategory} - ${formData.company}`)
-
-        await transporter.sendMail({
-          from: process.env.MAIL_FROM || process.env.SMTP_USER,
-          to: process.env.MAIL_TO || process.env.SMTP_USER,
-          subject,
-          html: emailHtml,
-          replyTo: safeHeaderValue(email),
-        })
-      } catch (emailError) {
-        console.error("Email sending error:", emailError)
-      }
+    try {
+      await sendGraphMail({
+        to,
+        subject,
+        html: emailHtml,
+        replyTo: safeHeaderValue(email),
+      })
+    } catch (emailError) {
+      console.error("Graph email sending error:", emailError)
+      // We keep processing success response like your previous behavior (non-blocking)
     }
 
-    // ✅ خلّها نفس اللي الواجهة تتوقعه (اختياري)
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error("Service request error:", error)

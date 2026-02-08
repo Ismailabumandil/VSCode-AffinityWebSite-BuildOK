@@ -12,7 +12,6 @@ export default function AccessibilityPage() {
 
   return (
     <div className="min-h-screen bg-background" dir={language === "ar" ? "rtl" : "ltr"}>
-      {/* ✅ Navbar بدل SharedHeader */}
       <Navbar />
 
       <Breadcrumb
@@ -40,7 +39,7 @@ export default function AccessibilityPage() {
                   {language === "en" ? "Our Commitment" : "التزامنا"}
                 </h2>
                 <p className="leading-relaxed">
-                  Innovation Readiness Est. is committed to ensuring digital accessibility for people with disabilities.
+                  Affinity Technology Co. . is committed to ensuring digital accessibility for people with disabilities.
                   We continually improve the user experience for everyone and apply relevant accessibility standards to
                   achieve these goals.
                 </p>
@@ -251,13 +250,13 @@ export default function AccessibilityPage() {
                 </p>
                 <div className="bg-card/50 p-6 rounded-lg">
                   <p className="mb-2">
-                    <strong>Email:</strong> accessibility@innovationreadiness.com
+                    <strong>Email:</strong> TeamSupport@weaffinity-tech.com
                   </p>
                   <p className="mb-2">
-                    <strong>Phone:</strong> +966 XX XXX XXXX
+                    <strong>Phone:</strong> +966 57938905
                   </p>
                   <p className="mb-2">
-                    <strong>Address:</strong> Riyadh, Saudi Arabia
+                    <strong>Address:</strong> Jeddah, Saudi Arabia
                   </p>
                   <p className="text-sm text-muted-foreground mt-4">
                     We aim to respond to accessibility feedback within 2 business days.
@@ -280,7 +279,7 @@ export default function AccessibilityPage() {
                   {language === "en" ? "Last Review" : "آخر مراجعة"}
                 </h2>
                 <p className="leading-relaxed">
-                  This accessibility statement was last reviewed and updated in January 2025. We review and update our
+                  This accessibility statement was last reviewed and updated in January 2026. We review and update our
                   accessibility practices regularly.
                 </p>
               </section>

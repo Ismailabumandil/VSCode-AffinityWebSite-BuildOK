@@ -20,32 +20,32 @@ export default function TalkToUsPage(): ReactElement {
     () =>
       ({
         en: {
-          breadcrumb: "Talk To Us",
           heroTitle: "Talk To Us",
           heroSubtitle: "We're here to help and answer any questions you might have",
           leftTitle: "Get In Touch",
           emailTitle: "Email Us",
           emailDesc: "Our team typically responds within 24 hours",
           callTitle: "Call Us",
-          callDesc: "Monday to Friday, 9 AM to 6 PM (AST)",
+          callDesc: "Sunday  to Thursday , 9 AM to 6 PM (Riyadh Time)",
           visitTitle: "Visit Us",
           hoursTitle: "Business Hours",
           hoursDesc: "Sunday - Thursday: 9:00 AM - 6:00 PM\nFriday - Saturday: Closed",
           connectTitle: "Connect With Us",
+          OurAddress:"Mohamdiyyah - Amenah Bint Abdulmotalen St. Building No. S3, Office 4",
         },
         ar: {
-          breadcrumb: "تواصل معنا",
           heroTitle: "تواصل معنا",
           heroSubtitle: "نحن هنا لمساعدتك والإجابة على استفساراتك",
           leftTitle: "طرق التواصل",
           emailTitle: "راسلنا عبر البريد",
           emailDesc: "عادةً نرد خلال 24 ساعة",
           callTitle: "اتصل بنا",
-          callDesc: "من الإثنين إلى الجمعة، 9 صباحًا إلى 6 مساءً (AST)",
+          callDesc: "من الأحد إلى الحميس ، 9 صباحًا إلى 6 مساءً ( توقيت الرياض ))",
           visitTitle: "زرنا",
           hoursTitle: "ساعات العمل",
           hoursDesc: "الأحد - الخميس: 9:00 ص - 6:00 م\nالجمعة - السبت: مغلق",
           connectTitle: "تابعنا",
+          OurAddress: "جده حي المحمدية - شارع أمنه بنت عبدالمطلب - فيلا 3 مكتب 4",
         },
       }) as const,
     [],
@@ -101,7 +101,7 @@ export default function TalkToUsPage(): ReactElement {
                       href="mailto:info@innovationreadiness.com"
                       className="font-semibold inline-flex items-center gap-2 text-accent hover:underline"
                     >
-                      info@innovationreadiness.com <ArrowRight className="w-4 h-4" />
+                      Sales@weaffinity-tech.com <ArrowRight className="w-4 h-4" />
                     </a>
                   </div>
                 </div>
@@ -113,8 +113,8 @@ export default function TalkToUsPage(): ReactElement {
                   <div>
                     <h3 className="font-semibold mb-1 text-foreground">{t.callTitle}</h3>
                     <p className="text-sm mb-2 text-muted-foreground">{t.callDesc}</p>
-                    <a href="tel:+966XXXXXXXX" className="font-semibold text-accent hover:underline">
-                      +966 XX XXX XXXX
+                    <a href="tel:+966579389025" className="font-semibold text-accent hover:underline">
+                      +966 579389025
                     </a>
                   </div>
                 </div>
@@ -126,9 +126,8 @@ export default function TalkToUsPage(): ReactElement {
                   <div>
                     <h3 className="font-semibold mb-1 text-foreground">{t.visitTitle}</h3>
                     <p className="text-sm whitespace-pre-line text-muted-foreground">
-                      Innovation Readiness Est.
-                      {"\n"}Riyadh, Saudi Arabia
-                      {"\n"}Kingdom of Saudi Arabia
+                      
+                      {t.OurAddress}
                     </p>
                   </div>
                 </div>

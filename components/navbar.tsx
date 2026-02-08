@@ -457,7 +457,7 @@ export function Navbar() {
           {
             label: language === "en" ? "Carriers Signals Boosters" : "معززات إشارات الناقلات",
             labelAr: "معززات إشارات الناقلات",
-            href: "/low-current/signal-boosters",
+            href: "/coming-soon",
             icon: "signal",
           },
           {
@@ -583,7 +583,7 @@ export function Navbar() {
           {
             label: language === "en" ? "Hardware Sections" : "أقسام الأجهزة",
             labelAr: "أقسام الأجهزة",
-            href: "/supply-hd/hardware",
+            href: "/coming-soon",
             icon: "monitor",
           },
           {

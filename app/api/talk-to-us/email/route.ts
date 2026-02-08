@@ -1,5 +1,5 @@
 import { verifyRecaptcha } from "@/lib/recaptcha-verify"
-import nodemailer from "nodemailer"
+import { ConfidentialClientApplication } from "@azure/msal-node"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -39,7 +39,7 @@ function escapeHtml(input: any) {
     .replaceAll("'", "&#039;")
 }
 
-function safe(payload: LeadPayload, v?: string) {
+function safe(_payload: LeadPayload, v?: string) {
   return escapeHtml(v ?? "-")
 }
 
@@ -48,29 +48,93 @@ function pickAnswer(payload: LeadPayload, key: string) {
   return v && String(v).trim() ? String(v).trim() : "-"
 }
 
+/** =========================
+ *  Microsoft Graph Mail
+ *  ========================= */
+const tenantId = process.env.AZURE_TENANT_ID
+const clientId = process.env.AZURE_CLIENT_ID
+const clientSecret = process.env.AZURE_CLIENT_SECRET
+const graphFrom = process.env.MAIL_FROM
+
+const msal =
+  tenantId && clientId && clientSecret
+    ? new ConfidentialClientApplication({
+        auth: {
+          clientId,
+          authority: `https://login.microsoftonline.com/${tenantId}`,
+          clientSecret,
+        },
+      })
+    : null
+
+async function getGraphToken() {
+  if (!msal) {
+    throw new Error(
+      "Missing Azure envs: AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET",
+    )
+  }
+  const result = await msal.acquireTokenByClientCredential({
+    scopes: ["https://graph.microsoft.com/.default"],
+  })
+  if (!result?.accessToken) throw new Error("Failed to acquire Graph token")
+  return result.accessToken
+}
+
+async function sendGraphMail(args: {
+  to: string | string[]
+  subject: string
+  html: string
+  replyTo?: string
+}) {
+  const from = requireEnv("MAIL_FROM")
+  const token = await getGraphToken()
+
+  const toList = Array.isArray(args.to) ? args.to : [args.to]
+
+  const payload = {
+    message: {
+      subject: args.subject,
+      body: { contentType: "HTML", content: args.html },
+      toRecipients: toList.map((email) => ({ emailAddress: { address: email } })),
+      ...(args.replyTo
+        ? { replyTo: [{ emailAddress: { address: args.replyTo } }] }
+        : {}),
+    },
+    saveToSentItems: true,
+  }
+
+  const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(from)}/sendMail`
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const details = await res.text()
+    throw new Error(`Graph sendMail failed (${res.status}): ${details}`)
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const payload = (await req.json()) as LeadPayload
 
-    const user = requireEnv("SMTP_USER")
-    const pass = requireEnv("SMTP_PASS")
-    const from = requireEnv("MAIL_FROM")
-    const to = requireEnv("MAIL_TO")
+    // env
+    const from = requireEnv("MAIL_FROM") // used by Graph as sender mailbox
+    const to = requireEnv("MAIL_TO") // internal team inbox
+
+    // recaptcha
     const token = payload.recaptchaToken || ""
     const action = payload.recaptchaAction || ""
     const vr = await verifyRecaptcha(token, { expectedAction: action })
     if (!vr.isValid) {
-      return Response.json(
-        { ok: false, error: "Security check failed" },
-        { status: 400 }
-      )
+      return Response.json({ ok: false, error: "Security check failed" }, { status: 400 })
     }
-
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user, pass },
-    })
 
     const lang: "en" | "ar" = payload.lang === "en" ? "en" : "ar"
     const category = (payload.category ?? "General").trim()
@@ -80,7 +144,7 @@ export async function POST(req: Request) {
     const categoryLower = category.toLowerCase()
     const intentLower = intent.toLowerCase()
 
-      const isBookDemo =
+    const isBookDemo =
       categoryLower.includes("book demo") ||
       categoryLower.includes("bookdemo") ||
       intentLower.includes("demo")
@@ -128,11 +192,14 @@ export async function POST(req: Request) {
           payload,
           payload.notes,
         )}</pre>
+
+        <p style="margin-top:16px;color:#777;font-size:12px">
+          Sent via Affinity Website · From: ${escapeHtml(from)}
+        </p>
       </div>
     `
 
-    await transporter.sendMail({
-      from: `"Affinity AI Agent" <${from}>`,
+    await sendGraphMail({
       to,
       subject: internalSubject,
       html: internalHtml,
@@ -219,8 +286,7 @@ export async function POST(req: Request) {
           </div>
         `
 
-        await transporter.sendMail({
-          from: `"Affinity Technology" <${from}>`,
+        await sendGraphMail({
           to: payload.email,
           subject: clientSubject,
           html: clientHtml,
@@ -259,8 +325,7 @@ export async function POST(req: Request) {
           </div>
         `
 
-        await transporter.sendMail({
-          from: `"Affinity Technology" <${from}>`,
+        await sendGraphMail({
           to: payload.email,
           subject: clientSubject,
           html: clientHtml,
@@ -268,7 +333,10 @@ export async function POST(req: Request) {
       }
     }
 
-    return Response.json({ ok: true }, { status: 200, headers: { "Content-Type": "application/json" } })
+    return Response.json(
+      { ok: true },
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    )
   } catch (e: any) {
     console.error("EMAIL_ERROR:", e)
     return Response.json(

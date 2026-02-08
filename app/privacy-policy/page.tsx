@@ -44,7 +44,7 @@ export default function PrivacyPolicyPage() {
                 {language === "en" ? "1. Introduction" : "1. المقدمة"}
               </h2>
               <p className="leading-relaxed">
-                Innovation Readiness Est. ("we", "our", or "us") is committed to protecting your privacy. This Privacy
+                Affinity Technology. ("we", "our", or "us") is committed to protecting your privacy. This Privacy
                 Policy explains how we collect, use, disclose, and safeguard your information when you visit our website
                 or use our services.
               </p>
@@ -100,13 +100,13 @@ export default function PrivacyPolicyPage() {
               </h2>
               <div className="bg-card/50 p-6 rounded-lg">
                 <p className="mb-2">
-                  <strong>Email:</strong> privacy@innovationreadiness.com
+                  <strong>Email:</strong> Sales@weaffinity-tech.com
                 </p>
                 <p className="mb-2">
-                  <strong>Phone:</strong> +966 XX XXX XXXX
+                  <strong>Phone:</strong> +966 579389025
                 </p>
                 <p>
-                  <strong>Address:</strong> Riyadh, Saudi Arabia
+                  <strong>Address:</strong> Jeddah, Saudi Arabia
                 </p>
               </div>
             </section>

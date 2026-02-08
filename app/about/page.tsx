@@ -105,18 +105,18 @@ export default function AboutPage() {
 
   const founders = [
     {
-      name: isAr ? "المؤسس الأول" : "Founder One",
-      role: isAr ? "CEO / Founder" : "CEO / Founder",
+      name: isAr ? "سامي محمد الخليلي" : "Sami Mohammed Al-Khalili",
+      role: isAr ? "المؤسس الأول و الرئيس التنفيذي" : "Founder & CEO",
+      bio: isAr
+        ? "من رواد الأعمال في مجال التقنية في السعودية، بخبرة تمتد لأكثر من 15 سنة في بناء شركات تقنية ناجحة."
+        : "ُA tech entrepreneur with 15+ years of experience building successful tech companies in Saudi Arabia.",
+    },
+    {
+      name: isAr ? "إسماعيل أبومنديل" : " Ismail Abumandil",
+      role: isAr ? "مستشار وتنفيذي تقنية المعلومات" : "CIO",
       bio: isAr
         ? "خبرة في بناء المنتجات والمنصات وإدارة التحول الرقمي."
         : "Experience in building products, platforms, and leading digital transformation.",
-    },
-    {
-      name: isAr ? "المؤسس الثاني" : "Founder Two",
-      role: isAr ? "CTO / Co-Founder" : "CTO / Co-Founder",
-      bio: isAr
-        ? "هندسة حلول + أمن سيبراني + بنية مؤسسية."
-        : "Solution engineering + cybersecurity + enterprise architecture.",
     },
   ]
 
@@ -446,7 +446,7 @@ export default function AboutPage() {
                   <LineItem
                     icon={<MapPin className="w-4 h-4" />}
                     label={isAr ? "المدينة" : "City"}
-                    value={isAr ? "الرياض" : "Riyadh"}
+                    value={isAr ? "الرياض - جده- الدمام" : "Jeddah-Riyadh-Dammam" }
                   />
                   <LineItem
                     icon={<Building2 className="w-4 h-4" />}
@@ -461,12 +461,12 @@ export default function AboutPage() {
                   <LineItem
                     icon={<Mail className="w-4 h-4" />}
                     label={isAr ? "البريد" : "Email"}
-                    value="info@affinity-tech.com"
+                    value="Sales@weaffinity-tech.com"
                   />
                   <LineItem
                     icon={<Phone className="w-4 h-4" />}
                     label={isAr ? "الهاتف" : "Phone"}
-                    value="+966 000 000 000"
+                    value="+966 579 389 025"
                   />
                 </div>
 

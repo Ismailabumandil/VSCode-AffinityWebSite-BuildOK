@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer"
+import { ConfidentialClientApplication } from "@azure/msal-node"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -28,6 +28,77 @@ function escapeHtml(s: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;")
+}
+
+/** =========================
+ *  Microsoft Graph Mail
+ *  ========================= */
+const tenantId = process.env.AZURE_TENANT_ID
+const clientId = process.env.AZURE_CLIENT_ID
+const clientSecret = process.env.AZURE_CLIENT_SECRET
+
+const msal =
+  tenantId && clientId && clientSecret
+    ? new ConfidentialClientApplication({
+        auth: {
+          clientId,
+          authority: `https://login.microsoftonline.com/${tenantId}`,
+          clientSecret,
+        },
+      })
+    : null
+
+async function getGraphToken() {
+  if (!msal) {
+    throw new Error(
+      "Missing Azure envs: AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET",
+    )
+  }
+  const result = await msal.acquireTokenByClientCredential({
+    scopes: ["https://graph.microsoft.com/.default"],
+  })
+  if (!result?.accessToken) throw new Error("Failed to acquire Graph token")
+  return result.accessToken
+}
+
+async function sendGraphMail(args: {
+  to: string | string[]
+  subject: string
+  html: string
+  replyTo?: string
+}) {
+  const from = requireEnv("MAIL_FROM")
+  const token = await getGraphToken()
+
+  const toList = Array.isArray(args.to) ? args.to : [args.to]
+
+  const payload = {
+    message: {
+      subject: args.subject,
+      body: { contentType: "HTML", content: args.html },
+      toRecipients: toList.map((email) => ({ emailAddress: { address: email } })),
+      ...(args.replyTo
+        ? { replyTo: [{ emailAddress: { address: args.replyTo } }] }
+        : {}),
+    },
+    saveToSentItems: true,
+  }
+
+  const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(from)}/sendMail`
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const details = await res.text()
+    throw new Error(`Graph sendMail failed (${res.status}): ${details}`)
+  }
 }
 
 /* ===============================
@@ -80,8 +151,6 @@ export async function POST(req: Request) {
   try {
     const payload = (await req.json().catch(() => ({} as any))) as NewsletterPayload
 
-    const user = requireEnv("SMTP_USER")
-    const pass = requireEnv("SMTP_PASS")
     const from = requireEnv("MAIL_FROM")
     const to = requireEnv("MAIL_TO")
 
@@ -92,17 +161,13 @@ export async function POST(req: Request) {
       return Response.json({ ok: false, error: "Invalid email" }, { status: 400 })
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user, pass },
-    })
-
     // 1) Internal notification to team
     const internalSubject =
-      lang === "ar" ? `📬 اشتراك جديد في النشرة — ${email}` : `📬 New Newsletter Subscription — ${email}`
+      lang === "ar"
+        ? `📬 اشتراك جديد في النشرة — ${email}`
+        : `📬 New Newsletter Subscription — ${email}`
 
-    await transporter.sendMail({
-      from: `"Affinity Newsletter" <${from}>`,
+    await sendGraphMail({
       to,
       subject: internalSubject,
       html: buildNewsletterInternalHtml(payload),
@@ -111,18 +176,25 @@ export async function POST(req: Request) {
 
     // 2) Thank-you email to subscriber
     const clientSubject =
-      lang === "ar" ? "✅ شكرًا لاشتراكك في نشرة Affinity Technology" : "✅ Thanks for subscribing — Affinity Technology"
+      lang === "ar"
+        ? "✅ شكرًا لاشتراكك في نشرة Affinity Technology"
+        : "✅ Thanks for subscribing — Affinity Technology"
 
-    await transporter.sendMail({
-      from: `"Affinity Technology" <${from}>`,
+    await sendGraphMail({
       to: email,
       subject: clientSubject,
       html: buildNewsletterSubscriberHtml(lang),
     })
 
+    // (اختياري) فقط للتأكيد في اللوج
+    void from
+
     return Response.json({ ok: true })
   } catch (e: any) {
     console.error("NEWSLETTER_EMAIL_ERROR:", e)
-    return Response.json({ ok: false, error: e?.message ?? "Newsletter email failed" }, { status: 500 })
+    return Response.json(
+      { ok: false, error: e?.message ?? "Newsletter email failed" },
+      { status: 500 },
+    )
   }
 }

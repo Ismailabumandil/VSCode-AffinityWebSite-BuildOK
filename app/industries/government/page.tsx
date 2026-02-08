@@ -87,7 +87,6 @@ export default function GovernmentPage() {
               language === "en"
                 ? [
                     { title: "E-Government Platforms", icon: "🏛️" },
-                    { title: "Citizen Portals", icon: "👥" },
                     { title: "Data Security & Compliance", icon: "🔐" },
                     { title: "Smart City Solutions", icon: "🌆" },
                     { title: "Digital Identity Systems", icon: "🆔" },
@@ -95,7 +94,6 @@ export default function GovernmentPage() {
                   ]
                 : [
                     { title: "منصات الحكومة الإلكترونية", icon: "🏛️" },
-                    { title: "بوابات المواطن", icon: "👥" },
                     { title: "أمن البيانات والامتثال", icon: "🔐" },
                     { title: "حلول المدن الذكية", icon: "🌆" },
                     { title: "أنظمة الهوية الرقمية", icon: "🆔" },

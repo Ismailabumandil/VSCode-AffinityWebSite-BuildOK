@@ -19,8 +19,8 @@ export default function NotFoundClient() {
 
   const popularPages = [
     { name: "Home", nameAr: "الرئيسية", href: "/" },
-    { name: "Mission", nameAr: "مهمتنا", href: "/mission" },
-    { name: "Vision", nameAr: "رؤيتنا", href: "/vision" },
+    { name: "Digital Transformation", nameAr: "التحول الرقمي", href: "/digital-transformation/ai-integration" },
+    { name: "Development ", nameAr: "التطوير", href: "/services/development/mobile-application" },
   ]
 
   const handleSearch = (e: React.FormEvent) => {

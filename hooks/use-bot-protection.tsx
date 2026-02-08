@@ -18,6 +18,13 @@ interface BotProtectionResult {
   isVerifying: boolean
 }
 
+function getMinIntervalMs(action: string) {
+  // ✅ الشات لازم يكون سريع
+  if (action === "chat_message") return 1500 // 1.5s
+  // ✅ باقي الفورمات (contact / book-demo / ... )
+  return 30_000 // 30s
+}
+
 export function useBotProtection(config: BotProtectionConfig = {}): BotProtectionResult {
   const {
     enableRecaptcha = true,
@@ -44,6 +51,7 @@ export function useBotProtection(config: BotProtectionConfig = {}): BotProtectio
 
     // Dedupe: don’t inject script multiple times
     if (document.querySelector('script[data-recaptcha="v3"]')) {
+      // script موجود، لكن grecaptcha ممكن ما يكون جاهز الآن
       setRecaptchaLoaded(true)
       return
     }
@@ -101,13 +109,14 @@ export function useBotProtection(config: BotProtectionConfig = {}): BotProtectio
           }
         }
 
-        // 2) Client-side throttling (optional)
+        // 2) Client-side throttling (optional) ✅ per-action
         if (enableRateLimit) {
-          const lastSubmission = localStorage.getItem("lastFormSubmission")
-          if (lastSubmission) {
-            const timeSinceLastSubmit = Date.now() - Number.parseInt(lastSubmission)
-            const minInterval = 30000
+          const key = `lastSubmission:${action}`
+          const lastSubmission = localStorage.getItem(key)
+          const minInterval = getMinIntervalMs(action)
 
+          if (lastSubmission) {
+            const timeSinceLastSubmit = Date.now() - Number.parseInt(lastSubmission, 10)
             if (timeSinceLastSubmit < minInterval) {
               const waitTime = Math.ceil((minInterval - timeSinceLastSubmit) / 1000)
               return {
@@ -140,9 +149,9 @@ export function useBotProtection(config: BotProtectionConfig = {}): BotProtectio
           }
         }
 
-        // 4) Update client throttle timestamp
+        // 4) Update client throttle timestamp ✅ per-action
         if (enableRateLimit) {
-          localStorage.setItem("lastFormSubmission", Date.now().toString())
+          localStorage.setItem(`lastSubmission:${action}`, Date.now().toString())
         }
 
         return {

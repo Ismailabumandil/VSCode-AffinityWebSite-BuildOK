@@ -139,10 +139,10 @@ export default function SecurityPage() {
                   {language === "en" ? "Contact Security Team" : "التواصل مع فريق الأمن"}
                 </h2>
                 <div className="bg-card/50 p-6 rounded-lg">
-                  <p><strong>Email:</strong> security@innovationreadiness.com</p>
-                  <p><strong>Support:</strong> support@innovationreadiness.com</p>
-                  <p><strong>Phone:</strong> +966 XX XXX XXXX</p>
-                  <p><strong>Address:</strong> Riyadh, Saudi Arabia</p>
+                  <p><strong>Email:</strong> sales@weaffinity-tech.com</p>
+                  <p><strong>Support:</strong> SupportTeam@weaffinity-tech.com</p>
+                  <p><strong>Phone:</strong> +966 579389025</p>
+                  <p><strong>Address:</strong> Jeddah, Saudi Arabia</p>
                 </div>
               </section>
             </div>
