@@ -43,12 +43,12 @@ export default function industriesmainpage() {
   // ✅ 6 صور للكاروسيل (غيرها أنت)
   const slides = useMemo(
     () => [
-      { src: "/screens/in1.jpg", alt: "Industries", title: { en: "Industries", ar: "القطاعات" }, desc: { en: "Multi-sector solutions", ar: "حلول متعددة القطاعات" } },
-      { src: "/screens/in2.jpg", alt: "IT", title: { en: "IT", ar: "تقنية المعلومات" }, desc: { en: "Automation & visibility", ar: "أتمتة ورؤية شاملة" } },
-      { src: "/screens/in3.jpg", alt: "Manufacturing", title: { en: "Manufacturing", ar: "التصنيع" }, desc: { en: "Traceability & analytics", ar: "تتبع وتحليلات" } },
-      { src: "/screens/in4.jpg", alt: "Government", title: { en: "Government", ar: "حكومي" }, desc: { en: "Secure & compliant", ar: "آمن ومتوافق" } },
-      { src: "/screens/in5.jpg", alt: "Finance", title: { en: "Finance", ar: "مالية" }, desc: { en: "Regulation-ready", ar: "جاهزية تنظيمية" } },
-      { src: "/screens/in6.jpg", alt: "Hospitality", title: { en: "Hospitality", ar: "ضيافة" }, desc: { en: "11+ years expertise", ar: "+11 سنة خبرة" } },
+      { src: "/sectors.jpg", alt: "Industries", title: { en: "Industries", ar: "القطاعات" }, desc: { en: "Multi-sector solutions", ar: "حلول متعددة القطاعات" } },
+      { src: "/1683541586605.jpg", alt: "IT", title: { en: "IT", ar: "تقنية المعلومات" }, desc: { en: "Automation & visibility", ar: "أتمتة ورؤية شاملة" } },
+      { src: "/istockphoto-846859964-612x612.jpg", alt: "Manufacturing", title: { en: "Manufacturing", ar: "التصنيع" }, desc: { en: "Traceability & analytics", ar: "تتبع وتحليلات" } },
+      { src: "/presents-sphere-public-sector.webp", alt: "Government", title: { en: "Government", ar: "حكومي" }, desc: { en: "Secure & compliant", ar: "آمن ومتوافق" } },
+      { src: "/istockphoto.jpg", alt: "Finance", title: { en: "Finance", ar: "مالية" }, desc: { en: "Regulation-ready", ar: "جاهزية تنظيمية" } },
+      { src: "/cq5dam.webp", alt: "Hospitality", title: { en: "Hospitality", ar: "ضيافة" }, desc: { en: "11+ years expertise", ar: "+11 سنة خبرة" } },
     ],
     [],
   )
@@ -329,8 +329,7 @@ export default function industriesmainpage() {
           >
             <ScreenCarousel
               language={language as Lang}
-              heading={{ en: "Industries Showcase", ar: "عرض القطاعات" }}
-              subheading={{ en: "Auto-slides, tap to pause. Swipe on mobile.", ar: "يتحرك تلقائياً، اضغط لإيقافه. واسحب على الجوال." }}
+              heading={{ en: "Industries ", ar: " القطاعات" }}
               slides={slides}
             />
           </div>

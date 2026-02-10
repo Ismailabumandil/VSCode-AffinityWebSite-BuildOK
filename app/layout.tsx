@@ -51,7 +51,7 @@ export const metadata = {
         type: "image/svg+xml",
       },
     ],
-    apple: "/apple-icon.png",
+    apple: "/affinity-icon-white.svg",
   },
 }
 

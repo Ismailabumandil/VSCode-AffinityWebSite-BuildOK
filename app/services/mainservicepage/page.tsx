@@ -49,11 +49,11 @@ export default function mainservicepage() {
           { en: "Cloud", ar: "سحابة" },
         ],
         items: [
-          { icon: Code2, title: { en: "Web Development", ar: "تطوير مواقع الويب" }, href: "/services/web" },
-          { icon: Layers, title: { en: "Mobile Applications", ar: "تطوير تطبيقات الموبايل" }, href: "/services/mobile" },
-          { icon: Cloud, title: { en: "Cloud Services & Migration", ar: "خدمات السحابة والهجرة" }, href: "/services/cloud" },
-          { icon: Sparkles, title: { en: "API Integration", ar: "تكامل الأنظمة (API)" }, href: "/services/api" },
-          { icon: Database, title: { en: "Database Optimization", ar: "تحسين قواعد البيانات" }, href: "/services/database" },
+          { icon: Code2, title: { en: "Web Development", ar: "تطوير مواقع الويب" }, href: "/services/development/web-development" },
+          { icon: Layers, title: { en: "Mobile Applications", ar: "تطوير تطبيقات الموبايل" }, href: "/services/development/mobile-application" },
+          { icon: Cloud, title: { en: "Cloud Services & Migration", ar: "خدمات السحابة والترقيه" }, href: "/services/development/cloud-services" },
+          { icon: Sparkles, title: { en: "API Integration", ar: "تكامل الأنظمة (API)" }, href: "/services/development/api-integration" },
+          { icon: Database, title: { en: "Database Design & Optimization", ar: "تصميم وتحسين قواعد البيانات" }, href: "/services/development/database-design" },
         ],
       },
       {
@@ -70,10 +70,10 @@ export default function mainservicepage() {
           { en: "Automation", ar: "أتمتة" },
         ],
         items: [
-          { icon: Cpu, title: { en: "AI Solutions & Intelligent Agents", ar: "حلول الذكاء الاصطناعي والوكلاء" }, href: "/services/ai-agents" },
-          { icon: BarChart3, title: { en: "Analytics & Business Intelligence", ar: "تحليلات البيانات وذكاء الأعمال" }, href: "/services/bi" },
-          { icon: Wand2, title: { en: "Machine Learning Models", ar: "نماذج تعلم الآلة" }, href: "/services/ml" },
-          { icon: Layers, title: { en: "Process Automation", ar: "أتمتة العمليات" }, href: "/services/automation" },
+          { icon: Cpu, title: { en: "AI Solutions & Intelligent Agents", ar: "حلول الذكاء الاصطناعي والوكلاء" }, href: "/digital-transformation/chatbot" },
+          { icon: BarChart3, title: { en: "Analytics & Business Intelligence", ar: "تحليلات البيانات وذكاء الأعمال" }, href: "/services/data-analytics" },
+          { icon: Wand2, title: { en: "Machine Learning Models", ar: "نماذج تعلم الآلة" }, href: "/services/machine-learning" },
+          { icon: Layers, title: { en: "Process Automation", ar: "أتمتة العمليات" }, href: "/services/process-automation" },
         ],
       },
       {
@@ -90,10 +90,10 @@ export default function mainservicepage() {
           { en: "Support", ar: "دعم" },
         ],
         items: [
-          { icon: Briefcase, title: { en: "Enterprise Consulting", ar: "الاستشارات المؤسسية" }, href: "/services/consulting" },
-          { icon: Users, title: { en: "Staff Augmentation", ar: "دعم وتطوير الفرق" }, href: "/services/staffing" },
-          { icon: Headset, title: { en: "Support & Ticketing", ar: "الدعم والتذاكر" }, href: "/services/support" },
-          { icon: ShieldCheck, title: { en: "Cybersecurity & Standards", ar: "الأمن السيبراني والمعايير" }, href: "/services/cyber" },
+          { icon: Briefcase, title: { en: "Enterprise Consulting", ar: "الاستشارات المؤسسية" }, href: "/services/enterprise-consulting" },
+          { icon: Users, title: { en: "Staff Augmentation", ar: "دعم وتطوير الفرق" }, href: "/services/staff-augmentation" },
+          { icon: Headset, title: { en: "Support & Ticketing", ar: "الدعم والتذاكر" }, href: "/services/support-ticketing" },
+          { icon: ShieldCheck, title: { en: "Cybersecurity & Standards", ar: "الأمن السيبراني والمعايير" }, href: "/cybersecurity/compliance" },
         ],
       },
     ]
@@ -101,12 +101,12 @@ export default function mainservicepage() {
 
   const quickSlides = useMemo(
     () => [
-      { src: "/screens/s1.jpg", alt: "Slide 1", title: { en: "Service Overview", ar: "نظرة عامة" }, desc: { en: "A quick look at capabilities", ar: "نظرة سريعة على القدرات" } },
-      { src: "/screens/s2.jpg", alt: "Slide 2", title: { en: "Modern UI/UX", ar: "واجهات عصرية" }, desc: { en: "Clean, premium experiences", ar: "تجارب نظيفة وفخمة" } },
-      { src: "/screens/s3.jpg", alt: "Slide 3", title: { en: "AI Agents", ar: "وكلاء ذكية" }, desc: { en: "Automation & smart support", ar: "أتمتة ودعم ذكي" } },
-      { src: "/screens/s4.jpg", alt: "Slide 4", title: { en: "Cloud & DevOps", ar: "سحابة و DevOps" }, desc: { en: "Scale securely", ar: "توسع بأمان" } },
-      { src: "/screens/s5.jpg", alt: "Slide 5", title: { en: "Analytics", ar: "تحليلات" }, desc: { en: "Dashboards & insights", ar: "لوحات ومؤشرات" } },
-      { src: "/screens/s6.jpg", alt: "Slide 6", title: { en: "Consulting", ar: "استشارات" }, desc: { en: "Strategy & governance", ar: "حوكمة واستراتيجية" } },
+      { src: "/data_center-info_tech_components_and_functions-f_mobile.png", alt: "Slide 1", title: { en: "Service Overview", ar: "نظرة عامة" }, desc: { en: "A quick look at capabilities", ar: "نظرة سريعة على القدرات" } },
+      { src: "/flat-design-ui-ux-elements_23-2149093993.avif", alt: "Slide 2", title: { en: "Modern UI/UX", ar: "واجهات عصرية" }, desc: { en: "Clean, premium experiences", ar: "تجارب نظيفة وفخمة" } },
+      { src: "/original-536b8effa628cf6c08fa8571965ed20e.webp", alt: "Slide 3", title: { en: "AI Agents", ar: "وكلاء ذكية" }, desc: { en: "Automation & smart support", ar: "أتمتة ودعم ذكي" } },
+      { src: "/Screenshot-2024-10-10-at-07.58.42.png", alt: "Slide 4", title: { en: "Cloud & DevOps", ar: "سحابة و DevOps" }, desc: { en: "Scale securely", ar: "توسع بأمان" } },
+      { src: "/dashboarduxui.jpg", alt: "Slide 5", title: { en: "Analytics", ar: "تحليلات" }, desc: { en: "Dashboards & insights", ar: "لوحات ومؤشرات" } },
+      { src: "/Consultingandstargegy.jpg", alt: "Slide 6", title: { en: "Consulting", ar: "استشارات" }, desc: { en: "Strategy & governance", ar: "حوكمة واستراتيجية" } },
     ],
     []
   )
@@ -196,22 +196,22 @@ export default function mainservicepage() {
                   >
                     <Sparkles className="w-4 h-4" style={{ color: "var(--primary)" }} />
                     <span className="text-sm font-semibold" style={{ color: "var(--page-fg)" }}>
-                      {isAr ? "ملخص الخدمات والصفحات" : "Services & Pages Summary"}
+                      {isAr ? "خدماتنا بإختصار " : "Services & Pages Summary"}
                     </span>
                   </div>
 
                   <h1 className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight"
                     style={{ color: "var(--page-fg)" }}
                   >
-                    {isAr ? "كل خدماتنا… في صفحة واحدة" : "All Our Services… In One Page"}
+                    {isAr ? "مبدعين في كل خدمة نقدمها " : "Crafting excellence in every service we offer"}
                   </h1>
 
                   <p className="mt-4 text-lg md:text-xl leading-relaxed"
                     style={{ color: "var(--muted-foreground)" }}
                   >
                     {isAr
-                      ? "واجهة ترند مع أنيميشن وملخص ذكي لكل منيو والسب منيو — مناسبة للديسكتوب والتابلت والجوال."
-                      : "A trend-ready animated summary of every menu & submenu—built for desktop, tablet, and mobile."}
+                      ? "نتمتلك فريق المواهب  والخبرة لتقديم كل خدمة بأعلى جودة — من التطوير إلى الذكاء الاصطناعي والاستشارات."
+                      : "We have the talented team and expertise to deliver each service with top quality—from development to AI and consulting."}
                   </p>
 
                   {/* Chips */}
@@ -297,15 +297,11 @@ export default function mainservicepage() {
           >
             <ScreenCarousel
               language={language as Lang}
-              heading={{ en: "Highlights", ar: "أبرز اللقطات" }}
-              subheading={{ en: "Auto-slides, tap to pause. Swipe on mobile.", ar: "يتحرك تلقائياً، اضغط لإيقافه. واسحب على الجوال." }}
+              heading={{ en: "Highlights", ar: "أبرز الخدمات" }}
+              
               slides={quickSlides}
             />
-            <p className="text-xs mt-4" style={{ color: "var(--muted-foreground)" }}>
-              {isAr
-                ? "ضع صورك في public/screens/ (s1.jpg إلى s6.jpg) أو عدّل المسارات."
-                : "Put your images in public/screens/ (s1.jpg to s6.jpg) or update paths."}
-            </p>
+            
           </div>
         </div>
       </section>

@@ -18,6 +18,10 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 const MotionLink = motion(Link)
+
+// ✅ Hydration fix: stable numeric formatting between SSR & client
+const round = (n: number, d = 3) => Number(n.toFixed(d))
+
 export default function ComplianceAssessmentPage() {
   const { language: currentLang, theme: themeMode } = useTheme()
   const [activeFramework, setActiveFramework] = useState(0)
@@ -136,7 +140,6 @@ export default function ComplianceAssessmentPage() {
         color: "var(--page-fg)",
       }}
     >
-
       {/* HERO */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
         {/* Global animated background blobs */}
@@ -234,8 +237,11 @@ export default function ComplianceAssessmentPage() {
                     const Icon = framework.icon
                     const angle = (index / frameworks.length) * 2 * Math.PI
                     const radius = 155
-                    const x = Math.cos(angle) * radius
-                    const y = Math.sin(angle) * radius
+
+                    // ✅ Hydration fix: stable rounding
+                    const x = round(Math.cos(angle) * radius, 3)
+                    const y = round(Math.sin(angle) * radius, 3)
+
                     const isActive = index === activeFramework
 
                     return (
@@ -287,8 +293,11 @@ export default function ComplianceAssessmentPage() {
                     const radius = 155
                     const cx = 210
                     const cy = 210
-                    const x2 = cx + Math.cos(angle) * radius
-                    const y2 = cy + Math.sin(angle) * radius
+
+                    // ✅ Hydration fix: stable rounding + keep as numbers
+                    const x2 = round(cx + Math.cos(angle) * radius, 3)
+                    const y2 = round(cy + Math.sin(angle) * radius, 3)
+
                     const isActive = index === activeFramework
 
                     return (
@@ -395,7 +404,10 @@ export default function ComplianceAssessmentPage() {
                     {currentLang === "en" ? service.title : service.titleAr}
                   </h3>
 
-                  <p className={`${currentLang === "ar" ? "text-right" : "text-left"} leading-relaxed`} style={{ color: "var(--muted-foreground)" }}>
+                  <p
+                    className={`${currentLang === "ar" ? "text-right" : "text-left"} leading-relaxed`}
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
                     {currentLang === "en" ? service.description : service.descriptionAr}
                   </p>
 
@@ -418,7 +430,8 @@ export default function ComplianceAssessmentPage() {
       <section
         className="py-20 relative px-4"
         style={{
-          background: "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--page-bg) 80%, var(--primary) 20%))",
+          background:
+            "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--page-bg) 80%, var(--primary) 20%))",
         }}
       >
         <div className="max-w-7xl mx-auto">
@@ -458,7 +471,10 @@ export default function ComplianceAssessmentPage() {
                 </h3>
               </div>
 
-              <p className={`leading-relaxed mb-4 ${currentLang === "ar" ? "text-right" : "text-left"}`} style={{ color: "var(--muted-foreground)" }}>
+              <p
+                className={`leading-relaxed mb-4 ${currentLang === "ar" ? "text-right" : "text-left"}`}
+                style={{ color: "var(--muted-foreground)" }}
+              >
                 {currentLang === "en"
                   ? "Support compliance readiness for Saudi NCA ECC with evidence-based assessment, control validation, and gap remediation planning."
                   : "دعم جاهزية الامتثال لـ NCA ECC عبر تقييم قائم على الأدلة، وتحقق الضوابط، وخطة معالجة الفجوات."}
@@ -500,7 +516,10 @@ export default function ComplianceAssessmentPage() {
                 </h3>
               </div>
 
-              <p className={`leading-relaxed mb-4 ${currentLang === "ar" ? "text-right" : "text-left"}`} style={{ color: "var(--muted-foreground)" }}>
+              <p
+                className={`leading-relaxed mb-4 ${currentLang === "ar" ? "text-right" : "text-left"}`}
+                style={{ color: "var(--muted-foreground)" }}
+              >
                 {currentLang === "en"
                   ? "Financial-grade compliance readiness aligned with SAMA, with governance, risk, and technical evidence mapping."
                   : "جاهزية امتثال للقطاع المالي وفق SAMA مع مواءمة الحوكمة والمخاطر والأدلة التقنية."}
@@ -576,84 +595,86 @@ export default function ComplianceAssessmentPage() {
         </div>
       </section>
 
-{/* FINAL CTA */}
-<section className="py-24 px-4 relative">
-  <div className="max-w-4xl mx-auto text-center">
-    <div
-      className="relative p-12 rounded-3xl border overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--accent) 14%, transparent))",
-        borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
-        backdropFilter: "blur(10px)",
-      }}
-    >
-      {/* Glow background */}
-      <div
-        className="absolute inset-0 opacity-20 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at top, var(--glow-1), transparent 70%)",
-        }}
-      />
+      {/* FINAL CTA */}
+      <section className="py-24 px-4 relative">
+        <div className="max-w-4xl mx-auto text-center">
+          <div
+            className="relative p-12 rounded-3xl border overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), color-mix(in srgb, var(--accent) 14%, transparent))",
+              borderColor: "color-mix(in srgb, var(--border) 65%, transparent)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            {/* Glow background */}
+            <div
+              className="absolute inset-0 opacity-20 pointer-events-none"
+              style={{
+                background: "radial-gradient(circle at top, var(--glow-1), transparent 70%)",
+              }}
+            />
 
-      <h2 className="text-4xl md:text-5xl font-bold mb-6 relative z-10">
-        {currentLang === "en"
-          ? "Ready for Compliance Confidence?"
-          : "جاهز للامتثال بثقة؟"}
-      </h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 relative z-10">
+              {currentLang === "en" ? "Ready for Compliance Confidence?" : "جاهز للامتثال بثقة؟"}
+            </h2>
 
-      <p
-        className="text-xl mb-10 relative z-10"
-        style={{ color: "var(--muted-foreground)" }}
-      >
-        {currentLang === "en"
-          ? "Book a live demo or talk to our experts to start your compliance assessment journey."
-          : "احجز عرضًا مباشرًا أو تواصل مع خبرائنا لبدء رحلة تقييم الامتثال."}
-      </p>
+            <p className="text-xl mb-10 relative z-10" style={{ color: "var(--muted-foreground)" }}>
+              {currentLang === "en"
+                ? "Book a live demo or talk to our experts to start your compliance assessment journey."
+                : "احجز عرضًا مباشرًا أو تواصل مع خبرائنا لبدء رحلة تقييم الامتثال."}
+            </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-        {/* Book Demo */}
-        <MotionLink
-          href="/book-demo"
-          className="inline-flex items-center justify-center px-10 py-4 rounded-lg font-semibold text-white shadow-xl"
-          style={{
-            background: "linear-gradient(90deg, var(--primary), var(--accent))",
-          }}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {currentLang === "en" ? "Book a Demo" : "احجز عرضًا"}
-        </MotionLink>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+              {/* Book Demo */}
+              <MotionLink
+                href="/book-demo"
+                className="inline-flex items-center justify-center px-10 py-4 rounded-lg font-semibold text-white shadow-xl"
+                style={{
+                  background: "linear-gradient(90deg, var(--primary), var(--accent))",
+                }}
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {currentLang === "en" ? "Book a Demo" : "احجز عرضًا"}
+              </MotionLink>
 
-        {/* Contact Us */}
-        <MotionLink
-          href="/talk-to-us"
-          className="inline-flex items-center justify-center px-10 py-4 rounded-lg font-semibold border"
-          style={{
-            borderColor: "color-mix(in srgb, var(--border) 70%, transparent)",
-            background: "color-mix(in srgb, var(--card) 18%, transparent)",
-            color: "var(--page-fg)",
-          }}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {currentLang === "en" ? "Contact Us" : "تواصل معنا"}
-        </MotionLink>
-      </div>
-    </div>
-  </div>
-</section>
+              {/* Contact Us */}
+              <MotionLink
+                href="/talk-to-us"
+                className="inline-flex items-center justify-center px-10 py-4 rounded-lg font-semibold border"
+                style={{
+                  borderColor: "color-mix(in srgb, var(--border) 70%, transparent)",
+                  background: "color-mix(in srgb, var(--card) 18%, transparent)",
+                  color: "var(--page-fg)",
+                }}
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {currentLang === "en" ? "Contact Us" : "تواصل معنا"}
+              </MotionLink>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Orbit animations */}
       <style jsx global>{`
         @keyframes orbitClockwise {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
         }
         @keyframes counterRotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(-360deg); }
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(-360deg);
+          }
         }
         .orbit-rotator {
           animation: orbitClockwise 22s linear infinite;

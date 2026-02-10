@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import Link from "next/link"
 import {
   Server,
@@ -182,10 +177,6 @@ export default function TechnologyImplementationPage() {
         color: "var(--page-fg)",
       }}
     >
-      <Navbar />
-      <Breadcrumb currentLang={currentLang} currentTheme={currentTheme} />
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Hero Section with Live Implementation Visualization */}
       <section className="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
@@ -542,7 +533,6 @@ export default function TechnologyImplementationPage() {
         </div>
       </section>
 
-      <SharedFooter />
 
       <style jsx global>{`
         :root {

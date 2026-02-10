@@ -427,8 +427,8 @@ export default function Home() {
         ctas: { primary: "Start Your Journey", secondary: "Explore Solutions", contact: "Contact Us" },
         // Added content for OccasionModal
         newYearGreeting: {
-          title: "Happy New Year!",
-          message: "Wishing you a prosperous and innovative year ahead from Affinity Technology.",
+          title: "Ramadan Kareem",
+          message: "May this Ramadan bring joy, health, and prosperity to you and your loved ones. Thank you for being part of our journey!",
           cta: "Explore Solutions",
         },
       },
@@ -809,24 +809,24 @@ export default function Home() {
       }
     >
       <OccasionModal
-        occasionType="new-year"
+        occasionType="Ramadan"
         title={{
-          en: "Happy New Year",
-          ar: "سنة جديدة سعيدة",
+          en: " Ramadan Kareem",
+          ar: "رمضان كريم",
         }}
         subtitle={{
-          en: "Welcome to 2026",
-          ar: "مرحباً بعام 2026",
+          en: "Welcome to the month of blessings",
+          ar: "مرحب شهر الخير والبركات",
         }}
         message={{
-          en: "Wishing all our valued partners and clients a year filled with success, innovation, and prosperity. Thank you for being part of our journey. Here's to achieving new milestones together!",
-          ar: "نتمنى لجميع شركائنا وعملائنا الكرام عاماً مليئاً بالنجاح والابتكار والازدهار. شكراً لكونكم جزءاً من رحلتنا. نتطلع لتحقيق إنجازات جديدة معاً!",
+          en: "May this Ramadan bring joy, health, and prosperity to you and your loved ones. Thank you for being part of our journey!",
+          ar: "هلّ هلالك يارمضان أهلاً وسهلاً بشهر الخير والبركات! نتمنى أن يتقبل الله منّا ومنكم سائر الأعمال . شكراً لكونكم جزءاً من رحلتنا!",
         }}
         year="2026"
         companyName="Affinity Technology"
         logoSrc="/images/affinity-icon-white.svg"
         enabled={true}
-        storageKey="affinity-new-year-2026"
+        storageKey="affinity-ramadan-2026"
       />
 
 

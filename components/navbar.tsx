@@ -583,7 +583,7 @@ export function Navbar() {
           {
             label: language === "en" ? "Hardware Sections" : "أقسام الأجهزة",
             labelAr: "أقسام الأجهزة",
-            href: "/coming-soon",
+            href: "/supply-hd/hdmainpage",
             icon: "monitor",
           },
           {

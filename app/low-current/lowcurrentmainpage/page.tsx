@@ -57,12 +57,12 @@ export default function lowcurrentmainpage() {
 
   const slides = useMemo(
     () => [
-      { src: "/screens/lc1.jpg", alt: "Signal", title: { en: "Signal Boosters", ar: "تقوية الإشارة" }, desc: { en: "Indoor cellular coverage", ar: "تغطية داخلية للجوال" } },
-      { src: "/screens/lc2.jpg", alt: "Cabling", title: { en: "Structured Cabling", ar: "كابلات مُهيكلة" }, desc: { en: "Fiber & copper", ar: "فايبر ونحاس" } },
-      { src: "/screens/lc3.jpg", alt: "Server Room", title: { en: "Server Rooms", ar: "غرف السيرفرات" }, desc: { en: "Racks, PDU, airflow", ar: "رفوف وطاقة وتبريد" } },
-      { src: "/screens/lc4.jpg", alt: "CCTV", title: { en: "CCTV", ar: "CCTV" }, desc: { en: "IP cameras + analytics", ar: "كاميرات IP وتحليلات" } },
-      { src: "/screens/lc5.jpg", alt: "Signage", title: { en: "Digital Signage", ar: "الديجتال ساينج" }, desc: { en: "Content scheduling", ar: "إدارة المحتوى والجدولة" } },
-      { src: "/screens/lc6.jpg", alt: "BMS", title: { en: "BMS", ar: "BMS" }, desc: { en: "Facility control", ar: "تحكم ومراقبة المنشأة" } },
+      { src: "/Cel-Fi.webp", alt: "Signal", title: { en: "Signal Boosters", ar: "تقوية الإشارة" }, desc: { en: "Indoor cellular coverage", ar: "تغطية داخلية للجوال" } },
+      { src: "/PullingCables.jpg", alt: "Cabling", title: { en: "Structured Cabling", ar: "كابلات مُهيكلة" }, desc: { en: "Fiber & copper", ar: "فايبر ونحاس" } },
+      { src: "/server-room-mobile-ba.jpg", alt: "Server Room", title: { en: "Server Rooms", ar: "غرف السيرفرات" }, desc: { en: "Racks, PDU, airflow", ar: "رفوف وطاقة وتبريد" } },
+      { src: "/Types-of-cctv-cameras.webp", alt: "CCTV", title: { en: "CCTV", ar: "CCTV" }, desc: { en: "IP cameras + analytics", ar: "كاميرات IP وتحليلات" } },
+      { src: "/Product_MO_720x1080.avif", alt: "Signage", title: { en: "Digital Signage", ar: "الديجتال ساينج" }, desc: { en: "Content scheduling", ar: "إدارة المحتوى والجدولة" } },
+      { src: "/controllers-category-image_369.jpg", alt: "BMS", title: { en: "BMS", ar: "BMS" }, desc: { en: "Facility control", ar: "تحكم ومراقبة المنشأة" } },
     ],
     [],
   )
@@ -305,31 +305,7 @@ export default function lowcurrentmainpage() {
                   </div>
                 </div>
 
-                {/* Language Switch */}
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                    }}
-                    onClick={() => setLanguage("en")}
-                  >
-                    English
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--secondary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                    }}
-                    onClick={() => setLanguage("ar")}
-                  >
-                    العربية
-                  </button>
-                </div>
+               
               </div>
             </div>
 
@@ -364,7 +340,7 @@ export default function lowcurrentmainpage() {
             <ScreenCarousel
               language={language as Lang}
               heading={{ en: "Infrastructure Showcase", ar: "عرض البنية التحتية" }}
-              subheading={{ en: "Auto-slides, tap to pause. Swipe on mobile.", ar: "يتحرك تلقائياً، اضغط لإيقافه. واسحب على الجوال." }}
+            
               slides={slides}
             />
           </div>
@@ -450,12 +426,10 @@ export default function lowcurrentmainpage() {
                     </div>
                     <div>
                       <div className="font-extrabold" style={{ color: "var(--page-fg)" }}>
-                        {isAr ? "مقطع صوت (تجريبي)" : "Audio Demo (Placeholder)"}
+                        {isAr ? "بث مباشر لأي موسيقى أو مقطوعات صوتيه " : "Streaming Audio (Demo) or any music or audio clips"}
                       </div>
                       <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                        {isAr
-                          ? "ضع MP3 في publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3"
-                          : "Put MP3 at publichttps://hebbkx1anhila5yf.public.blob.vercel-storage.com/AUDIO-2025-12-16-21-37-14-2iKvnx6vl9NdiEJhkazNUEoFxsV360.mp3"}
+                        
                       </div>
                     </div>
                   </div>

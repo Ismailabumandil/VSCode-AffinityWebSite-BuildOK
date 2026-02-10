@@ -131,8 +131,8 @@ export default function MaintenancePage() {
       contact: {
         title: "Get Support Now",
         description: "Contact our support team for immediate assistance",
-        phone: "+966 XX XXX XXXX",
-        email: "support@affinity.sa",
+        phone: "+966 5793 89025",
+        email: "SupportTeam@weaffinity-tech.com",
       },
     },
     ar: {

@@ -1,9 +1,6 @@
 "use client"
 
 import React, { useMemo, useRef, useEffect, useState } from "react"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { SharedFooter } from "@/components/shared-footer"
 import { ScreenCarousel } from "@/components/screen-carousel"
 import { useTheme } from "@/contexts/theme-context"
 
@@ -204,7 +201,6 @@ export default function solutionmainpage() {
 
   return (
     <div className="min-h-screen neon-bg">
-      <Navbar />
 
       {/* HERO */}
       <section className="relative pt-28 pb-10 px-4">
@@ -228,10 +224,13 @@ export default function solutionmainpage() {
             </div>
 
             {/* robot holo */}
-            <div className="absolute -right-10 md:right-4 top-16 md:top-10 w-[320px] md:w-[420px] opacity-95 pointer-events-none">
-              <RobotHolo />
-            </div>
-
+<div
+  className={`absolute top-16 md:top-10 w-[320px] md:w-[420px] opacity-95 pointer-events-none ${
+    isAr ? "-left-10 md:left-4" : "-right-10 md:right-4"
+  }`}
+>
+  <RobotHolo />
+</div>
             <div className="relative p-8 md:p-12">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
                 <div className="max-w-2xl">
@@ -298,13 +297,13 @@ export default function solutionmainpage() {
                         color: "var(--page-fg)",
                       }}
                     >
-                      {isAr ? "شاهد البروسس" : "See the Process"}
+                      {isAr ? "كيف يتم ذلك ؟" : "How It Works?"}
                       {isAr ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
                     </a>
                   </div>
                 </div>
 
-                \
+  
               </div>
             </div>
 
@@ -360,7 +359,6 @@ export default function solutionmainpage() {
             <ScreenCarousel
               language={language as Lang}
               heading={{ en: "AI Showcase", ar: "عرض الذكاء الاصطناعي" }}
-              subheading={{ en: "Auto-slides, tap to pause. Swipe on mobile.", ar: "يتحرك تلقائياً، اضغط لإيقافه. واسحب على الجوال." }}
               slides={slides}
             />
           </div>
@@ -456,10 +454,10 @@ export default function solutionmainpage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
             <h3 className="text-3xl md:text-4xl font-extrabold" style={{ color: t.fg }}>
-              {isAr ? "بروسس التنفيذ (Animation)" : "Implementation Process (Animated)"}
+              {isAr ? "معالجة خطوات التنفيذ الممنهجة" : "A systematic approach to implementation steps"}
             </h3>
             <p className="mt-3 text-lg" style={{ color: t.muted }}>
-              {isAr ? "خطوات واضحة… مع حركة بصرية توضح تدفق العمل." : "Clear steps… with visual motion to show the workflow."}
+              {isAr ? "خطوات واضحة و سلسلة لتنفيذ العمليات" : "Clear, streamlined steps for process execution"}
             </p>
           </div>
 
@@ -565,7 +563,6 @@ export default function solutionmainpage() {
         </div>
       </section>
 
-      <SharedFooter />
     </div>
   )
 }

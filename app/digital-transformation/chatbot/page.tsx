@@ -1,10 +1,5 @@
 "use client"
 import { useTheme } from "@/contexts/theme-context"
-import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ChatWidget } from "@/components/chat-widget"
-import { ScrollToTop } from "@/components/scroll-to-top"
-import { SharedFooter } from "@/components/shared-footer"
 import {
   Bot,
   MessageCircle,
@@ -284,10 +279,6 @@ export default function ChatbotIntegrationPage() {
         }
       `}</style>
 
-      <Navbar />
-      <Breadcrumb currentLang={currentLang as any} currentTheme={currentTheme as any} />
-      <ChatWidget />
-      <ScrollToTop />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-24 px-4 overflow-hidden">
@@ -623,7 +614,6 @@ export default function ChatbotIntegrationPage() {
         </div>
       </section>
 
-      <SharedFooter  />
     </div>
   )
 }

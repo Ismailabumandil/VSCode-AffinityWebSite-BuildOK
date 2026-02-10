@@ -146,12 +146,12 @@ export default function cybermainpage() {
 
   const slides = useMemo(
     () => [
-      { src: "/screens/s1.jpg", alt: "Threat Monitoring", title: { en: "Threat Monitoring", ar: "مراقبة التهديدات" }, desc: { en: "Detect early, respond fast", ar: "اكتشف مبكرًا واستجب بسرعة" } },
-      { src: "/screens/s2.jpg", alt: "Compliance", title: { en: "Compliance", ar: "الامتثال" }, desc: { en: "NCA • ISO • PCI-DSS", ar: "NCA • ISO • PCI-DSS" } },
-      { src: "/screens/s3.jpg", alt: "Pen Testing", title: { en: "Penetration Testing", ar: "اختبار اختراق" }, desc: { en: "OWASP • PTES • OSSTMM", ar: "OWASP • PTES • OSSTMM" } },
-      { src: "/screens/s4.jpg", alt: "Hardening", title: { en: "Hardening", ar: "تعزيز الحماية" }, desc: { en: "Reduce attack surface", ar: "تقليل سطح الهجوم" } },
-      { src: "/screens/s5.jpg", alt: "Risk", title: { en: "Risk Evaluation", ar: "تقييم المخاطر" }, desc: { en: "Business impact driven", ar: "مبني على أثر الأعمال" } },
-      { src: "/screens/s6.jpg", alt: "Resilience", title: { en: "Resilience", ar: "الصمود" }, desc: { en: "Defense you can trust", ar: "دفاع موثوق" } },
+      { src: "/Threats.jpg", alt: "Threat Monitoring", title: { en: "Threat Monitoring", ar: "مراقبة التهديدات" }, desc: { en: "Detect early, respond fast", ar: "اكتشف مبكرًا واستجب بسرعة" } },
+      { src: "/security-compliance-en.png", alt: "Compliance", title: { en: "Compliance", ar: "الامتثال" }, desc: { en: "NCA • ISO • PCI-DSS", ar: "NCA • ISO • PCI-DSS" } },
+      { src: "/pentest.jpg", alt: "Pen Testing", title: { en: "Penetration Testing", ar: "اختبار اختراق" }, desc: { en: "OWASP • PTES • OSSTMM", ar: "OWASP • PTES • OSSTMM" } },
+      { src: "/hardening.png", alt: "Hardening", title: { en: "Hardening", ar: "تعزيز الحماية" }, desc: { en: "Reduce attack surface", ar: "تقليل سطح الهجوم" } },
+      { src: "/RiskEvaluation.png", alt: "Risk", title: { en: "Risk Evaluation", ar: "تقييم المخاطر" }, desc: { en: "Business impact driven", ar: "مبني على أثر الأعمال" } },
+      { src: "/CyberResilience.jpg", alt: "Resilience", title: { en: "Resilience", ar: "الصمود" }, desc: { en: "Defense you can trust", ar: "دفاع موثوق" } },
     ],
     [],
   )
@@ -293,33 +293,7 @@ export default function cybermainpage() {
                   </div>
                 </div>
 
-                {/* Language Switch */}
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-1) 65%, transparent)",
-                    }}
-                    onClick={() => setLanguage("en")}
-                  >
-                    English
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: `color-mix(in srgb, ${tokens.threat} 35%, transparent)`,
-                      color: "var(--page-fg)",
-                      boxShadow: `0 18px 55px color-mix(in srgb, ${tokens.threat} 22%, transparent)`,
-                    }}
-                    onClick={() => setLanguage("ar")}
-                  >
-                    العربية
-                  </button>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -464,7 +438,6 @@ export default function cybermainpage() {
               slides={slides}
             />
             <p className="text-xs mt-4" style={{ color: "var(--muted-foreground)" }}>
-              {isAr ? "ضع صورك في public/screens/ أو عدّل المسارات." : "Put your images in public/screens/ or update paths."}
             </p>
           </div>
         </div>

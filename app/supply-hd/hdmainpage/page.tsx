@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { Navbar } from "@/components/navbar"
-import { Breadcrumb } from "@/components/breadcrumb"
 import { SharedFooter } from "@/components/shared-footer"
 import { ScreenCarousel } from "@/components/screen-carousel"
 import { useTheme } from "@/contexts/theme-context"
@@ -26,6 +25,7 @@ import {
   Boxes,
   Cpu,
   CheckCircle2,
+  Headphones,
 } from "lucide-react"
 
 type Lang = "en" | "ar"
@@ -50,7 +50,7 @@ export default function hdmainpage() {
           en: "Official partnerships, certified devices, optimized configuration, and rapid deployment—built for mission-critical continuity.",
           ar: "شراكات رسمية، أجهزة أصلية معتمدة، تجهيزات محسّنة، وانتشار سريع—لاستمرارية الأعمال دون توقف.",
         },
-        cta1: { en: "Explore Portfolio", ar: "استعرض الأجهزة" },
+        cta1: { en: "Explore Portfolio", ar: "استكشف الأجهزة" },
         cta2: { en: "Emergency Deployment", ar: "التوريد الطارئ" },
       },
 
@@ -96,7 +96,7 @@ export default function hdmainpage() {
         title: { en: "Procurement Timeline", ar: "خطوات التوريد والتنفيذ" },
         sub: {
           en: "A smooth cycle from request to delivery—built for enterprise procurement.",
-          ar: "دورة سلسة من الطلب حتى التسليم—مناسبة للتوريد المؤسسي.",
+          ar: "دورة سلسة من الطلب حتى التسليم—إحترافية للتوريد على مستى الشركات.",
         },
         steps: [
           { icon: Layers, en: "Request", ar: "طلب" , dEn:"Needs & specs intake", dAr:"جمع الاحتياج والمواصفات"},
@@ -140,12 +140,12 @@ export default function hdmainpage() {
   // ---------- Carousel slides (6) ----------
   const slides = useMemo(
     () => [
-      { src: "/screens/sh1.jpg", alt: "Servers", title: { en: "Servers", ar: "خوادم" }, desc: { en: "Enterprise compute", ar: "حوسبة مؤسسية" } },
-      { src: "/screens/sh2.jpg", alt: "Storage", title: { en: "Storage", ar: "تخزين" }, desc: { en: "Backup & resilience", ar: "نسخ احتياطي واعتمادية" } },
-      { src: "/screens/sh3.jpg", alt: "Laptops", title: { en: "Laptops", ar: "أجهزة محمولة" }, desc: { en: "Fleet supply", ar: "توريد أسطول" } },
-      { src: "/screens/sh4.jpg", alt: "Network", title: { en: "Network", ar: "شبكات" }, desc: { en: "Switching & security", ar: "سويتشات وأمن" } },
-      { src: "/screens/sh5.jpg", alt: "Datacenter", title: { en: "Datacenter", ar: "مركز بيانات" }, desc: { en: "Racks & accessories", ar: "رفوف ومستلزمات" } },
-      { src: "/screens/sh6.jpg", alt: "Deployment", title: { en: "Deployment", ar: "انتشار" }, desc: { en: "Rapid response", ar: "استجابة سريعة" } },
+      { src: "/ServersImages.jpg", alt: "Servers", title: { en: "Servers", ar: "خوادم" }, desc: { en: "Enterprise compute", ar: "حوسبة مؤسسية" } },
+      { src: "/Storages.jpg", alt: "Storage", title: { en: "Storage", ar: "تخزين" }, desc: { en: "Backup & resilience", ar: "نسخ احتياطي واعتمادية" } },
+      { src: "/Laptops.webp", alt: "Laptops", title: { en: "Laptops", ar: "أجهزة محمولة" }, desc: { en: "Fleet supply", ar: "توريد أسطول" } },
+      { src: "/Networks-scaled.jpg", alt: "Network", title: { en: "Network", ar: "شبكات" }, desc: { en: "Switching & security", ar: "سويتشات وأمن" } },
+      { src: "/DataCentersEnterprise.jpg", alt: "Datacenter", title: { en: "Datacenter", ar: "مركز بيانات" }, desc: { en: "Racks & accessories", ar: "رفوف ومستلزمات" } },
+      { src: "/EmbeddingGuide.jpg", alt: "Deployment", title: { en: "Deployment", ar: "انتشار" }, desc: { en: "Rapid response", ar: "استجابة سريعة" } },
     ],
     [],
   )
@@ -167,6 +167,8 @@ export default function hdmainpage() {
 
       { key: "accessories" as const, icon: Package, en: "Cabling, patch panels, tooling", ar: "كابلات وباتش بانل وأدوات" },
       { key: "accessories" as const, icon: Boxes, en: "POS, tablets, kiosks", ar: "POS وتابلت وكيوسكات" },
+            { key: "accessories" as const, icon: Headphones , en: "Call Center", ar: "مركز الاتصال" },
+
     ],
     [],
   )
@@ -260,9 +262,14 @@ export default function hdmainpage() {
                       dir={dir}
                       title={isAr ? "شراكات رسمية" : "Official Partnerships"}
                       logos={[
-                        { src: "/partners/dell.svg", label: "Dell" },
-                        { src: "/partners/lenovo.svg", label: "Lenovo" },
-                        { src: "/partners/hp.svg", label: "HP" },
+                        { src: "/Dell_logo.svg.png", label: "" },
+                        { src: "/lenovo-2.svg", label: "" },
+                        { src: "/hp-logo.png", label: "" },
+                        { src: "/Cisco_logo.png", label: "" },
+                        { src: "/logo-brand-hikvision.jpg", label: "" },
+                        { src: "/paloalto.png", label: "" },
+                        { src: "/Aruba.jpg", label: "" },
+
                       ]}
                     />
                   </div>
@@ -295,32 +302,6 @@ export default function hdmainpage() {
                       {isAr ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
                     </a>
                   </div>
-                </div>
-
-                {/* Language Switch */}
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                    }}
-                    onClick={() => setLanguage("en")}
-                  >
-                    English
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--secondary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                    }}
-                    onClick={() => setLanguage("ar")}
-                  >
-                    العربية
-                  </button>
                 </div>
               </div>
             </div>
@@ -372,7 +353,6 @@ export default function hdmainpage() {
             <ScreenCarousel
               language={language as Lang}
               heading={{ en: "Hardware Showcase", ar: "عرض الأجهزة" }}
-              subheading={{ en: "Auto-slides, tap to pause. Swipe on mobile.", ar: "يتحرك تلقائياً، اضغط لإيقافه. واسحب على الجوال." }}
               slides={slides}
             />
           </div>
@@ -399,7 +379,7 @@ export default function hdmainpage() {
               <KPI label={isAr ? "أجهزة تم تجهيزها" : "Devices Prepared"} value={`${kpi.devices}+`} />
               <KPI label={isAr ? "شركاء رسميون" : "Official Partners"} value={`${Math.max(1, kpi.partners)}`} />
               <KPI label={isAr ? "استجابة طارئة" : "Emergency Response"} value={`${Math.max(1, kpi.response)}h`} />
-              <KPI label={isAr ? "جاهزية واستمرارية" : "Continuity Readiness"} value={`${Math.min(99.99, kpi.uptime).toFixed(2)}%`} />
+              <KPI label={isAr ? "جاهزية واستمرارية" : "Continuity Readiness"} value={`${Math.max(99.99, kpi.uptime).toFixed(2)}%`} />
             </div>
           </div>
         </div>
@@ -533,10 +513,7 @@ export default function hdmainpage() {
                     <Wrench className="w-6 h-6" style={{ color: "rgb(239 68 68)" }} />
                   </div>
                   <div>
-                    <div className="text-sm font-bold" style={{ color: "rgb(239 68 68)" }}>
-                      {isAr ? "رسالة احترافية" : "Professional Message"}
-                    </div>
-                    <div className="text-xl font-extrabold" style={{ color: "var(--page-fg)" }}>
+                                        <div className="text-xl font-extrabold" style={{ color: "var(--page-fg)" }}>
                       {isAr ? "عندما تتوقف الأنظمة… نحن نبدأ." : "When continuity matters most, we deliver."}
                     </div>
                   </div>
@@ -566,9 +543,7 @@ export default function hdmainpage() {
             <h3 className="text-3xl md:text-4xl font-extrabold" style={{ color: "var(--page-fg)" }}>
               {isAr ? content.faq.title.ar : content.faq.title.en}
             </h3>
-            <p className="mt-3 text-lg" style={{ color: "var(--muted-foreground)" }}>
-              {isAr ? "إجابات سريعة — وإذا تبغى نضيف أسئلة أكثر." : "Quick answers — we can add more anytime."}
-            </p>
+            
           </div>
 
           <div className="grid gap-4">

@@ -139,12 +139,11 @@ export default function dtmainpage() {
 
   const slides = useMemo(
     () => [
-      { src: "/screens/s1.jpg", alt: "Transformation 1", title: { en: "Strategy", ar: "استراتيجية" }, desc: { en: "Executive-level clarity", ar: "وضوح تنفيذي" } },
-      { src: "/screens/s2.jpg", alt: "Transformation 2", title: { en: "Governance", ar: "حوكمة" }, desc: { en: "COBIT / ITIL / ISO", ar: "COBIT / ITIL / ISO" } },
-      { src: "/screens/s3.jpg", alt: "Transformation 3", title: { en: "Modernization", ar: "تحديث" }, desc: { en: "Future-proof platforms", ar: "منصات قابلة للتوسع" } },
-      { src: "/screens/s4.jpg", alt: "Transformation 4", title: { en: "Automation", ar: "أتمتة" }, desc: { en: "Lean operations", ar: "عمليات أكثر كفاءة" } },
-      { src: "/screens/s5.jpg", alt: "Transformation 5", title: { en: "AI Agents", ar: "وكلاء ذكية" }, desc: { en: "Assist & accelerate", ar: "تسريع ورفع الجودة" } },
-      { src: "/screens/s6.jpg", alt: "Transformation 6", title: { en: "Outcomes", ar: "نتائج" }, desc: { en: "Measurable impact", ar: "أثر قابل للقياس" } },
+      { src: "/Digital-transformation-strategies.png", alt: "Transformation 1", title: { en: "Strategy", ar: "استراتيجية" }, desc: { en: "Executive-level clarity", ar: "وضوح تنفيذي" } },
+      { src: "/digitalTransfomationGovernanace.jpg", alt: "Transformation 2", title: { en: "Governance", ar: "حوكمة" }, desc: { en: "COBIT / ITIL / ISO", ar: "COBIT / ITIL / ISO" } },
+      { src: "/Automation.jpg", alt: "Transformation 4", title: { en: "Automation", ar: "أتمتة" }, desc: { en: "Lean operations", ar: "عمليات أكثر كفاءة" } },
+      { src: "/AIAgents.jpg", alt: "Transformation 5", title: { en: "AI Agents", ar: "وكلاء ذكية" }, desc: { en: "Assist & accelerate", ar: "تسريع ورفع الجودة" } },
+      { src: "/Measurableimpact.png", alt: "Transformation 6", title: { en: "Outcomes", ar: "نتائج" }, desc: { en: "Measurable impact", ar: "أثر قابل للقياس" } },
     ],
     [],
   )
@@ -288,33 +287,7 @@ export default function dtmainpage() {
                   </div>
                 </div>
 
-                {/* Language Switch */}
-                <div className="flex items-center gap-3">
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--primary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-1) 65%, transparent)",
-                    }}
-                    onClick={() => setLanguage("en")}
-                  >
-                    English
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-xl border font-semibold hover:scale-[1.02] transition"
-                    style={{
-                      backgroundColor: "color-mix(in srgb, var(--card) 22%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--secondary) 22%, transparent)",
-                      color: "var(--page-fg)",
-                      boxShadow: "0 18px 55px color-mix(in srgb, var(--glow-2) 60%, transparent)",
-                    }}
-                    onClick={() => setLanguage("ar")}
-                  >
-                    العربية
-                  </button>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -398,14 +371,9 @@ export default function dtmainpage() {
             <ScreenCarousel
               language={language as Lang}
               heading={{ en: "Transformation Highlights", ar: "أبرز محاور التحول" }}
-              subheading={{ en: "Auto-slides, tap to pause. Swipe on mobile.", ar: "يتحرك تلقائياً، اضغط لإيقافه. واسحب على الجوال." }}
-              slides={slides}
+             slides={slides}
             />
-            <p className="text-xs mt-4" style={{ color: tokens.muted }}>
-              {isAr
-                ? "ضع صورك في public/screens/ (s1.jpg إلى s6.jpg) أو عدّل المسارات."
-                : "Put your images in public/screens/ (s1.jpg to s6.jpg) or update paths."}
-            </p>
+           
           </div>
         </div>
       </section>
@@ -478,7 +446,7 @@ export default function dtmainpage() {
             </div>
             <div className="mt-4">
               <a
-                href="/contact"
+                href="/talk-to-us"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold border hover:scale-105 transition"
                 style={{
                   background: "linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%)",

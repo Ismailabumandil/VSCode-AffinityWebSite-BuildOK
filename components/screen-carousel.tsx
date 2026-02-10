@@ -88,8 +88,8 @@ export function ScreenCarousel({
   }
 
   const S = subheading ?? {
-    en: "Auto-slides, tap to pause. Swipe on mobile.",
-    ar: "يتحرك تلقائياً، اضغط لإيقافه. واسحب على الجوال.",
+    en: "",
+    ar: "",
   }
 
   return (
